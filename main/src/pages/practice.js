@@ -1,6 +1,8 @@
+import './practice.css';
 import React, { Component, useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import tradchar from './data/tradchars.json'; //import json fo 
+import simpchar from './data/simpchars.json'; //import json 
 //add component to display the challenge
 
 //lists of the words corresponding to the images in the order
@@ -45,7 +47,6 @@ function randomWordList() {
   }
   irrelevant_words = Array.from(irrelevant_words) //convert to list
 
-
   let image_paths = [] //get image paths
   for(let i = 1; i <= 10; i++) {
     image_paths.push(`../test_images/list${list_chosen}/${String(i)}.png`)
@@ -63,12 +64,12 @@ function randomWordList() {
   return [image_paths, word_list, irrelevant_words ]
 }
 
-//child component 1: display images + text etc
-const TextImageSplit = ({ text, imageUrl}) => {
+//child component 1: display Text
+const TextDisplay = ({ text, imageUrl}) => {
   return (
-    <div style={styles.img_container}>
-      <div style={styles.img_text}>{text}</div>
-      <img src={imageUrl} alt="Should Not" style={styles.image} />
+    <div className="img_container">
+      <div className="img_text">{text}</div>
+      <img src={imageUrl} alt="Should Not" className="image"/>
     </div>
   );
 };
@@ -77,7 +78,7 @@ const TextImageSplit = ({ text, imageUrl}) => {
 const TextInput = () => {
   return (
     <div>
-      <h2>Try to remember the word you just saw</h2>
+      <div className="img_text">Type the Pinyin</div>
     </div>
   );
 };
@@ -106,40 +107,53 @@ const Results = ({data, time_limit}) => {
   );
 };
 
-
-//function to get the list of components used
-function getComponents() { 
-  let component_list = []
-  let final_word_list = [] //final word list to return 
-  //loop through the 3 conditions, 10 images for each condition (1==relevant image + text, 2 == no image + text, 3==irrelevant image + text)
-  for(let cond = 1; cond <= 3; cond++) {
-    let [image_paths, relevant, irrelevant ] = randomWordList() //destructure
-    let wordList = [] //we choose either relevant or irrelevant word lists to used based on the condition
-    if(cond == 1) {
-      wordList = relevant
-    } else {
-      wordList = irrelevant
-    }
-    //additionally, if image condition if 2, we set image paths of invalid (bc we want to show no images)
-    if(cond === 2) {
-      image_paths = Array(10).fill("../bs")
-    }
-    if(cond == 2) {
-      image_paths = Array(10).fill("/test_images/blank.png")
-    }
-    for(let i = 0; i < 10; i++) {
-      //pass to another defined component that returns the image+card combination
-      //depending on the condition, we give different combinations to the components
-      const currWord = wordList[i]
-      final_word_list.push(currWord)//add word to the final word list
-      const imageComponent = <TextImageSplit text={currWord} imageUrl={image_paths[i]}/>
-      const textInput = <TextInput/>
-      component_list.push(imageComponent) //add image component to the list
-      component_list.push(textInput)
+function getJsons(bottom, top, numtest,practice_type, character_type) {
+  //get load in jsondata of can characters based on character type and practice type
+  let jsonData = null 
+  let retjsonlist = []
+  if(practice_type === "characters" && character_type === "Trad") {
+    jsonData = tradchar
+  } else if (practice_type === "characters" && character_type === "Simp") {
+    jsonData = simpchar
+  }
+  //first get all json matching the category range 
+  for (const key in jsonData) {
+    const json = jsonData[key] //get json list
+    if(json["cat"]<= top && json["cat"] >= bottom ) { //narrow down by category (in range) and add to the final list 
+      console.log("ran in range:")
+      retjsonlist.push(json)
     }
   }
-  //return the total word list and the component list
-  return [component_list, final_word_list]
+  //console.log(JSON.stringify(retjsonlist))
+  //select numtest unique json objects from this
+  //randomly select 10 from the list 
+  let new_random_chars = new Set()
+  while (new_random_chars.size < numtest) {
+    const random = retjsonlist[Math.floor(Math.random()*retjsonlist.length)] //select from our current list 
+    new_random_chars.add(random)
+  }
+  new_random_chars = Array.from(new_random_chars) //convert to list
+  return new_random_chars 
+}
+
+//function to get the pronunciation components, and the list of correct values 
+//range is a list of highest to 
+function getComponents(bottom, top , num_test, character_type, test_type, practice_type) { 
+  const componentsList = [];
+  const correctvals = [];
+  const jsonlist = getJsons(bottom, top,num_test,practice_type, character_type)//get the proper list of subjson
+  //iterate to create components
+  //based on the test type: isolate the key for the correct value to test the user on
+  let test_key = "" ?
+  if (test_type=="def") {
+
+  }
+
+  for (const json in jsonlist) {
+
+  }
+
+  return [componentsList, correctvals]
 }
 
 ////tracks accuracy of all words 30 for now, every 10 different conditions
@@ -148,9 +162,8 @@ const [components, word_list] = getComponents() //get list of current components
 export function PracticePronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
   const navigate = useNavigate();
   const location = useLocation();
-
   //get destructured data
-  const { range, num_test, character_type,  practice_type} = location.state 
+  const { range, num_test, character_type, test_type, practice_type} = location.state 
   
   const [componentList, setComponentList] = useState(components)//store the fixed list of components 
   const [index, setIndex] = useState(0); //this index is key, cycling through through all words (60 for now 2 for ach)
@@ -160,28 +173,14 @@ export function PracticePronunciation(props) { //main parent image component (to
   const timeoutTime = Math.floor(parseFloat(props.time) * 1000) //calculate ms to allow the user to see the image
   
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
-
-
-  //function to send data to the database once all is done
-  const sendData = async(lim, cond, accuracy,correct_count) => {
-    try{
-      const send_data = {"limit_value":lim, 
-                      "condition": cond,
-                      "accuracy":accuracy,
-                      "correct_count": correct_count,
-                    } //data to send
-      const postReq = await fetch("https://photomemorygame-production.up.railway.app/add-data",{
-        method:"POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(send_data)
-      });
-    } catch (err) {
-      console.log("error sending data")
-    }
-  }
   
+  // This effect will only run once after the component mounts. user this to get the necessary data
+  useEffect(() => {
+    const componentLists = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
+    setComponentList(componentLists)
+  }, []); 
+
+
   //calculate counts of correct values
   const getAccuracies = () => {
     const a1 = accuracies.slice(0,10).reduce((a,b)=>a+b,0) //compute accuracy for condition 1 (sum elements from 1 to 10), then divide by 10 
@@ -189,6 +188,8 @@ export function PracticePronunciation(props) { //main parent image component (to
     const a3 = accuracies.slice(20,30).reduce((a,b)=>a+b,0) //compute accuracy for condition 3
     return [a1, a2, a3]
   }
+
+
 
   const nextSection = () => { 
     //if isText is 0, this is an image one, so we move to a text one (so we stay on the same word)
@@ -205,10 +206,7 @@ export function PracticePronunciation(props) { //main parent image component (to
     } else {
       //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
       const [a1, a2, a3] = getAccuracies()
-      console.log(a1+","+a2 +","+a3)
-      sendData(props.time, 1, a1*10,a1)
-      sendData(props.time, 2, a2*10, a2)
-      sendData(props.time, 3, a3*10, a3) //lim, cond, accuracy,correct_count
+      console.log(a1+","+a2 +","+a3)//lim, cond, accuracy,correct_count
       setIndex(0);
       setIsText(0);
       setComponentList([<Results data={accuracies} time_limit={props.time}/>])
@@ -232,17 +230,15 @@ export function PracticePronunciation(props) { //main parent image component (to
     //in the case, we are not at the results page, show a warning window before exiting to menu
     const confirmed = window.confirm("Are you sure you want to proceed?"); //confirm for this case as a precaution to avoid exiting to menu
     if (confirmed) {
-    navigate('/characters') //exist back to characters
+      navigate('/characters') //exist back to characters
     } 
   }
 
-  console.log("current index: "+index+", isText:"+isText )
   return (
-    <div style={styles.all}>
-      <h1>Let's see how you remember {num_test} characters with and without the help of images</h1>
-      <h2>you have {props.time} seconds for each word</h2>
+    <div className="all">
+      <h3>Try to type the pronuciation ({test_type === "prt"? "without": "with"} tone) for {num_test} characters</h3>
 
-      <div style={styles.text_container}>
+      <div className="text_container">
         {/* render all components with varying visiblity to avoid unmounting, destroying vital state variables. Renders components in order*/}
         {componentList.map((Component, i) => (
           <div key={i} style={{ display: index === (i) ? 'block' : 'none' }}>
@@ -253,7 +249,7 @@ export function PracticePronunciation(props) { //main parent image component (to
         {/* button for inputting text-display only if is text is odd*/}
         
         <div style={{ display: (isText === 1) ? 'block' : 'none' }}>
-          <div style={styles.text_wrapper}>
+          <div className="text_wrapper">
             <input
               type="text"
               value = {text}
@@ -265,52 +261,19 @@ export function PracticePronunciation(props) { //main parent image component (to
           </div>
         </div>
 
-        <p style={{display: componentList.length != 1 ? 'block' : 'none' }}>Word {Math.floor(index/2)} of 30 total</p> 
+        <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>Word {Math.floor(index/2)} of {num_test} total</p> 
       </div>
 
       <button onClick={nextSection} style={{...styles.skip, ...{display: componentList.length != 1 ? 'block' : 'none' }}}>{nextText}</button> {/* skip function inherted from parent component (display only the number of components is not 0)*/}
-      <button onClick={menuExit} style={styles.back}>
+      <button onClick={menuExit} className="back">
       ⬅ Back to Menu
       </button>
     </div>
   );
 };
 
-//image card to display the images
-
+//addition styles for a component that needs to chnage style oftenL, the next page
 const styles = {
-  img_container: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '10px',
-    padding: '10px',
-  },
-  img_text: {
-    flex: 1,
-    fontSize: '20pt',
-  },
-  image: {
-    height: '350px',
-    width:"350px",
-    objectFit: 'contain',
-  },
-  all: {
-    display: "flex", 
-    flexDirection: "column",
-    alignItems: 'center',
-    textAlign: 'center',
-  },
-  back: {
-    backgroundColor: '#e63946',     // vibrant red
-    color: '#fff',
-    border: 'none',
-    borderRadius: '12px',
-    padding: '10px 20px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    transition: 'background-color 0.3s ease',
-  }, 
   skip: {
     backgroundColor: '#44e02f',     // vibrant red
     color: '#fff',
@@ -321,24 +284,5 @@ const styles = {
     cursor: 'pointer',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     transition: 'background-color 0.3s ease',
-  }, text_wrapper: {
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  text_input : {
-    padding: "5px",
-    fontSize: '20px',   // Large font
-    fontWeight: 'bold'  // Bold text
-  },
-  text_container: {
-    padding: '12px',
-    fontSize: '1rem',
-    width: '400px',
-    height: '400px',
-    border: '3px solid #ccc',
-    borderRadius: '8px',
-    outline: 'none',
-    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-    transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
-  }
+  }, 
 };

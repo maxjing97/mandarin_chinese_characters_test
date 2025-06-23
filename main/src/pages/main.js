@@ -58,7 +58,8 @@ export default function Characters() {
             const data = {
                 range: catrange,
                 num_test: numChars,
-                character_type: CharType,
+                character_type: CharType, //if a character is traditional or simplified : Trad or Simp
+                test_type: testType, //type of information tested: prt, pwt, def
                 practice_type: "characters"
             };
             //if practicing pronuciation we have a special option 
