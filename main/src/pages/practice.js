@@ -19,33 +19,34 @@ const TextDisplay = ({ char, sup}) => {
 const DefinitionPart = ({char, definition, full_pronunciation}) => {
   return (
     <div>
+      <p>Please review the information</p>
       <h1 className="def_text">{char}</h1>
       <p>Pronunciation: <strong>{full_pronunciation}</strong></p> 
       <p>Definition: {definition}</p>
     </div>
   );
 };
-//child component 3: component to display the final results and connect to a database to store them
-const Results = ({data, time_limit}) => {
-  const a1 = data.slice(0,10).reduce((a,b)=>a+b,0) //compute accuracy for condition 1 (sum elements from 1 to 10), then divide by 10 
-  const a2 = data.slice(10,20).reduce((a,b)=>a+b,0) //compute accuracy for condition 2
-  const a3 = data.slice(20,30).reduce((a,b)=>a+b,0) //compute accuracy for condition 3
-  //compute total accuracy
-  const total = data.slice(0, 30).reduce((a,b)=>a+b,0)
-  
+//child component 3: component to display the final results and give a list of missed results 
+const Results = ({accuracies, num_test, componentList}) => {
+  const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
+
+  const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
+
 
   useEffect(()=>{
     return () => {} 
   }, []) //call only once on mount
-  
+  //if display components if they correpond to a one missed and are a defintion component
   return (
     <div>
       <h2>Results Page</h2>
-      <h3>Here are results of your memory test:</h3>
-      <p>Accuracy when shown a relevant image + word {a1*10}%</p>
-      <p>Accuracy when shown a no image + word {a2*10}%</p>
-      <p>Accuracy when shown an irrelevant image + word {a3*10}%</p>
-      <p>total accuracy: {Math.floor(total/30*100)}% or {total} correct</p>
+      <p>First-time Accuracy {accuracy/num_test*100}% or {accuracy}/{num_test} correct</p>
+      <p>Missed Characters (if any)</p>
+      {componentList.map((Component, i) => (
+          <div key={i} style={{ display: (i % 2 === 1 && i < num_test && accuracies[i] === 0) ? 'block' : 'none' }}>
+            {Component}
+          </div>
+        ))}
     </div>
   );
 };
@@ -114,8 +115,6 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
   return [componentsList, correctvals]
 }
 
-////tracks accuracy of all words 30 for now, every 10 different conditions
-let accuracies = Array(30).fill(0)
 export function PracticePronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
   const navigate = useNavigate();
   const location = useLocation();
@@ -127,9 +126,14 @@ export function PracticePronunciation(props) { //main parent image component (to
 
   const [index, setIndex] = useState(0); //this index is key, cycling through through all words (60 for now 2 for ach)
   const [isText, setIsText] = useState(0); //states if we are on the definition part or not 
-  const [text, setText] = useState(''); //set text in the input box
-  const [nextText, setnextText] = useState("Skip to test ➡");//text to display in the next button
-  
+  const [text, setText] = useState(""); //set text in the input box
+  const [nextText, setnextText] = useState("Submit");//text to display in the next button
+  const [correctmessage, setCorrectMessage]  = useState("") //store the correct message
+  const [accuracies, setAccuracies] = useState([])//array for accuracies
+  console.log("current length of components:"+componentList.length)
+  console.log("current index of components:"+index)
+  console.log("should be definition stage:"+isText)
+
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
   
   // This effect will only run once after the component mounts. user this to get the necessary data
@@ -140,34 +144,68 @@ export function PracticePronunciation(props) { //main parent image component (to
     setCorrectList(correctVals)
   }, []); 
 
-
-  //calculate counts of correct values
-  const getAccuracies = () => {
-    const a1 = accuracies.slice(0,10).reduce((a,b)=>a+b,0) //compute accuracy for condition 1 (sum elements from 1 to 10), then divide by 10 
-    const a2 = accuracies.slice(10,20).reduce((a,b)=>a+b,0) //compute accuracy for condition 2
-    const a3 = accuracies.slice(20,30).reduce((a,b)=>a+b,0) //compute accuracy for condition 3
-    return [a1, a2, a3]
+  //parse pronunciations string into a list with correct formatting
+  const parsePronunciations =(pro) => {
+    const prolist = []
+    let myArray = ""
+    if (pro) {//if is a string
+      myArray = pro.split("/") //split based on / 
+    }
+    
+    for(const str of myArray) {
+      prolist.push(str.trim().toLowerCase())
+    }
+    return prolist
   }
 
-  const nextSection = () => { 
+
+  const nextSection = (gap) => { //argument is how much to change the index can be 1 or 2 (when we want to skip the current text)
     //if isText is 0, this is an image one, so we move to a text one (so we stay on the same word)
-    if (isText === 0 && index < (componentList.length-1)) {
-      setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
-      setIsText(1); //move to the text section 
-      setnextText("Don't Remember? Try the Next Word ➡")
-    } else if (isText === 1 && index < (componentList.length-1)) { //in this case, the user has skipped the section, so record the accuracy as 0 for this, while moving on to the next image to test
-      setIsText(0); //move to the image section 
-      setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
-      setnextText("Skip to test ➡")//set the appropriate text for the button
-      setText("")//when the skip button is clicked, reset the value of the text input box
-      //update component list to the next index since state changes in React do not apply immediately, being applied by the next render cycle
-    } else {
-      //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
-      const [a1, a2, a3] = getAccuracies()
-      console.log(a1+","+a2 +","+a3)//lim, cond, accuracy,correct_count
-      setIndex(0);
-      setIsText(0);
-      setComponentList([<Results data={accuracies} time_limit={props.time}/>])
+    if (gap === 1) {
+      if (isText === 0 && index < (componentList.length-1)) {
+        setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
+        setIsText(1); //move to the text section 
+        setnextText("Try the Next Word ➡")
+      } else if (isText === 1 && index < (componentList.length-1)) { //in this case, the user has skipped the section, so record the accuracy as 0 for this, while moving on to the next image to test
+        setIsText(0); //move to the character section 
+        setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
+        setnextText("Submit")//set the appropriate text for the button
+        setText("")//when the skip button is clicked, reset the value of the text input box
+        //update component list to the next index since state changes in React do not apply immediately, being applied by the next render cycle
+      } else {
+        //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
+        setIndex(0);
+        setIsText(0);
+        setComponentList([<Results accuracies={accuracies} num_test={num_test} componentList={componentList}/>])
+      }
+    } else if (gap === 2) { //if gap is two, we keep the same pattern
+      if (index < (componentList.length-2)) {
+        setIndex((prev) => (prev + 2)); //go to the next one as long as the end has not been reached
+      } else {
+        //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
+        setIndex(0);
+        setIsText(1);
+        setComponentList([<Results accuracies={accuracies} num_test={num_test} componentList={componentList}/>])
+      }
+    }
+  }
+  //handle the submission button
+  const handleSubmit = (e) => {
+    const targetWord = correctList[index/2] //get the correct target word
+    if (text && parsePronunciations(targetWord).includes(text.trim().toLowerCase())) { //if matching and string is valid
+      setText("") //reset if there is match
+      setAccuracies(curr=>[...curr, 1])
+      setCorrectMessage("Last Response Correct")
+      nextSection(2) //more to the next one
+    } else{
+      //when incorrect, we add to the of components and correct words to repeat (afterwards) (only when index is even)
+      if (index % 2 ===0 ) {
+        setComponentList(curr=>[...curr, curr[index], curr[index+1]])
+        setCorrectList(curr=>[...curr, curr[index/2]])   
+        setAccuracies(curr=>[...curr, 0])
+      }
+      setCorrectMessage("Incorrect Pronunciation entered, try again later")
+      nextSection(1) 
     }
   }
 
@@ -176,10 +214,11 @@ export function PracticePronunciation(props) { //main parent image component (to
     setText(e.target.value) //set the text value dynamically
     const value = e.target.value;
     const targetWord = correctList[index/2] //get the correct value for based on the index
-    if (value.trim().toLowerCase() === targetWord.toLowerCase()) {
+    if (parsePronunciations(targetWord).includes(value.trim().toLowerCase())) {
       setText("") //reset if there is match
-      accuracies[(index-1)/2] = 1 //find the correponding accuracy index to change
-      nextSection() //more to the next one
+      setAccuracies(curr=>[...curr, 1]) //increment the accuracy
+      setCorrectMessage("Last Response Correct") //if correct
+      nextSection(2) //more to the next one
     }
   };
 
@@ -194,6 +233,9 @@ export function PracticePronunciation(props) { //main parent image component (to
 
   return (
     <div className="all">
+      <button onClick={menuExit} className="back">
+      ⬅ Back to Menu
+      </button>
       <h3>Try to type the pronuciation ({test_type === "prt"? "without": "with"} tone) for {num_test} characters</h3>
 
       <div className="text_container">
@@ -212,26 +254,32 @@ export function PracticePronunciation(props) { //main parent image component (to
               type="text"
               value = {text}
               ref={inputRef}
+              id= "text_input"
               onChange={handleTextChange}
               placeholder="Start typing..."
               style={styles.text_input}
             />
           </div>
         </div>
-
-        <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>Word {Math.floor(index/2)} of {num_test} total</p> 
+        <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
+        {index < num_test ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
+        `Repeating missed characters`}</p> 
       </div>
+      
+      <button onClick={handleSubmit} style={{...styles.skip, ...{display: componentList.length != 1 ? 'block' : 'none' }}}>{nextText}</button> {/* skip function inherted from parent component (display only the number of components is not 0)*/}
+      
+      <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
 
-      <button onClick={nextSection} style={{...styles.skip, ...{display: componentList.length != 1 ? 'block' : 'none' }}}>{nextText}</button> {/* skip function inherted from parent component (display only the number of components is not 0)*/}
-      <button onClick={menuExit} className="back">
-      ⬅ Back to Menu
-      </button>
     </div>
   );
 };
 
-//addition styles for a component that needs to chnage style oftenL, the next page
-const styles = {
+//addition styles for a component that needs to chnage style often, like the skip button
+let styles = {
+  correct_text: {
+    color: "black",
+    fontSize: "14pt",
+  }, 
   skip: {
     backgroundColor: '#44e02f',     // vibrant green
     color: '#fff',
