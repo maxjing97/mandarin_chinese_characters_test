@@ -1,3 +1,16 @@
+.all {
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+}
+.text_container {
+    padding: 12px;
+    height: 350px;
+    border: 3px solid #636725;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
 .img_container {
     align-items: center;
     justify-content: space-between;
@@ -21,12 +34,7 @@
     object-fit: contain;
     font-size: 12pt;
 }
-.all {
-    display: flex; 
-    flex-direction: column;
-    align-items: center;
-    margin: auto;
-}
+
 .back {
     background-color: #e63946;
     color: #fff;
@@ -65,21 +73,7 @@
     font-size: 20px;   
     font-weight: bold  
 };
-.text_container {
-    padding: 12px;
-    font-size: 1rem;
-    width: 350px;
-    height: 350px;
-    border: 3px solid #ccc;
-    border-radius: 8px;
-    outline: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    -webkit-transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    -moz-transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    -ms-transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    -o-transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
+
 .def-text {
     font-family: "kaiti";
     font-size: 14pt;

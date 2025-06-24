@@ -151,11 +151,11 @@ export function PracticePronunciation(props) { //main parent image component (to
 
   const nextSection = () => { 
     //if isText is 0, this is an image one, so we move to a text one (so we stay on the same word)
-    if (isText === 0 && index < (componentList.length*2-1)) {
+    if (isText === 0 && index < (componentList.length-1)) {
       setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
       setIsText(1); //move to the text section 
       setnextText("Don't Remember? Try the Next Word ➡")
-    } else if (isText === 1 && index < (componentList.length*2-1)) { //in this case, the user has skipped the section, so record the accuracy as 0 for this, while moving on to the next image to test
+    } else if (isText === 1 && index < (componentList.length-1)) { //in this case, the user has skipped the section, so record the accuracy as 0 for this, while moving on to the next image to test
       setIsText(0); //move to the image section 
       setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
       setnextText("Skip to test ➡")//set the appropriate text for the button
@@ -233,7 +233,7 @@ export function PracticePronunciation(props) { //main parent image component (to
 //addition styles for a component that needs to chnage style oftenL, the next page
 const styles = {
   skip: {
-    backgroundColor: '#44e02f',     // vibrant red
+    backgroundColor: '#44e02f',     // vibrant green
     color: '#fff',
     border: 'none',
     borderRadius: '12px',
