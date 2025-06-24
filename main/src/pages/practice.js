@@ -5,80 +5,23 @@ import tradchar from './data/tradchars.json'; //import json fo
 import simpchar from './data/simpchars.json'; //import json 
 //add component to display the challenge
 
-//lists of the words corresponding to the images in the order
-// sorted in folders for each of the image lists
-const listA = ["lantern", "valley","spoon", "lightning", "puzzle",
- "carpet","robot","mirror", "volcano","guitar"]
-
-const listB = ["forest", "castle","ladder", "notebook", "candle",
-        "anchor","helmet","river", "statue","clock"]
-
-const listC = ["train", "feather","coins", "whale", "telescope",
-        "compass","dragon","fountain", "diamond","mask"] 
-
-//function to randomly select a word list with its name and corresponding image list, and a randomly selected irrelevant word list
-function randomWordList() {
-  //randomly select a list to use
-  const list_names = ["A","B","C"] 
-  const list_chosen = list_names[Math.floor(Math.random() * list_names.length)];
-  //get the correspoding words in order
-  let word_list = []
-  let irrelevant_list = [] //word list of excluded words to include in the list of 10 irrelevant words to be randomly chosen
-  switch(list_chosen) {
-    case "A":
-      word_list = listA
-      irrelevant_list = listB.concat(listC)
-      break;
-    case "B":
-      word_list = listB
-      irrelevant_list = listA.concat(listC)
-      break;
-    case "C":
-      word_list = listC
-      irrelevant_list = listA.concat(listB)
-      break;
-  }
-  
-  //randomly select 10 from the list 
-  let irrelevant_words = new Set()
-  while (irrelevant_words.size < 10) {
-    const random = irrelevant_list[Math.floor(Math.random()*irrelevant_list.length)]
-    irrelevant_words.add(random)
-  }
-  irrelevant_words = Array.from(irrelevant_words) //convert to list
-
-  let image_paths = [] //get image paths
-  for(let i = 1; i <= 10; i++) {
-    image_paths.push(`../test_images/list${list_chosen}/${String(i)}.png`)
-  }
-
-  //shuffle the word_list and image paths randomly:
-  const result = [...word_list];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]]; // Swap elements
-    [image_paths[i], image_paths[j]] = [image_paths[j], image_paths[i]]; // Swap elements
-  }
-  word_list = result
-
-  return [image_paths, word_list, irrelevant_words ]
-}
-
 //child component 1: display Text
-const TextDisplay = ({ text, imageUrl}) => {
+const TextDisplay = ({ char, sup}) => {
   return (
     <div className="img_container">
-      <div className="img_text">{text}</div>
-      <img src={imageUrl} alt="Should Not" className="image"/>
+      <h1 className="main_text">{char}</h1>
+      <p>Hint: {sup}</p>
     </div>
   );
 };
 
-//child component 2: display text and more for the text input
-const TextInput = () => {
+//child component 2: display definitions and informations after a user submits
+const DefinitionPart = ({char, definition, full_pronunciation}) => {
   return (
     <div>
-      <div className="img_text">Type the Pinyin</div>
+      <h1 className="def_text">{char}</h1>
+      <p>Pronunciation: <strong>{full_pronunciation}</strong></p> 
+      <p>Definition: {definition}</p>
     </div>
   );
 };
@@ -144,13 +87,28 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
   const jsonlist = getJsons(bottom, top,num_test,practice_type, character_type)//get the proper list of subjson
   //iterate to create components
   //based on the test type: isolate the key for the correct value to test the user on
-  let test_key = "" ?
-  if (test_type=="def") {
-
+  let test_key = ""
+  if (test_type==="def") {
+    test_key = "test_definition"
+  } else if (test_type === "prt") {//testing without tones
+    test_key = "full_pronunciation_wo"
+  } else if (test_type === "pwt") { //testing with tones 
+    test_key = "full_pronunciation"
   }
 
-  for (const json in jsonlist) {
+  let supporting ="" //get the supporting text key to help the user: either definition or the pronuciation
+  if (test_type==="def")  {
+    supporting = "full_pronunciation"
+  } else {
+    supporting = "test_definition"
+  }
 
+
+  for (const json of jsonlist) {
+    const character = json["word/character"]
+    componentsList.push(<TextDisplay char={character} sup={json[supporting]}/>)
+    componentsList.push(<DefinitionPart char={character} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
+    correctvals.push(json[test_key])
   }
 
   return [componentsList, correctvals]
@@ -158,26 +116,28 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
 
 ////tracks accuracy of all words 30 for now, every 10 different conditions
 let accuracies = Array(30).fill(0)
-const [components, word_list] = getComponents() //get list of current components, word list
 export function PracticePronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
   const navigate = useNavigate();
   const location = useLocation();
   //get destructured data
   const { range, num_test, character_type, test_type, practice_type} = location.state 
   
-  const [componentList, setComponentList] = useState(components)//store the fixed list of components 
+  const [componentList, setComponentList] = useState([])//store the fixed list of components 
+  const [correctList, setCorrectList] = useState([])//store the fixed list of correct values 
+
   const [index, setIndex] = useState(0); //this index is key, cycling through through all words (60 for now 2 for ach)
-  const [isText, setIsText] = useState(0); //states weather we access the first (image) or second(text) component in our current 2-element component
+  const [isText, setIsText] = useState(0); //states if we are on the definition part or not 
   const [text, setText] = useState(''); //set text in the input box
   const [nextText, setnextText] = useState("Skip to test ➡");//text to display in the next button
-  const timeoutTime = Math.floor(parseFloat(props.time) * 1000) //calculate ms to allow the user to see the image
   
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
   
   // This effect will only run once after the component mounts. user this to get the necessary data
   useEffect(() => {
-    const componentLists = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
-    setComponentList(componentLists)
+    const [componentList, correctVals] = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
+    console.log("size of list generated:"+componentList.length)
+    setComponentList(componentList)
+    setCorrectList(correctVals)
   }, []); 
 
 
@@ -189,15 +149,13 @@ export function PracticePronunciation(props) { //main parent image component (to
     return [a1, a2, a3]
   }
 
-
-
   const nextSection = () => { 
     //if isText is 0, this is an image one, so we move to a text one (so we stay on the same word)
-    if (isText == 0 && index < 59) {
+    if (isText === 0 && index < (componentList.length*2-1)) {
       setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
       setIsText(1); //move to the text section 
       setnextText("Don't Remember? Try the Next Word ➡")
-    } else if (isText == 1 && index < 59) { //in this case, the user has skipped the section, so record the accuracy as 0 for this, while moving on to the next image to test
+    } else if (isText === 1 && index < (componentList.length*2-1)) { //in this case, the user has skipped the section, so record the accuracy as 0 for this, while moving on to the next image to test
       setIsText(0); //move to the image section 
       setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
       setnextText("Skip to test ➡")//set the appropriate text for the button
@@ -217,7 +175,7 @@ export function PracticePronunciation(props) { //main parent image component (to
   const handleTextChange = (e) => {
     setText(e.target.value) //set the text value dynamically
     const value = e.target.value;
-    const targetWord = word_list[(index-1)/2] //get the target for based on the for index
+    const targetWord = correctList[index/2] //get the correct value for based on the index
     if (value.trim().toLowerCase() === targetWord.toLowerCase()) {
       setText("") //reset if there is match
       accuracies[(index-1)/2] = 1 //find the correponding accuracy index to change
@@ -248,7 +206,7 @@ export function PracticePronunciation(props) { //main parent image component (to
 
         {/* button for inputting text-display only if is text is odd*/}
         
-        <div style={{ display: (isText === 1) ? 'block' : 'none' }}>
+        <div style={{ display: (isText === 0) ? 'block' : 'none' }}>
           <div className="text_wrapper">
             <input
               type="text"

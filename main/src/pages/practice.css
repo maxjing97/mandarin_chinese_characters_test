@@ -1,24 +1,31 @@
 .img_container {
     align-items: center;
     justify-content: space-between;
+    margin: auto;
+    text-align: center;
+    font-family: "kaiti";
+    font-size: 14pt;
     gap: 10px;
     padding: 10px;
     margin: 10px
 }
-.img_text {
-    flex: 1;
-    font-size: 20pt;
+.img_container p {
+    font-family: "Arial";
+    font-weight: bold;
 }
-.image {
-    height: 350px;
-    width:350px;
+.main_text {
+    flex: 1;
+    font-size: 40pt;
+}
+.sup_text {
     object-fit: contain;
+    font-size: 12pt;
 }
 .all {
     display: flex; 
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    margin: auto;
 }
 .back {
     background-color: #e63946;
@@ -72,4 +79,8 @@
     -moz-transition: border-color 0.3s ease, box-shadow 0.3s ease;
     -ms-transition: border-color 0.3s ease, box-shadow 0.3s ease;
     -o-transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.def-text {
+    font-family: "kaiti";
+    font-size: 14pt;
 }
