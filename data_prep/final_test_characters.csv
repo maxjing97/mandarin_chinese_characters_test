@@ -576,10 +576,10 @@
 574,223,張,zhāng,"spread, sheet of paper, <classifier for surfaces, tables, postcards, etc.>",t,,zhāng,zhang,"spread, sheet of paper, <classifier for surfaces, tables, postcards, etc.>"
 575,224,活,huó,"live, alive, living, vivid, save someone's life",s,,huó,huo,"live, alive, living, vivid, save someone's life"
 576,224,活,huó,"live, alive, living, vivid, save someone's life",t,,huó,huo,"live, alive, living, vivid, save someone's life"
-577,225,难,nán,difficult,s,,nán,,difficult
-578,225,難,nán,difficult,t,,nán,,difficult
-579,225,难,nàn,disaster,s,,nàn,,disaster
-580,225,難,nàn,disaster,t,,nàn,,disaster
+577,225,难,nán,difficult,s,,nán,"nan",difficult
+578,225,難,nán,difficult,t,,nán,"nan",difficult
+579,225,难,nàn,disaster,s,,nàn,"nan",disaster
+580,225,難,nàn,disaster,t,,nàn,"nan",disaster
 581,226,神,shén,"spirit, god",s,,shén,shen,"spirit, god"
 582,226,神,shén,"spirit, god",t,,shén,shen,"spirit, god"
 583,227,数,shù,"number, number, figure, fate, plan",s,,shù,shu,"number, number, figure, fate, plan"
@@ -743,8 +743,8 @@
 741,290,題,tí,"topic, problem, inscribe",t,,tí,ti,"topic, problem, inscribe"
 742,291,建,jiàn,"construct, establish",s,,jiàn,jian,"construct, establish"
 743,291,建,jiàn,"construct, establish",t,,jiàn,jian,"construct, establish"
-744,292,南,nán,south,s,,nán,,south
-745,292,南,nán,south,t,,nán,,south
+744,292,南,nán,south,s,,nán,"nan",south
+745,292,南,nán,south,t,,nán,"nan",south
 746,293,度,dù,"degree, extent, unit (kWh, angle, temperature, etc.), <classifier for units of measurement, occasions, times, etc.>",s,,dù,du,"degree, extent, unit (kWh, angle, temperature, etc.), <classifier for units of measurement, occasions, times, etc.>"
 747,293,度,dù,"degree, extent, unit (kWh, angle, temperature, etc.), <classifier for units of measurement, occasions, times, etc.>",t,,dù,du,"degree, extent, unit (kWh, angle, temperature, etc.), <classifier for units of measurement, occasions, times, etc.>"
 748,294,统,tǒng,"order, unite, (Equivalent:  系统 xìtǒng) system",s,,tǒng,tong,"order, unite,  system"
@@ -1251,8 +1251,8 @@
 1249,499,竟,jìng,"finish, (Equivalent:  竟然 jìngrán) unexpectedly",t,,jìng,jing,"finish,  unexpectedly"
 1250,500,乎,hū,似乎 sìhu it seems,s,,hū,hu,sìhu it seems
 1251,500,乎,hū,似乎 sìhu it seems,t,,hū,hu,sìhu it seems
-1252,501,男,nán,"male, (Equivalent:  男人 nánrén) man",s,,nán,,"male,  man"
-1253,501,男,nán,"male, (Equivalent:  男人 nánrén) man",t,,nán,,"male,  man"
+1252,501,男,nán,"male, (Equivalent:  男人 nánrén) man",s,,nán,"nan","male,  man"
+1253,501,男,nán,"male, (Equivalent:  男人 nánrén) man",t,,nán,"nan","male,  man"
 1254,502,举,jǔ,raise,s,,jǔ,ju,raise
 1255,502,舉,jǔ,raise,t,,jǔ,ju,raise
 1256,503,客,kè,(Equivalent:  客人 kèrén) guest,s,,kè,ke,guest
