@@ -28,8 +28,8 @@ const DefinitionPart = ({char, definition, full_pronunciation}) => {
 };
 //child component 3: component to display the final results and give a list of missed results 
 const Results = ({accuracies, num_test, componentList}) => {
+  console.log("in results length of component list:", componentList.length)
   const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
-
   const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
 
 
@@ -43,7 +43,7 @@ const Results = ({accuracies, num_test, componentList}) => {
       <p>First-time Accuracy {accuracy/num_test*100}% or {accuracy}/{num_test} correct</p>
       <p>Missed Characters (if any)</p>
       {componentList.map((Component, i) => (
-          <div key={i} style={{ display: (i % 2 === 1 && i < num_test && accuracies[i] === 0) ? 'block' : 'none' }}>
+          <div key={i} style={{ display: (i % 2 === 1 && i < (num_test*2) && ourAccuracy[Math.floor(i/2)] === 0) ? 'block' : 'none' }}>
             {Component}
           </div>
         ))}
@@ -116,6 +116,7 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
 }
 
 export function PracticePronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
+  
   const navigate = useNavigate();
   const location = useLocation();
   //get destructured data
@@ -133,13 +134,13 @@ export function PracticePronunciation(props) { //main parent image component (to
   console.log("current length of components:"+componentList.length)
   console.log("current index of components:"+index)
   console.log("should be definition stage:"+isText)
+  console.log("current accuracies list:",accuracies)
 
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
   
   // This effect will only run once after the component mounts. user this to get the necessary data
   useEffect(() => {
     const [componentList, correctVals] = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
-    console.log("size of list generated:"+componentList.length)
     setComponentList(componentList)
     setCorrectList(correctVals)
   }, []); 
@@ -159,7 +160,7 @@ export function PracticePronunciation(props) { //main parent image component (to
   }
 
 
-  const nextSection = (gap) => { //argument is how much to change the index can be 1 or 2 (when we want to skip the current text)
+  const nextSection = (gap, accuracy_list = accuracies) => { //argument is how much to change the index can be 1 or 2 (when we want to skip the current text)
     //if isText is 0, this is an image one, so we move to a text one (so we stay on the same word)
     if (gap === 1) {
       if (isText === 0 && index < (componentList.length-1)) {
@@ -175,8 +176,8 @@ export function PracticePronunciation(props) { //main parent image component (to
       } else {
         //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
         setIndex(0);
-        setIsText(0);
-        setComponentList([<Results accuracies={accuracies} num_test={num_test} componentList={componentList}/>])
+        setIsText(1);
+        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentList={componentList}/>])
       }
     } else if (gap === 2) { //if gap is two, we keep the same pattern
       if (index < (componentList.length-2)) {
@@ -185,7 +186,7 @@ export function PracticePronunciation(props) { //main parent image component (to
         //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
         setIndex(0);
         setIsText(1);
-        setComponentList([<Results accuracies={accuracies} num_test={num_test} componentList={componentList}/>])
+        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentList={componentList}/>])
       }
     }
   }
@@ -196,7 +197,7 @@ export function PracticePronunciation(props) { //main parent image component (to
       setText("") //reset if there is match
       setAccuracies(curr=>[...curr, 1])
       setCorrectMessage("Last Response Correct")
-      nextSection(2) //more to the next one
+      nextSection(2, [...accuracies, 1]) //more to the next on the next one (pass the updated list before the state rerender to avoid unexpected issues )
     } else{
       //when incorrect, we add to the of components and correct words to repeat (afterwards) (only when index is even)
       if (index % 2 ===0 ) {
@@ -218,7 +219,8 @@ export function PracticePronunciation(props) { //main parent image component (to
       setText("") //reset if there is match
       setAccuracies(curr=>[...curr, 1]) //increment the accuracy
       setCorrectMessage("Last Response Correct") //if correct
-      nextSection(2) //more to the next one
+
+      nextSection(2, [...accuracies, 1]) //more to the next one
     }
   };
 
