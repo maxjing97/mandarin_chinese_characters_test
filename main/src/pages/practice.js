@@ -26,11 +26,31 @@ const DefinitionPart = ({char, definition, full_pronunciation}) => {
     </div>
   );
 };
-//child component 3: component to display the final results and give a list of missed results 
-const Results = ({accuracies, num_test, componentList}) => {
-  console.log("in results length of component list:", componentList.length)
+//child component 3: component to display details of a character in a table format 
+const DetailsRow = ({charJson}) => {
+  return (
+    <tr>
+      <td>{charJson["word/character"]}</td>
+      <td>{charJson["definition"]}</td>
+      <td>{charJson["full_pronunciation"]}</td>
+    </tr>
+  );
+};
+//child component 4: component to display the final results and give a list of missed results 
+const Results = ({accuracies, num_test, componentJsons}) => {
+  console.log("in results length of component list:", componentJsons.length)
   const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
   const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
+
+  //create table header
+  const compList = [] //json list to display
+  for(let i=0; i<num_test; i++ ) {
+    //if accuarcy is low, we add to the list of components
+    if (accuracies[i] === 0) {
+      const currentJson = componentJsons[i]
+      compList.push(currentJson)
+    }
+  }
 
 
   useEffect(()=>{
@@ -38,15 +58,16 @@ const Results = ({accuracies, num_test, componentList}) => {
   }, []) //call only once on mount
   //if display components if they correpond to a one missed and are a defintion component
   return (
-    <div>
+    <div className='results-display'>
       <h2>Results Page</h2>
       <p>First-time Accuracy {accuracy/num_test*100}% or {accuracy}/{num_test} correct</p>
       <p>Missed Characters (if any)</p>
-      {componentList.map((Component, i) => (
-          <div key={i} style={{ display: (i % 2 === 1 && i < (num_test*2) && ourAccuracy[Math.floor(i/2)] === 0) ? 'block' : 'none' }}>
-            {Component}
-          </div>
+      <table style={{ display: compList.length > 0 ? 'block' : 'none' }}>
+        <tr><th>word/character</th><th>definition</th><th>full pronunciation</th></tr>
+        {compList.map((Json, i) => (
+          <DetailsRow charJson={Json}/>
         ))}
+      </table>
     </div>
   );
 };
@@ -106,13 +127,12 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
 
 
   for (const json of jsonlist) {
-    const character = json["word/character"]
-    componentsList.push(<TextDisplay char={character} sup={json[supporting]}/>)
-    componentsList.push(<DefinitionPart char={character} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
+    componentsList.push(<TextDisplay char={json["word/character"]} sup={json[supporting]}/>)
+    componentsList.push(<DefinitionPart char={json["word/character"]} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
     correctvals.push(json[test_key])
   }
 
-  return [componentsList, correctvals]
+  return [componentsList, correctvals, jsonlist]
 }
 
 export function PracticePronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
@@ -124,7 +144,7 @@ export function PracticePronunciation(props) { //main parent image component (to
   
   const [componentList, setComponentList] = useState([])//store the fixed list of components 
   const [correctList, setCorrectList] = useState([])//store the fixed list of correct values 
-
+  const [correctJsons, setCorrectJsons] = useState([])//store the fixed list json objects containing full information for the characters 
   const [index, setIndex] = useState(0); //this index is key, cycling through through all words (60 for now 2 for ach)
   const [isText, setIsText] = useState(0); //states if we are on the definition part or not 
   const [text, setText] = useState(""); //set text in the input box
@@ -140,9 +160,10 @@ export function PracticePronunciation(props) { //main parent image component (to
   
   // This effect will only run once after the component mounts. user this to get the necessary data
   useEffect(() => {
-    const [componentList, correctVals] = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
+    const [componentList, correctVals, correctJsons] = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
     setComponentList(componentList)
     setCorrectList(correctVals)
+    setCorrectJsons(correctJsons)
   }, []); 
 
   //parse pronunciations string into a list with correct formatting
@@ -177,7 +198,8 @@ export function PracticePronunciation(props) { //main parent image component (to
         //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
         setIndex(0);
         setIsText(1);
-        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentList={componentList}/>])
+        setCorrectMessage("") //clear mesage at the end
+        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
       }
     } else if (gap === 2) { //if gap is two, we keep the same pattern
       if (index < (componentList.length-2)) {
@@ -186,7 +208,8 @@ export function PracticePronunciation(props) { //main parent image component (to
         //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
         setIndex(0);
         setIsText(1);
-        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentList={componentList}/>])
+        setCorrectMessage("") //clear mesage at the end
+        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
       }
     }
   }
@@ -268,7 +291,7 @@ export function PracticePronunciation(props) { //main parent image component (to
         `Repeating missed characters`}</p> 
       </div>
       
-      <button onClick={handleSubmit} style={{...styles.skip, ...{display: componentList.length != 1 ? 'block' : 'none' }}}>{nextText}</button> {/* skip function inherted from parent component (display only the number of components is not 0)*/}
+      <button onClick={handleSubmit} style={{...styles.skip, ...{display: componentList.length !== 1 ? 'block' : 'none' }}}>{nextText}</button> {/* skip function inherted from parent component (display only the number of components is not 0)*/}
       
       <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
 
