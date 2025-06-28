@@ -264,7 +264,7 @@ export function PracticePronunciation(props) { //main parent image component (to
           </div>
         </div>
         <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
-        {index < num_test ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
+        {(Math.floor(index/2) < num_test) ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
         `Repeating missed characters`}</p> 
       </div>
       
