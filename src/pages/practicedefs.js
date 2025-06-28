@@ -40,7 +40,6 @@ const DetailsRow = ({charJson}) => {
 };
 //child component 4: component to display the final results and give a list of missed results 
 const Results = ({accuracies, num_test, componentJsons}) => {
-  console.log("in results length of component list:", componentJsons.length)
   const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
   const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
 
@@ -87,12 +86,9 @@ function getJsons(bottom, top, numtest,practice_type, character_type) {
   for (const key in jsonData) {
     const json = jsonData[key] //get json list
     if(json["cat"]<= top && json["cat"] >= bottom ) { //narrow down by category (in range) and add to the final list 
-      console.log("ran in range:")
       retjsonlist.push(json)
     }
   }
-  //console.log(JSON.stringify(retjsonlist))
-  //select numtest unique json objects from this
   //randomly select numtest from the list 
   let new_random_chars = new Set()
   while (new_random_chars.size < numtest) {
@@ -110,7 +106,7 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
   const jsonlist = getJsons(bottom, top,num_test,practice_type, character_type)//get the proper list of subjson
   //iterate to create components
   //based on the test type: isolate the key for the correct value to test the user on
-  let test_key = "definition" //we are testing the defnition
+  let test_key = "test_definition" //we are testing the defnition
   let supporting ="full_pronunciation" //get the supporting text key to help the user: either definition or the pronuciation
 
   const defslist = [] //get a list of definition json to show
@@ -119,7 +115,7 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
     const def_dict = {}//get a dictionary mapping definitions to certain keys
     const currdef = json[test_key]//current definition
     const rlist = getJsons(0,maxCat,4,practice_type, character_type) //get random 4 other definitions in a list format using the same get jsons list, selecting from all possible difficutly categories
-    const rCorrectKey = defidx[Math.floor(Math.random * defidx.length)]//randomly select the correct definition index key 
+    const rCorrectKey = defidx[Math.floor(Math.random() * defidx.length)]//randomly select the correct definition index key 
     def_dict[String(rCorrectKey)] = currdef//add the correct key to the dictiontary
     let j = 0 //count index of the random json list of 4 elements 
     for(const i of defidx) {
@@ -147,25 +143,20 @@ export default function PracticeDefinition(props) { //main parent image componen
   const [componentList, setComponentList] = useState([])//store the fixed list of components 
   const [correctList, setCorrectList] = useState([])//store the fixed list of correct values (definitions)
   const [correctJsons, setCorrectJsons] = useState([])//store the fixed list json objects containing full information for the characters 
-  const [defJsons, setDefJsons] =useState([]) //list of definition jsons to show
+  const [defJsons, setDefJsons] = useState([{"0":"", "1":"","2":"","3":"","4":""}]) //list of definition jsons to show. initialize to prevent invalid issues
   
   const [index, setIndex] = useState(0); //this index is key, cycling through through all words (60 for now 2 for ach)
   const [isText, setIsText] = useState(0); //states if we are on the definition part or not 
   const [correctmessage, setCorrectMessage]  = useState("") //store the correct message
   const [accuracies, setAccuracies] = useState([])//array for accuracies
-  console.log("current length of components:"+componentList.length)
-  console.log("current index of components:"+index)
-  console.log("should be definition stage:"+isText)
-  console.log("current accuracies list:",accuracies)
-  console.log("current def json list:",defslist)
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
   
   // This effect will only run once after the component mounts. user this to get the necessary data
-  useEffect(() => {
+  useEffect(() => { //runs after initial render
     const [componentList, correctVals, correctJsons, defslist] = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
     setComponentList(componentList)
     setCorrectList(correctVals)
-    setCorrectJsons(correctJsons)
+    setCorrectJsons(correctJsons) //add empty json at the end to prevent unexpected rendering errors 
     setDefJsons(defslist)   
   }, []); 
 
@@ -209,13 +200,14 @@ export default function PracticeDefinition(props) { //main parent image componen
 
       nextSection(2, [...accuracies, 1]) //more to the next one
     } else{
-      //when incorrect, we add to the of components and correct words to repeat (afterwards) (only when index is even)
+      //when incorrect, we add to the of components and correct words to repeat (afterwards) (only when index is even, meaning on input section)
       if (index % 2 ===0 ) {
         setComponentList(curr=>[...curr, curr[index], curr[index+1]])
         setCorrectList(curr=>[...curr, curr[index/2]])   
         setAccuracies(curr=>[...curr, 0])
+        setDefJsons(curr=>[...curr, curr[Math.floor(index/2)]])
       }
-      setCorrectMessage("Incorrect Pronunciation entered, try again later")
+      setCorrectMessage("Incorrect Definition entered, try again later")
       nextSection(1) 
     }
   };
@@ -229,6 +221,10 @@ export default function PracticeDefinition(props) { //main parent image componen
     } 
   }
 
+  const handleSubmit = (e) => {
+    setCorrectMessage("Last Response Incorrect")
+    nextSection(1) 
+  }
 
   return (
     <div className="all">
@@ -248,19 +244,23 @@ export default function PracticeDefinition(props) { //main parent image componen
         {/* button for selecting defintiion only if is text is false*/}
         
         <div style={{ display: (isText === 0) ? 'block' : 'none' }}>
-          <button onClick={() =>  handleSelection("0")} className="selectbutton">{defJsons[Math.floor(index/2)][0]}</button>
-          <button onClick={() =>  handleSelection("1")} className="selectbutton">{defJsons[Math.floor(index/2)][1]}</button>
-          <button onClick={() =>  handleSelection("2")} className="selectbutton">{defJsons[Math.floor(index/2)][2]}</button>
-          <button onClick={() =>  handleSelection("3")} className="selectbutton">{defJsons[Math.floor(index/2)][3]}</button>
-          <button onClick={() =>  handleSelection("4")} className="selectbutton">{defJsons[Math.floor(index/2)][4]}</button>
+          <div id="definition_select" >
+          <button onClick={() =>  handleSelection("0")} className="selectbutton">{defJsons[Math.floor(index/2)]["0"]}</button>
+          <button onClick={() =>  handleSelection("1")} className="selectbutton">{defJsons[Math.floor(index/2)]["1"]}</button>
+          <button onClick={() =>  handleSelection("2")} className="selectbutton">{defJsons[Math.floor(index/2)]["2"]}</button>
+          <button onClick={() =>  handleSelection("3")} className="selectbutton">{defJsons[Math.floor(index/2)]["3"]}</button>
+          <button onClick={() =>  handleSelection("4")} className="selectbutton">{defJsons[Math.floor(index/2)]["4"]}</button>
+          </div>
         </div>
-        <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
-        {(Math.floor(index/2) < num_test) ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
-        `Repeating missed characters`}</p> 
+        <div id="def_buttons">
+          <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
+          {(Math.floor(index/2) < num_test) ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
+          `Repeating missed characters`}</p> 
+          <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
+        </div>
+        <button className="back" style={{...styles.next_button, ...{display : (index % 2===1 ? "block":"none")}}} onClick={handleSubmit}>Try the Next Word ➡</button>
       </div>
-            
-      <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
-
+          
     </div>
   );
 };
@@ -270,6 +270,12 @@ let styles = {
   correct_text: {
     color: "black",
     fontSize: "14pt",
+    display: "flex",
+    margin: "0 auto",
+    padding: "10px",
+    justifyContent: "center",
+    borderRadius: '12px',
+    placeItems: "center",
   }, 
   skip: {
     backgroundColor: '#44e02f',     // vibrant green
@@ -281,5 +287,5 @@ let styles = {
     cursor: 'pointer',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     transition: 'background-color 0.3s ease',
-  }, 
+  }
 };

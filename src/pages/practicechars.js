@@ -157,7 +157,6 @@ export default function PracticePronunciation(props) { //main parent image compo
     if (pro) {//if is a string
       myArray = pro.split("/") //split based on / 
     }
-    
     for(const str of myArray) {
       prolist.push(str.trim().toLowerCase())
     }

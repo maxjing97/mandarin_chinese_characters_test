@@ -1,13 +1,25 @@
 .all {
     display: flex; 
     flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
     margin: auto;
 }
 .text_container {
     padding: 12px;
     height: 275px;
-
+}
+#definition_select {
+    font-size: 14pt;
+    display: flex; 
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+#def_buttons {
+    font-size: 14pt;
+    display: flex; 
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 .img_container {
     align-items: center;
@@ -32,6 +44,7 @@
     object-fit: contain;
     font-size: 12pt;
 }
+
 table, th, td {
   border: 2px solid black; /* add border to table */
   border-collapse: collapse; /* remove default double border */
