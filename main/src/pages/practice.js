@@ -256,6 +256,37 @@ export function PracticePronunciation(props) { //main parent image component (to
     } 
   }
 
+  //function for the special tone keyboard
+  function applyPinyinTone(num) {
+    const toneMap = {
+      a: ['ā', 'á', 'ǎ', 'à'],
+      o: ['ō', 'ó', 'ǒ', 'ò'],
+      e: ['ē', 'é', 'ě', 'è'],
+      i: ['ī', 'í', 'ǐ', 'ì'],
+      u: ['ū', 'ú', 'ǔ', 'ù'],
+      ü: ['ǖ', 'ǘ', 'ǚ', 'ǜ']
+    };
+    const letters = new Set(["a","o","e","i","u","ü"])
+    const currstr = text //get text string of  
+    //for the special case that the ü key is pressed
+    if (num === 100) {
+      //get new string 
+      const newstr = currstr.slice(0, currstr.length-1) + "ü" 
+      setText(newstr)
+    } else if (text.length === 0) { //if the text is empty, no modifciation
+      return 
+    } else {
+      const lastlet = text[currstr.length-1] //check if the last letter is in the list
+      if(letters.has(lastlet)) { //if the letter is in the set
+        //get new string based on map
+        const newstr = currstr.slice(0, currstr.length-1) + toneMap[lastlet][num]
+        setText(newstr)
+        return  
+      }
+    }
+
+    return 
+  }
   return (
     <div className="all">
       <button onClick={menuExit} className="back">
@@ -295,6 +326,15 @@ export function PracticePronunciation(props) { //main parent image component (to
       
       <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
 
+      {/*only display tone keyboard for*/}
+      <div style={{display : test_type === "pwt" ? 'block' : 'none'}}>
+        <p>Tone/Special Letter Keyboard</p>
+        <button onClick={() =>  applyPinyinTone(0)} className="selectbutton">1: -</button>
+        <button onClick={() =>  applyPinyinTone(1)} className="selectbutton">2: /</button>
+        <button onClick={() =>  applyPinyinTone(2)} className="selectbutton">3: v</button>
+        <button onClick={() =>  applyPinyinTone(3)} className="selectbutton">4: \</button>
+        <button onClick={() => applyPinyinTone(100) } className="selectbutton">ü</button>
+      </div>
     </div>
   );
 };
