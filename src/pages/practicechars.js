@@ -38,7 +38,6 @@ const DetailsRow = ({charJson}) => {
 };
 //child component 4: component to display the final results and give a list of missed results 
 const Results = ({accuracies, num_test, componentJsons}) => {
-  console.log("in results length of component list:", componentJsons.length)
   const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
   const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
 
@@ -85,13 +84,11 @@ function getJsons(bottom, top, numtest,practice_type, character_type) {
   for (const key in jsonData) {
     const json = jsonData[key] //get json list
     if(json["cat"]<= top && json["cat"] >= bottom ) { //narrow down by category (in range) and add to the final list 
-      console.log("ran in range:")
       retjsonlist.push(json)
     }
   }
-  //console.log(JSON.stringify(retjsonlist))
   //select numtest unique json objects from this
-  //randomly select 10 from the list 
+  //randomly select numtest from the list 
   let new_random_chars = new Set()
   while (new_random_chars.size < numtest) {
     const random = retjsonlist[Math.floor(Math.random()*retjsonlist.length)] //select from our current list 
@@ -110,21 +107,12 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
   //iterate to create components
   //based on the test type: isolate the key for the correct value to test the user on
   let test_key = ""
-  if (test_type==="def") {
-    test_key = "test_definition"
-  } else if (test_type === "prt") {//testing without tones
+  if (test_type === "prt") {//testing without tones
     test_key = "full_pronunciation_wo"
   } else if (test_type === "pwt") { //testing with tones 
     test_key = "full_pronunciation"
   }
-
-  let supporting ="" //get the supporting text key to help the user: either definition or the pronuciation
-  if (test_type==="def")  {
-    supporting = "full_pronunciation"
-  } else {
-    supporting = "test_definition"
-  }
-
+  let supporting ="test_definition" //get the supporting text key to help the user: either definition or the pronuciation
 
   for (const json of jsonlist) {
     componentsList.push(<TextDisplay char={json["word/character"]} sup={json[supporting]}/>)
@@ -135,7 +123,7 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
   return [componentsList, correctvals, jsonlist]
 }
 
-export function PracticePronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
+export default function PracticePronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -151,10 +139,6 @@ export function PracticePronunciation(props) { //main parent image component (to
   const [nextText, setnextText] = useState("Submit");//text to display in the next button
   const [correctmessage, setCorrectMessage]  = useState("") //store the correct message
   const [accuracies, setAccuracies] = useState([])//array for accuracies
-  console.log("current length of components:"+componentList.length)
-  console.log("current index of components:"+index)
-  console.log("should be definition stage:"+isText)
-  console.log("current accuracies list:",accuracies)
 
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
   
@@ -302,7 +286,7 @@ export function PracticePronunciation(props) { //main parent image component (to
           </div>
         ))}
 
-        {/* button for inputting text-display only if is text is odd*/}
+        {/*button for selecting defintiion only if is text is false*/}
         
         <div style={{ display: (isText === 0) ? 'block' : 'none' }}>
           <div className="text_wrapper">

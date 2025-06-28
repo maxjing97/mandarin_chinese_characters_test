@@ -64,9 +64,9 @@ export default function Characters() {
             };
             //if practicing pronuciation we have a special option 
             if (testType === "prt" || testType === "pwt") {
-                navigate('/practice_pronunciation', { state: data })
+                navigate('/practice_char_pronunciation', { state: data })
             } else {
-                navigate('/practice_definition', { state: data })
+                navigate('/practice_char_definition', { state: data })
             }
         }
     };
