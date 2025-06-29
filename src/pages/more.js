@@ -24,7 +24,7 @@ export function About() {
       <h2>practice and learn now!</h2>
 
       <p>This is a project to create a flashcard app that also assigns in learning chinese by having characters ranked in a frequency order</p>
-      <p>This tool is likely most helpful to people wanting to practice their character and mandarin pronunciation comprehension who are at an intermediateto early advanced
+      <p>This tool is likely most helpful to people wanting to practice their character and mandarin pronunciation comprehension who are at an intermediate to early advanced
        level of chinese. The character list contains ~2600 to practice, and the dictionary contains around ~10000 total words that are are combination of these characters.
     
       
