@@ -8,23 +8,23 @@ const Navbar=()=>{
         <div className='navBar'>
             <h1 id="title">中文 Reading Trainer</h1>
             <div className="dropdown">
-                <h1 className="main-option">Practice</h1>
+                <h1 className="main-option"><Link to="/characters">Practice</Link></h1>
                 <div className="dropdown-content">
                     <Link to="/characters">Characters</Link>
                     <Link to="/words">Words</Link>
                 </div>
             </div>
             <div className="dropdown">
-                <h1 className="main-option">Learn</h1>
+                <h1 className="main-option"><Link className="main-option" to="/learn">Learn</Link></h1>
                 <div className="dropdown-content">
-                    <Link to="/charlist">Characters+ List</Link>
-                    <Link to="/wordlist">Words List</Link>
+                    <Link to="/charlist">Tested Characters</Link>
+                    <Link to="/wordlist">Tested Words</Link>
+                    <Link to="/resources">More Resources</Link>
                 </div>
             </div>
             <div className="dropdown">
                 <h1 className="main-option"><Link to="/resources">More</Link></h1>
                 <div className="dropdown-content">
-                    <Link to="/resources">More Resources</Link>
                     <Link to="/about">About</Link>
                 </div>
             </div>

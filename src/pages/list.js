@@ -53,23 +53,25 @@ function getJsons(character_type, list_type) {
 
 //component to display the list of characters
 export function CharList () {
-  const location = useLocation();
+  const navigate = useNavigate();
   const [displayJson, setDisplayJson] = useState([]) //jsons to display (depends on the options chosen)
   const [charType, setCharType] = useState("Trad") //set character type
 
-//run after each render
+  //run after each mount only
   useEffect(() => {
     const jsons = getJsons(charType, "characters")//get jsons
     setDisplayJson(jsons)
-})
-
+  }, [])
+  //handle back button 
+  const handleBack= () => {
+    setDisplayJson([])
+    navigate("/learn")
+  }
   
-  useEffect(()=>{
-    return () => {} 
-  }, []) //call only once on mount
   //if display components if they correpond to a one missed and are a defintion component
   return (
     <div id='characters-list'>
+      <button onClick={handleBack}className="back_to_learn">⏴ Learning Menu</button>
       <h2>Character List</h2>
       <p>This is the list of characters (with various pronunciations) tested in the practice characters section</p>
       <p>(Also includes words where one of the characters is unique in the list)</p>
@@ -96,23 +98,26 @@ export function CharList () {
 
 //component to display the list of words of multiple characters
 export function WordList () {
-  const location = useLocation();
+  const navigate = useNavigate();
   const [displayJson, setDisplayJson] = useState([]) //jsons to display (depends on the options chosen)
   const [charType, setCharType] = useState("Trad") //set character type
 
-//run after each render
+  //run after each mount only
   useEffect(() => {
-    const jsons = getJsons(charType, "words")//get jsons
+    const jsons = getJsons(charType, "characters")//get jsons
     setDisplayJson(jsons)
-})
-
+  }, [])
+  //handle back button 
+  const handleBack= () => {
+    setDisplayJson([])
+    navigate("/learn")
+  }
   
-  useEffect(()=>{
-    return () => {} 
-  }, []) //call only once on mount
+
   //if display components if they correpond to a one missed and are a defintion component
   return (
     <div id='characters-list'>
+      <button onClick={handleBack}className="back_to_learn">⏴ Learning Menu</button>
       <h2>Multi-character Word List</h2>
       <p>This is the list of words formed from multiple characters tested in the practice word section</p>
       <p>(Also includes words where one of the characters is unique in the list)</p>

@@ -135,7 +135,7 @@ export default function Characters() {
                     <button onClick={() => handleSubmit("def") } className="selectbutton">Definitions</button>
                 </div>
                 <p id="error">{error}</p> 
-                <p>more information about the difficulty range of characters can be found on the learn page</p>
+                <p>More information about the difficulty range of characters can be found by clicking on the learn page.</p>
             </div>
         </div>
     );

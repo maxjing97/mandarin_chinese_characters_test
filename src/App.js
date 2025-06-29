@@ -6,7 +6,7 @@ import Words from './pages/mainwords';
 import PracticeCharPronunciation from './pages/practicecharspros';
 import PracticeCharDefinition from "./pages/practicecharsdefs";
 import PracticeWordDefinition from "./pages/practiceworddefs";
-import {About, Resources} from './pages/more';
+import {Entry, About, Resources} from './pages/more';
 import {CharList, WordList} from "./pages/list"
 
 function App() {
@@ -27,7 +27,8 @@ function App() {
       {/*routes for the more page*/}
       <Route path="/resources"  element={<Resources />}/>
       <Route path="/about"  element={<About />}/>
-
+      {/*Links for learning more*/}
+      <Route path="/learn"  element={<Entry />}/>
       <Route path="/charlist"  element={<CharList />}/>
       <Route path="/wordlist"  element={<WordList />}/>
     </Routes>

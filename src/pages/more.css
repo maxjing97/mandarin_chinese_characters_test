@@ -13,3 +13,25 @@
     height: 700px;     /* or any fixed/relative value */
     position: relative;/* ensures child 100% height works */
 }
+.stats-title {
+    margin: 10px 10px;
+    padding: 0
+}
+.list_link, .list_link a {
+    padding: 10px;
+    background-color: #08639C;
+    text-decoration: none;
+    color: whitesmoke;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+.back_to_learn {
+    width: 200px;
+    height: 30px;
+    font-size: 14pt;
+    font-weight: bold;
+}
