@@ -3,10 +3,11 @@ import { Route,Routes } from 'react-router-dom';
 import Navbar from './pages/navbar';
 import Characters from './pages/mainchars';
 import Words from './pages/mainwords';
-import PracticePronunciation from './pages/practicechars';
-import PracticeDefinition from "./pages/practicedefs"
+import PracticeCharPronunciation from './pages/practicecharspros';
+import PracticeCharDefinition from "./pages/practicecharsdefs";
+import PracticeWordDefinition from "./pages/practiceworddefs";
 import {About, Resources} from './pages/more';
-import {CharList} from "./pages/list"
+import {CharList, WordList} from "./pages/list"
 
 function App() {
   return (
@@ -18,14 +19,16 @@ function App() {
       <Route path="/characters"  element={<Characters/>} />
       <Route path="/words"  element={<Words/>} />
         {/*defining routes within the practice page*/}
-        <Route path="/practice_char_pronunciation"  element={<PracticePronunciation/>} />
-        <Route path="/practice_char_definition"  element={<PracticeDefinition/>} />
+        <Route path="/practice_char_pronunciation"  element={<PracticeCharPronunciation/>} />
+        <Route path="/practice_char_definition"  element={<PracticeCharDefinition/>} />
+
+        <Route path="/practice_word_definition"  element={<PracticeWordDefinition/>} />
       {/*routes for the more page*/}
       <Route path="/resources"  element={<Resources />}/>
       <Route path="/about"  element={<About />}/>
 
       <Route path="/charlist"  element={<CharList />}/>
-      <Route path="/wordlist"  element={<CharList />}/>
+      <Route path="/wordlist"  element={<WordList />}/>
     </Routes>
     </div>
     </>

@@ -60,20 +60,15 @@ export default function Words() {
                 num_test: numChars,
                 character_type: CharType, //if a character is traditional or simplified : Trad or Simp
                 test_type: testType, //type of information tested: prt, pwt, def
-                practice_type: "characters"
+                practice_type: "words"
             };
-            //if practicing pronuciation we have a special option 
-            if (testType === "prt" || testType === "pwt") {
-                navigate('/practice_char_pronunciation', { state: data })
-            } else {
-                navigate('/practice_char_definition', { state: data })
-            }
+            navigate('/practice_word_definition', { state: data })
         }
     };
 
     return (
         <div className="page">
-            <h1 className="title">Test your knowledge of Characters (字)</h1>
+            <h1 className="title">Test your knowledge of Words (詞)</h1>
             <div className="container">
                 <h2 className="selectCat">Select Difficulty Range (1-{maxCat}) of Characters to test</h2>
                 <div className="rangebuttonContainer">

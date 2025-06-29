@@ -125,7 +125,7 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
       }
     }//iterrate through the non-correct definitions set difference to create a def list
     componentsList.push(<TextDisplay char={json["word/character"]} sup={json[supporting]}/>)
-    componentsList.push(<DefinitionPart char={json["word/character"]} definition={currdef} full_pronunciation={json["full_pronunciation"]}/>)
+    componentsList.push(<DefinitionPart char={json["word/character"]} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
     correctvals.push(currdef)
     defslist.push(def_dict)
   }
@@ -133,7 +133,7 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
   return [componentsList, correctvals, jsonlist, defslist]
 }
 
-export default function PracticeDefinition(props) { //main parent image component (to avoid remounts when changing child components shown)
+export default function PracticeCharDefinition(props) { //main parent image component (to avoid remounts when changing child components shown)
 
   const navigate = useNavigate();
   const location = useLocation();

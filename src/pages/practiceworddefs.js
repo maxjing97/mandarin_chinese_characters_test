@@ -1,9 +1,11 @@
 import './practice.css';
 import React, { Component, useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import tradchar from './data/tradchars.json'; //import json fo 
-import simpchar from './data/simpchars.json'; //import json 
+import tradword from './data/tradwords.json'; //import json fo 
+import simpword from './data/simpwords.json'; //import json 
 //add component to display the challenge
+const maxCat = 2429 //constant storing the highest possible character difficulty category (may change as more characters are added)
+
 
 //child component 1: display Text
 const TextDisplay = ({ char, sup}) => {
@@ -32,7 +34,7 @@ const DetailsRow = ({charJson}) => {
     <tr>
       <td>{charJson["word/character"]}</td>
       <td>{charJson["definition"]}</td>
-      <td>{charJson["full_pronunciation"]}</td>
+      <td>{charJson["pronunciation"]}</td>
     </tr>
   );
 };
@@ -71,14 +73,14 @@ const Results = ({accuracies, num_test, componentJsons}) => {
   );
 };
 
-function getJsons(bottom, top, numtest,practice_type, character_type) {
+function getJsons(bottom, top, numtest, character_type) {
   //get load in jsondata of can characters based on character type and practice type
   let jsonData = null 
   let retjsonlist = []
-  if(practice_type === "characters" && character_type === "Trad") {
-    jsonData = tradchar
-  } else if (practice_type === "characters" && character_type === "Simp") {
-    jsonData = simpchar
+  if(character_type === "Trad") {
+    jsonData = tradword
+  } else if (character_type === "Simp") {
+    jsonData = simpword
   }
   //first get all json matching the category range 
   for (const key in jsonData) {
@@ -87,7 +89,6 @@ function getJsons(bottom, top, numtest,practice_type, character_type) {
       retjsonlist.push(json)
     }
   }
-  //select numtest unique json objects from this
   //randomly select numtest from the list 
   let new_random_chars = new Set()
   while (new_random_chars.size < numtest) {
@@ -98,84 +99,76 @@ function getJsons(bottom, top, numtest,practice_type, character_type) {
   return new_random_chars 
 }
 
-//function to get the pronunciation components, and the list of correct values 
-//range is a list of highest to 
-function getComponents(bottom, top , num_test, character_type, test_type, practice_type) { 
+//function to get the definition components. Get a list of the character jsons, list of lists of definitions, and the list of the correct defintion it
+function getComponents(bottom, top , num_test, character_type) { 
   const componentsList = [];
   const correctvals = [];
-  const jsonlist = getJsons(bottom, top,num_test,practice_type, character_type)//get the proper list of subjson
+  const jsonlist = getJsons(bottom, top,num_test, character_type)//get the proper list of subjson
   //iterate to create components
   //based on the test type: isolate the key for the correct value to test the user on
-  let test_key = ""
-  if (test_type === "prt") {//testing without tones
-    test_key = "full_pronunciation_wo"
-  } else if (test_type === "pwt") { //testing with tones 
-    test_key = "full_pronunciation"
-  }
-  let supporting ="test_definition" //get the supporting text key to help the user: either definition or the pronuciation
+  let test_key = "test_definition" //we are testing the defnition
+  let supporting ="pronunciation" //get the supporting text key to help the user: either definition or the pronuciation
 
+  const defslist = [] //get a list of definition json to show
+  const defidx = [0,1,2,3,4] //index of the 5 definitions to show
   for (const json of jsonlist) {
+    const def_dict = {}//get a dictionary mapping definitions to certain keys
+    const currdef = json[test_key]//current definition
+    const rlist = getJsons(0,maxCat,4, character_type) //get random 4 other definitions in a list format using the same get jsons list, selecting from all possible difficutly categories
+    const rCorrectKey = defidx[Math.floor(Math.random() * defidx.length)]//randomly select the correct definition index key 
+    def_dict[String(rCorrectKey)] = currdef//add the correct key to the dictiontary
+    let j = 0 //count index of the random json list of 4 elements 
+    for(const i of defidx) {
+      if(i !== rCorrectKey) { //only if it is not 
+        def_dict[String(i)] = rlist[j][test_key] //dict keys must be strings
+        j++ //increment only when the correct key has not pass
+      }
+    }//iterrate through the non-correct definitions set difference to create a def list
     componentsList.push(<TextDisplay char={json["word/character"]} sup={json[supporting]}/>)
     componentsList.push(<DefinitionPart char={json["word/character"]} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
-    correctvals.push(json[test_key])
+    correctvals.push(currdef)
+    defslist.push(def_dict)
   }
 
-  return [componentsList, correctvals, jsonlist]
+  return [componentsList, correctvals, jsonlist, defslist]
 }
 
-export default function PracticePronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
-  
+export default function PracticeWordDefinition(props) { //main parent image component (to avoid remounts when changing child components shown)
+
   const navigate = useNavigate();
   const location = useLocation();
+  const { range, num_test, character_type} = location.state 
   //get destructured data
-  const { range, num_test, character_type, test_type, practice_type} = location.state 
-  
   const [componentList, setComponentList] = useState([])//store the fixed list of components 
-  const [correctList, setCorrectList] = useState([])//store the fixed list of correct values 
+  const [correctList, setCorrectList] = useState([])//store the fixed list of correct values (definitions)
   const [correctJsons, setCorrectJsons] = useState([])//store the fixed list json objects containing full information for the characters 
+  const [defJsons, setDefJsons] = useState([{"0":"", "1":"","2":"","3":"","4":""}]) //list of definition jsons to show. initialize to prevent invalid issues
+  
   const [index, setIndex] = useState(0); //this index is key, cycling through through all words (60 for now 2 for ach)
   const [isText, setIsText] = useState(0); //states if we are on the definition part or not 
-  const [text, setText] = useState(""); //set text in the input box
-  const [nextText, setnextText] = useState("Submit");//text to display in the next button
   const [correctmessage, setCorrectMessage]  = useState("") //store the correct message
   const [accuracies, setAccuracies] = useState([])//array for accuracies
-
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
   
   // This effect will only run once after the component mounts. user this to get the necessary data
-  useEffect(() => {
-    const [componentList, correctVals, correctJsons] = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
+  useEffect(() => { //runs after initial render
+    const [componentList, correctVals, correctJsons, defslist] = getComponents(range[0], range[1], num_test, character_type) //pass range as a shallow object
     setComponentList(componentList)
     setCorrectList(correctVals)
-    setCorrectJsons(correctJsons)
+    setCorrectJsons(correctJsons) //add empty json at the end to prevent unexpected rendering errors 
+    setDefJsons(defslist)   
   }, []); 
 
-  //parse pronunciations string into a list with correct formatting
-  const parsePronunciations =(pro) => {
-    const prolist = []
-    let myArray = ""
-    if (pro) {//if is a string
-      myArray = pro.split("/") //split based on / 
-    }
-    for(const str of myArray) {
-      prolist.push(str.trim().toLowerCase())
-    }
-    return prolist
-  }
-
-
+  
   const nextSection = (gap, accuracy_list = accuracies) => { //argument is how much to change the index can be 1 or 2 (when we want to skip the current text)
     //if isText is 0, this is an image one, so we move to a text one (so we stay on the same word)
     if (gap === 1) {
       if (isText === 0 && index < (componentList.length-1)) {
         setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
         setIsText(1); //move to the text section 
-        setnextText("Try the Next Word ➡")
       } else if (isText === 1 && index < (componentList.length-1)) { //in this case, the user has skipped the section, so record the accuracy as 0 for this, while moving on to the next image to test
         setIsText(0); //move to the character section 
         setIndex((prev) => (prev + 1)); //go to the next one as long as the end has not been reached
-        setnextText("Submit")//set the appropriate text for the button
-        setText("")//when the skip button is clicked, reset the value of the text input box
         //update component list to the next index since state changes in React do not apply immediately, being applied by the next render cycle
       } else {
         //when we have reached the end, only display the results page: reset component list, and send the data, calculating accuracies
@@ -196,37 +189,25 @@ export default function PracticePronunciation(props) { //main parent image compo
       }
     }
   }
-  //handle the submission button
-  const handleSubmit = (e) => {
-    const targetWord = correctList[index/2] //get the correct target word
-    if (text && parsePronunciations(targetWord).includes(text.trim().toLowerCase())) { //if matching and string is valid
-      setText("") //reset if there is match
-      setAccuracies(curr=>[...curr, 1])
-      setCorrectMessage("Last Response Correct")
-      nextSection(2, [...accuracies, 1]) //more to the next on the next one (pass the updated list before the state rerender to avoid unexpected issues )
-    } else{
-      //when incorrect, we add to the of components and correct words to repeat (afterwards) (only when index is even)
-      if (index % 2 ===0 ) {
-        setComponentList(curr=>[...curr, curr[index], curr[index+1]])
-        setCorrectList(curr=>[...curr, curr[index/2]])   
-        setAccuracies(curr=>[...curr, 0])
-      }
-      setCorrectMessage("Incorrect Pronunciation entered, try again later")
-      nextSection(1) 
-    }
-  }
 
   //function used to handle changes in the text input box
-  const handleTextChange = (e) => {
-    setText(e.target.value) //set the text value dynamically
-    const value = e.target.value;
-    const targetWord = correctList[index/2] //get the correct value for based on the index
-    if (parsePronunciations(targetWord).includes(value.trim().toLowerCase())) {
-      setText("") //reset if there is match
+  const handleSelection = (num) => {
+    const i = Math.floor(index/2)//get true relative index
+    if (defJsons[i][num] === correctList[i]) { //check if selected the selected definition matches
       setAccuracies(curr=>[...curr, 1]) //increment the accuracy
       setCorrectMessage("Last Response Correct") //if correct
 
       nextSection(2, [...accuracies, 1]) //more to the next one
+    } else{
+      //when incorrect, we add to the of components and correct words to repeat (afterwards) (only when index is even, meaning on input section)
+      if (index % 2 ===0 ) {
+        setComponentList(curr=>[...curr, curr[index], curr[index+1]])
+        setCorrectList(curr=>[...curr, curr[index/2]])   
+        setAccuracies(curr=>[...curr, 0])
+        setDefJsons(curr=>[...curr, curr[Math.floor(index/2)]])
+      }
+      setCorrectMessage("Incorrect Definition entered, try again later")
+      nextSection(1) 
     }
   };
 
@@ -239,43 +220,17 @@ export default function PracticePronunciation(props) { //main parent image compo
     } 
   }
 
-  //function for the special tone keyboard
-  function applyPinyinTone(num) {
-    const toneMap = {
-      a: ['ā', 'á', 'ǎ', 'à'],
-      o: ['ō', 'ó', 'ǒ', 'ò'],
-      e: ['ē', 'é', 'ě', 'è'],
-      i: ['ī', 'í', 'ǐ', 'ì'],
-      u: ['ū', 'ú', 'ǔ', 'ù'],
-      ü: ['ǖ', 'ǘ', 'ǚ', 'ǜ']
-    };
-    const letters = new Set(["a","o","e","i","u","ü"])
-    const currstr = text //get text string of  
-    //for the special case that the ü key is pressed
-    if (num === 100) {
-      //get new string 
-      const newstr = currstr.slice(0, currstr.length-1) + "ü" 
-      setText(newstr)
-    } else if (text.length === 0) { //if the text is empty, no modifciation
-      return 
-    } else {
-      const lastlet = text[currstr.length-1] //check if the last letter is in the list
-      if(letters.has(lastlet)) { //if the letter is in the set
-        //get new string based on map
-        const newstr = currstr.slice(0, currstr.length-1) + toneMap[lastlet][num]
-        setText(newstr)
-        return  
-      }
-    }
-
-    return 
+  const handleSubmit = (e) => {
+    setCorrectMessage("Last Response Incorrect")
+    nextSection(1) 
   }
+
   return (
     <div className="all">
       <button onClick={menuExit} className="back">
       ⬅ Back to Menu
       </button>
-      <h3>Try to type the pronuciation ({test_type === "prt"? "without": "with"} tone) for {num_test} characters</h3>
+      <h3>Select the correct definition for the word</h3>
 
       <div className="text_container">
         {/* render all components with varying visiblity to avoid unmounting, destroying vital state variables. Renders components in order*/}
@@ -285,39 +240,26 @@ export default function PracticePronunciation(props) { //main parent image compo
           </div>
         ))}
 
-        {/*button for selecting defintiion only if is text is false*/}
+        {/* button for selecting defintiion only if is text is false*/}
         
         <div style={{ display: (isText === 0) ? 'block' : 'none' }}>
-          <div className="text_wrapper">
-            <input
-              type="text"
-              value = {text}
-              ref={inputRef}
-              id= "text_input"
-              onChange={handleTextChange}
-              placeholder="Start typing..."
-              style={styles.text_input}
-            />
+          <div id="definition_select" >
+          <button onClick={() =>  handleSelection("0")} className="selectbutton">{defJsons[Math.floor(index/2)]["0"]}</button>
+          <button onClick={() =>  handleSelection("1")} className="selectbutton">{defJsons[Math.floor(index/2)]["1"]}</button>
+          <button onClick={() =>  handleSelection("2")} className="selectbutton">{defJsons[Math.floor(index/2)]["2"]}</button>
+          <button onClick={() =>  handleSelection("3")} className="selectbutton">{defJsons[Math.floor(index/2)]["3"]}</button>
+          <button onClick={() =>  handleSelection("4")} className="selectbutton">{defJsons[Math.floor(index/2)]["4"]}</button>
           </div>
         </div>
-        <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
-        {(Math.floor(index/2) < num_test) ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
-        `Repeating missed characters`}</p> 
+        <div id="def_buttons">
+          <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
+          {(Math.floor(index/2) < num_test) ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
+          `Repeating missed characters`}</p> 
+          <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
+        </div>
+        <button className="back" style={{...styles.next_button, ...{display : (index % 2===1 ? "block":"none")}}} onClick={handleSubmit}>Try the Next Word ➡</button>
       </div>
-      
-      <button onClick={handleSubmit} style={{...styles.skip, ...{display: componentList.length !== 1 ? 'block' : 'none' }}}>{nextText}</button> {/* skip function inherted from parent component (display only the number of components is not 0)*/}
-      
-      <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
-
-      {/*only display tone keyboard for*/}
-      <div style={{display : test_type === "pwt" ? 'block' : 'none'}}>
-        <p>Tone/Special Letter Keyboard</p>
-        <button onClick={() =>  applyPinyinTone(0)} className="selectbutton">1: -</button>
-        <button onClick={() =>  applyPinyinTone(1)} className="selectbutton">2: /</button>
-        <button onClick={() =>  applyPinyinTone(2)} className="selectbutton">3: v</button>
-        <button onClick={() =>  applyPinyinTone(3)} className="selectbutton">4: \</button>
-        <button onClick={() => applyPinyinTone(100) } className="selectbutton">ü</button>
-      </div>
+          
     </div>
   );
 };
@@ -327,6 +269,12 @@ let styles = {
   correct_text: {
     color: "black",
     fontSize: "14pt",
+    display: "flex",
+    margin: "0 auto",
+    padding: "10px",
+    justifyContent: "center",
+    borderRadius: '12px',
+    placeItems: "center",
   }, 
   skip: {
     backgroundColor: '#44e02f',     // vibrant green
@@ -338,5 +286,5 @@ let styles = {
     cursor: 'pointer',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     transition: 'background-color 0.3s ease',
-  }, 
+  }
 };

@@ -33,7 +33,7 @@
 .selectbuttonContainer {
     display: flex;
     gap: 10px;
-    
+    justify-content: center;
 }
 .rangebuttonContainer {
     display: flex;
