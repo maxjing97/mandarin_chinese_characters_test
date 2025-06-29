@@ -68,7 +68,7 @@ export default function Words() {
 
     return (
         <div className="page">
-            <h1 className="title">Test your knowledge of Words (詞)</h1>
+            <h1 className="title">Test your knowledge of Multi-Character Words (詞)</h1>
             <div className="container">
                 <h2 className="selectCat">Select Difficulty Range (1-{maxCat}) of Characters to test</h2>
                 <div className="rangebuttonContainer">
@@ -128,7 +128,7 @@ export default function Words() {
                     <button onClick={() => handleSubmit("def") } className="selectbutton">Definitions</button>
                 </div>
                 <p id="error">{error}</p> 
-                <p>More information about the difficulty range of characters can be found by clicking on the learn page.</p>
+                <p>More information about the difficulty range of multi-character words can be found by clicking on the learn page.</p>
             </div>
         </div>
     );
