@@ -6,12 +6,11 @@ import "../App.css"
 const Navbar=()=>{
     return (    
         <div className='navBar'>
-            <img className="logo" src="logo.png"/>
-            <h1 className="title">Chinese Reading Trainer</h1>
+            <h1 id="title">中文 Reading Trainer</h1>
             <div className="dropdown">
                 <h1 className="main-option">Practice</h1>
                 <div className="dropdown-content">
-                    <Link to="/characters">Characters</Link>
+                    <button to="/characters">Characters</button>
                     <Link to="/words">Words</Link>
                 </div>
             </div>

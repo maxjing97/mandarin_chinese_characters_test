@@ -1,0 +1,15 @@
+.about_main {
+    padding: 10px 200px;
+    font-size: 12pt;
+    color: black;
+    text-align: center;
+}
+#wikidicttext {
+    font-size: 20px;
+    font-weight: bold;
+}
+#wikidict {
+    width: 100%;       /* full container width */
+    height: 700px;     /* or any fixed/relative value */
+    position: relative;/* ensures child 100% height works */
+}

@@ -15,6 +15,7 @@ function App() {
     <Navbar/>
       <div>
     <Routes>        {/*defining routes */}
+      <Route path="/"  element={<About/>} />{/*default page route */}
       {/*practice pages */}
       <Route path="/characters"  element={<Characters/>} />
       <Route path="/words"  element={<Words/>} />

@@ -1,10 +1,13 @@
+import "./more.css"
 import React from 'react';
-
 export function About() {
   return (
     <div className="about_main" style={styles.about_main}> 
       <h1 className='stats-title'>About</h1>
-      <p>This is a project to create a flashcards app that also assigns in learning chinese by having characters ranked in a frequency order</p>
+      <h3>Start becoming proficient in reading Mandarin!</h3>
+      <h2>practice and learn now!</h2>
+
+      <p>This is a project to create a flashcard app that also assigns in learning chinese by having characters ranked in a frequency order</p>
       <p>This tool is likely most helpful to people wanting to practice their character and mandarin pronunciation comprehension who are at an intermediateto early advanced
        level of chinese. The character list contains ~2600 to practice, and the dictionary contains around ~10000 total words that are are combination of these characters.
     
@@ -32,8 +35,8 @@ export function Resources() {
          
         <a href="https://en.wikipedia.org/wiki/Debate_on_traditional_and_simplified_Chinese_characters">Link</a> to wikipedia for differences between simplified and traditional characters
         
-        <p style={styles.wikidicttext}>Access Wiktionary Below (good for understanding the origin of characters), great general dictionary for Chinese</p>
-        <iframe title="report" style={styles.wikidict} src="https://en.wiktionary.org/wiki/%E4%B8%AD"></iframe>
+        <p id="wikidicttext">Access Wiktionary Below (good for understanding the origin of characters), great general dictionary for Chinese</p>
+        <iframe title="report" id="wikidict" src="https://en.wiktionary.org/wiki/%E4%B8%AD"></iframe>
 
 
       </p>
@@ -43,11 +46,6 @@ export function Resources() {
 }
 
 const styles = {
-  about_main: {
-    padding: "10px 200px",
-    fontSize: "16px",
-    color: "black"
-  },
   wikidict: {
     width: "100%",       /* full container width */
     height: "700px",     /* or any fixed/relative value */
