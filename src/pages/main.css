@@ -89,3 +89,11 @@ input[type="radio"]:checked + label{
     font-size: medium;
     font-weight: bold;
 }
+
+#characters-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    margin: 10px 100px;
+}

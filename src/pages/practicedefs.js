@@ -134,12 +134,11 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
 }
 
 export default function PracticeDefinition(props) { //main parent image component (to avoid remounts when changing child components shown)
-  
+
   const navigate = useNavigate();
   const location = useLocation();
-  //get destructured data
   const { range, num_test, character_type, test_type, practice_type} = location.state 
-  
+  //get destructured data
   const [componentList, setComponentList] = useState([])//store the fixed list of components 
   const [correctList, setCorrectList] = useState([])//store the fixed list of correct values (definitions)
   const [correctJsons, setCorrectJsons] = useState([])//store the fixed list json objects containing full information for the characters 

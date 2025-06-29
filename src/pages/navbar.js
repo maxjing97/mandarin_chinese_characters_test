@@ -18,7 +18,8 @@ const Navbar=()=>{
             <div className="dropdown">
                 <h1 className="main-option">Learn</h1>
                 <div className="dropdown-content">
-                    <Link to="/">Character/Word List</Link>
+                    <Link to="/charlist">Characters+ List</Link>
+                    <Link to="/wordlist">Words List</Link>
                 </div>
             </div>
             <div className="dropdown">
