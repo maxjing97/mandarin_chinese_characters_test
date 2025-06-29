@@ -23,7 +23,7 @@ const Navbar=()=>{
                 </div>
             </div>
             <div className="dropdown">
-                <h1 className="main-option"><Link to="/resources">More</Link></h1>
+                <h1 className="main-option"><Link to="/about">More</Link></h1>
                 <div className="dropdown-content">
                     <Link to="/about">About</Link>
                 </div>
