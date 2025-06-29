@@ -6,7 +6,7 @@ import simpchar from './data/simpchars.json'; //import json
 import tradword from './data/tradwords.json'; //import json fo 
 import simpword from './data/simpwords.json'; //import json 
 
-const DetailsRow = ({charJson, index}) => {
+const CharDetailsRow = ({charJson, index}) => { //current table row format displaying 
   return (
     <tr>
       <td>{index}</td>
@@ -17,6 +17,17 @@ const DetailsRow = ({charJson, index}) => {
     </tr>
   );
 };
+const DefDetailsRow = ({charJson, index}) => {
+  return (
+    <tr>
+      <td>{index}</td>
+      <td>{charJson["word/character"]}</td>
+      <td>{charJson["definition"]}</td>
+      <td>{charJson["cat"]}</td>
+    </tr>
+  );
+};
+
 
 //simplified function to get all jsons for the 5 possible categories
 function getJsons(character_type, list_type) {
@@ -76,7 +87,7 @@ export function CharList () {
       <table>
         <tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th></tr>
         {displayJson.map((Json, i) => (
-          <DetailsRow charJson={Json} index={i+1}/>
+          <CharDetailsRow charJson={Json} index={i+1}/>
         ))}
       </table>
     </div>
@@ -117,9 +128,9 @@ export function WordList () {
             </div>     
         </div>
       <table>
-        <tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th></tr>
+        <tr><th>Count</th><th>word/character</th><th>full definition</th><th>diffculty category</th></tr>
         {displayJson.map((Json, i) => (
-          <DetailsRow charJson={Json} index={i+1}/>
+          <DefDetailsRow charJson={Json} index={i+1}/>
         ))}
       </table>
     </div>
