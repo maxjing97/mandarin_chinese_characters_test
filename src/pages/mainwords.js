@@ -1,6 +1,6 @@
 import './main.css';
 import React, { Component, useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom' ;
 
 const maxCat = 2429 //constant storing the highest possible character difficulty category (may change as more characters are added)
 

@@ -10,7 +10,7 @@ const Navbar=()=>{
             <div className="dropdown">
                 <h1 className="main-option">Practice</h1>
                 <div className="dropdown-content">
-                    <button to="/characters">Characters</button>
+                    <Link to="/characters">Characters</Link>
                     <Link to="/words">Words</Link>
                 </div>
             </div>
