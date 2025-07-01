@@ -134,7 +134,6 @@ function getComponents(bottom, top , num_test, character_type) {
 }
 
 export default function PracticeWordDefinition(props) { //main parent image component (to avoid remounts when changing child components shown)
-
   const navigate = useNavigate();
   const location = useLocation();
   const { range, num_test, character_type} = location.state 
@@ -216,7 +215,7 @@ export default function PracticeWordDefinition(props) { //main parent image comp
     //in the case, we are not at the results page, show a warning window before exiting to menu
     const confirmed = window.confirm("Are you sure you want to proceed?"); //confirm for this case as a precaution to avoid exiting to menu
     if (confirmed) {
-      navigate('/characters') //exist back to characters
+      navigate('/words') //exist back to characters
     } 
   }
 
