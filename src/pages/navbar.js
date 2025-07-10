@@ -36,13 +36,13 @@ const Navbar=()=>{
                 </div>
             </div>
             <div className="dropdown">
+                <h1 className="main-option"><Link to="/">{accountText}</Link></h1>
+            </div>
+            <div className="dropdown">
                 <h1 className="main-option"><Link to="/about">More</Link></h1>
                 <div className="dropdown-content">
                     <Link to="/about">About</Link>
                 </div>
-            </div>
-            <div className="dropdown">
-                <h1 className="main-option"><Link to="/">{accountText}</Link></h1>
             </div>
         </div>
     )
