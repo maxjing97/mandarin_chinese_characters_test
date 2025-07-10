@@ -9,10 +9,11 @@ import { useUser } from "../context/userContext";
 export default function Flashcards() { 
   const navigate = useNavigate();
   const {userlogin, rawcards} = useUser()
-
+  console.log("card data:", rawcards)
   return (
     <div className="about_main"> 
       <h2>My Flashcards</h2>
+      <h5>Test: {rawcards}</h5>
       <h5>Test: {userlogin.uid}</h5>
     </div>
   );

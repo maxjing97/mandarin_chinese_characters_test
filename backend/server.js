@@ -32,31 +32,33 @@ app.post('/add-data', (req, res) => {
     });
 });
 //basic get request
-app.get('/get-all-data', (req, res) => {
+app.post('/get-all-data', (req, res) => {
     const {user_id} = req.body;
     //format the query
     const query = `
         SELECT *
         FROM flashcards
-        WHERE user_id=${user_id}
+        WHERE user_id= ?
     `;
-    db.query(query, [], (err, results) => {
+    db.query(query, [user_id], (err, results) => {
         if (err) {
+            console.log("request failed for user id:", user_id)
+            console.log("error message:", err.message)
             return res.status(500).json({ error: 'Database query failed' });
         } 
         res.json(results);
     });
 });
 //delete path for a deck
-app.get('/delete-deck', (req, res) => {
+app.post('/delete-deck', (req, res) => {
     const { user_id, deck_id} = req.body; 
     //format the query
     const query = `
         DELETE
         FROM flashcards
-        WHERE user_id=${user_id} AND deck_id=${deck_id}
+        WHERE user_id= ? AND deck_id= ?
     `;
-    db.query(query, [], (err, results) => {
+    db.query(query, [user_id, deck_id], (err, results) => {
         if (err) {
             return res.status(500).json({ error: 'Database query failed' });
         } 
@@ -65,15 +67,15 @@ app.get('/delete-deck', (req, res) => {
 });
 
 //delete path for a single card
-app.get('/delete-card', (req, res) => {
+app.post('/delete-card', (req, res) => {
     const { user_id, deck_id, idx, data_type, char_type} = req.body; 
     //format the query
     const query = `
         DELETE
         FROM flashcards
-        WHERE user_id=${user_id} AND deck_id=${deck_id} AND idx=${idx} AND data_type=${data_type} AND char_type=${char_type}
+        WHERE user_id=? AND deck_id=? AND idx=? AND data_type=? AND char_type=?
     `;
-    db.query(query, [], (err, results) => {
+    db.query(query, [user_id, deck_id, idx, data_type, char_type], (err, results) => {
         if (err) {
             return res.status(500).json({ error: 'Database query failed' });
         } 

@@ -10,33 +10,33 @@ const UserContext = createContext(null);
 export const useUser = () => useContext(UserContext);
 export default function UserProvider ({children}) {
     const [userlogin, setUserlogin] = useState(null); //context variable to check if a user is logged in
-    const queryClient = useQueryClient() //query client
     //async function to get data based on user id in userlogin (uid)
     const fetchRawcards = async() => {
+        console.log("ran context fetch with id:", userlogin.uid)
         const send_data = {
-            user_id:userlogin.uid
+            user_id: userlogin.uid
         }
-        const response= await fetch(API_URL, {
-            method: "GET",
+        const response= await fetch(`${API_URL}/get-all-data`, {
+            method: "POST",
             headers: {
-                "Content-Type":"application/json"
+                "Content-Type":"application/json",
             },
             body: JSON.stringify(send_data)
         })
+        const resdata = await response.json() //get response data
         //if not ok, return error 
         if(!response.ok) {
-            console.log("error fetching card data")
+            console.log("error fetching card data:", resdata)
             return
         } else {
             //otherwise, get the json data 
-            const resdata = await response.json()
             return resdata
         }
     }
 
     //destructure and rename data 
     const {data: rawcards, isSuccess, isError} = useQuery({
-        queryKey: ["cards_raw"],
+        queryKey: ["cards"],
         queryFn: fetchRawcards,
         enabled: !!userlogin, //run if there is a userlogin
         staleTime: 1000*60*60*24, //time to keep query stale in ms 
@@ -46,7 +46,7 @@ export default function UserProvider ({children}) {
         const auth = getAuth();
         onAuthStateChanged(auth, user=>{
             setUserlogin(user);
-        });
+        }); 
     },[])//register auth changes listener just once
 
 
