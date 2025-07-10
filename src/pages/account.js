@@ -8,10 +8,11 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUser
 
 
 //create components for entering password, register, reset password, and component to show flashcards review
-function EnterPassword({onPasswordEnter, change}) { //handler password
+function Login({onPasswordEnter, change}) { //handler password
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
   const [showPassword, setShowPassword] = useState(false)//tell if password should be shown
+  const buttonref = useRef(null) //focus on the login button
   return (
     <div className="account"> 
       <div>
@@ -45,7 +46,7 @@ function EnterPassword({onPasswordEnter, change}) { //handler password
         </div>
         
         <div className="submit_section">
-          <button className="account_submit_button" onClick={()=>onPasswordEnter(email, password)}>Login</button>
+          <button className="account_submit_button" ref={buttonref} onClick={()=>onPasswordEnter(email, password)}>Login</button>
           <button className="account_change_button" onClick={()=>change(2)}>Register</button>
 
           <button className="password-reset" onClick={()=>change(3)}>Forgot your password?</button>
@@ -178,8 +179,6 @@ function Reset({change}) { //handler password
   );
 }
 
-
-
 export function Account() {
   const navigate = useNavigate();
   const [index, setIndex] = useState(0) //index of components to show
@@ -216,17 +215,15 @@ export function Account() {
   }
 
   //get components list 
-  const compList = [<EnterPassword onPasswordEnter={handlelogin} change={setIndex}/>,<Flashcards/>, 
+  const compList = [<Login onPasswordEnter={handlelogin} change={setIndex}/>,<Flashcards/>, 
                     <Register change={setIndex}/>, <Reset change={setIndex}/>]
   return (
-    <div className="about_main"> 
-      <h1 className='stats-title'>Account {userlogin ? `: logged in with ${userlogin.email}`:""}</h1>
-      { userlogin && 
-      <div className="submit_section">
-        <button className="account_change_button" onClick={()=>logout()}>Logout</button>
-      </div>}
-
+    <div id="accounts-all">
+      <h1 className='stats-title'>Account</h1>
       {compList[index]}
+      { userlogin && 
+        <button className="account_change_button" onClick={()=>logout()}>Logout</button>
+      }
     </div>
   );
 }
