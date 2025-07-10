@@ -21,7 +21,11 @@
   position: relative;
   display: inline-block;
 }
-
+.main-option:hover {
+  position: relative;
+  display: inline-block;
+  color: black;
+}
 .main-option, .main-option a {
     color: white;
     position: relative;

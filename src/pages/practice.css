@@ -4,11 +4,14 @@
     flex-wrap: wrap;
     align-items: center;
     margin: auto;
+    padding: auto;
+    text-align: center;
 }
 .text_container {
     padding: 12px;
     height: 275px;
 }
+
 #definition_select {
     font-size: 14pt;
     display: flex; 
@@ -21,6 +24,13 @@
     flex-direction: row;
     flex-wrap: nowrap;
 }
+
+#char_text_input {
+    padding: 5px;
+    font-size: 16pt;   
+    font-weight: bold  
+};
+
 .img_container {
     align-items: center;
     justify-content: space-between;
@@ -44,7 +54,16 @@
     object-fit: contain;
     font-size: 12pt;
 }
-
+.tone_buttons {
+    font-size: 12pt;
+    display: flex; 
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+.selecttone {
+    font-size: 20pt;
+    font-weight: bold   
+}
 table, th, td {
   border: 2px solid black; /* add border to table */
   border-collapse: collapse; /* remove default double border */
@@ -87,11 +106,7 @@ table, th, td {
     display: flex;
     justify-content: center;
 };
-.text_input {
-    padding: 5px;
-    font-size: 20px;   
-    font-weight: bold  
-};
+
 
 .def-text {
     font-family: "kaiti";

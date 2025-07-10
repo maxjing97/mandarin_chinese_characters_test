@@ -8,6 +8,7 @@ import PracticeCharDefinition from "./pages/practicecharsdefs";
 import PracticeWordDefinition from "./pages/practiceworddefs";
 import {Entry, About, Resources} from './pages/more';
 import {CharList, WordList} from "./pages/list"
+import {Account} from "./pages/account"
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
     <Navbar/>
       <div>
     <Routes>        {/*defining routes */}
-      <Route path="/"  element={<About/>} />{/*default page route */}
+      <Route path="/"  element={<Account/>} />{/*default page route */}
       {/*practice pages */}
       <Route path="/characters"  element={<Characters/>} />
       <Route path="/words"  element={<Words/>} />

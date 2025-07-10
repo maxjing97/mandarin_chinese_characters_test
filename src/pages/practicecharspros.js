@@ -293,10 +293,9 @@ export default function PracticeCharPronunciation(props) { //main parent image c
               type="text"
               value = {text}
               ref={inputRef}
-              id= "text_input"
+              id= "char_text_input"
               onChange={handleTextChange}
               placeholder="Start typing..."
-              style={styles.text_input}
             />
           </div>
         </div>
@@ -310,13 +309,15 @@ export default function PracticeCharPronunciation(props) { //main parent image c
       <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
 
       {/*only display tone keyboard for*/}
-      <div style={{display : test_type === "pwt" ? 'block' : 'none'}}>
+      <div style={{display : test_type === "pwt" ? 'block' : 'none'}}> 
+        <div className='tone_buttons'>
+          <button onClick={() =>  applyPinyinTone(0)} className="selecttone">◌̄(1)</button>
+          <button onClick={() =>  applyPinyinTone(1)} className="selecttone">◌́(2)</button>
+          <button onClick={() =>  applyPinyinTone(2)} className="selecttone">◌̌(3)</button>
+          <button onClick={() =>  applyPinyinTone(3)} className="selecttone">◌̀(4)</button>
+          <button onClick={() => applyPinyinTone(100) } className="selecttone">ü</button>
+        </div>
         <p>Tone/Special Letter Keyboard</p>
-        <button onClick={() =>  applyPinyinTone(0)} className="selectbutton">1: -</button>
-        <button onClick={() =>  applyPinyinTone(1)} className="selectbutton">2: /</button>
-        <button onClick={() =>  applyPinyinTone(2)} className="selectbutton">3: v</button>
-        <button onClick={() =>  applyPinyinTone(3)} className="selectbutton">4: \</button>
-        <button onClick={() => applyPinyinTone(100) } className="selectbutton">ü</button>
       </div>
     </div>
   );
