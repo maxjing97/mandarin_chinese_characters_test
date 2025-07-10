@@ -8,6 +8,11 @@
 .logo {
   height: 50px;
 }
+.dropdown {
+  height: 100%;
+  width: 160px;
+  text-align: center;
+}
 .navBar {
     background-color: #CC230A;
     display: flex;
@@ -17,32 +22,23 @@
     font-family: Arial, sans-serif;
     border-bottom: 3px solid #dcb909;
 }
-.main-option {
-  position: relative;
-  display: inline-block;
-}
-.main-option:hover {
-  position: relative;
-  display: inline-block;
+
+.main-option a:hover {
   color: black;
 }
-.main-option, .main-option a {
+.main-option a {
     color: white;
-    position: relative;
+    text-align: center;
     text-decoration: none;
     font-weight: bold;
     font-size: 20pt;
-    padding: 8px 16px;
+    padding: 8px 0px;
     height: 100%;
-    display: inline-block;
+    width: 160px;
     border-radius: 3px;
     transition: background-color 0.3s ease;
 }
-.dropdown {
-  height: 100%;
-  width: 160px;
-  text-align: center;
-}
+
 .dropdown-content {
   display: none;
   position: absolute;

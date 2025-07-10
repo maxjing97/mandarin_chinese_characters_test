@@ -1,11 +1,11 @@
 import "./accounts_cards.css"
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {Link, useNavigate} from "react-router-dom"
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword, sendEmailVerification  } from 'firebase/auth';
-
-import Login, { Render } from 'react-login-page';
-import Logo from 'react-login-page/logo';
 import {auth} from "../context/auth"
+import { useUser } from "../context/userContext";
+import Flashcards from "./flashcards";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword, sendEmailVerification, signOut  } from 'firebase/auth';
+
 
 //create components for entering password, register, reset password, and component to show flashcards review
 function EnterPassword({onPasswordEnter, change}) { //handler password
@@ -13,7 +13,7 @@ function EnterPassword({onPasswordEnter, change}) { //handler password
   const [email, setEmail] = useState("")
   const [showPassword, setShowPassword] = useState(false)//tell if password should be shown
   return (
-    <div className="account" style={styles.about_main}> 
+    <div className="account"> 
       <div>
         <h2>Login:</h2>
         <h3>Enter Email</h3>
@@ -81,7 +81,7 @@ function Register({change}) { //handler for the registration
   };
   
   return (
-    <div className="account" style={styles.about_main}> 
+    <div className="account"> 
       <div>
         <h2>Register an Account to Start Saving Flashcards:</h2>
         {!sent && (
@@ -152,7 +152,7 @@ function Reset({change}) { //handler password
   };
   
   return (
-    <div className="account" style={styles.about_main}> 
+    <div className="account"> 
       <div>
         <h2>Reset Email Here</h2>
         <h3>Enter your email, a link will be sent to reset the password</h3>
@@ -178,17 +178,24 @@ function Reset({change}) { //handler password
   );
 }
 
-function Flashcards() { //handler password
-  return (
-    <div className="about_main" style={styles.about_main}> 
-      <p>Login Success</p>
-    </div>
-  );
-}
 
 
 export function Account() {
+  const navigate = useNavigate();
   const [index, setIndex] = useState(0) //index of components to show
+  const {userlogin} = useUser()//get user info 
+  //if the user is logged in, set into to 4 immediately
+  useEffect(()=>{
+    if (userlogin) {
+      setIndex(1)
+    }
+  })
+  //handle logouts
+  const logout = async () => {
+    await signOut(auth);
+    setIndex(0)//
+    navigate('/'); // Go to login page after logout
+  };
   //handle login
   const handlelogin = async(email, password) => {
     try {
@@ -208,14 +215,17 @@ export function Account() {
     }
   }
 
-
-  
   //get components list 
   const compList = [<EnterPassword onPasswordEnter={handlelogin} change={setIndex}/>,<Flashcards/>, 
                     <Register change={setIndex}/>, <Reset change={setIndex}/>]
   return (
-    <div className="about_main" style={styles.about_main}> 
-      <h1 className='stats-title'>Account</h1>
+    <div className="about_main"> 
+      <h1 className='stats-title'>Account {userlogin ? `: logged in with ${userlogin.email}`:""}</h1>
+      { userlogin && 
+      <div className="submit_section">
+        <button className="account_change_button" onClick={()=>logout()}>Logout</button>
+      </div>}
+
       {compList[index]}
     </div>
   );

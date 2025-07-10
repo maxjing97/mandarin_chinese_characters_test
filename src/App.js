@@ -9,10 +9,11 @@ import PracticeWordDefinition from "./pages/practiceworddefs";
 import {Entry, About, Resources} from './pages/more';
 import {CharList, WordList} from "./pages/list"
 import {Account} from "./pages/account"
+import UserProvider from "./context/userContext"
 
 function App() {
   return (
-   <>
+   <UserProvider>
     <Navbar/>
       <div>
     <Routes>        {/*defining routes */}
@@ -34,7 +35,7 @@ function App() {
       <Route path="/wordlist"  element={<WordList />}/>
     </Routes>
     </div>
-    </>
+    </UserProvider>
   );
 }
 
