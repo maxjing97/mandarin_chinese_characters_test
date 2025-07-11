@@ -89,7 +89,7 @@ export function CharList () {
                 <label htmlFor ="c1">Traditional</label>
             </div>
             <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton" checked={charType !== 'Trad'}></input>
+                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton"></input>
                 <label htmlFor ="c2">Simplified</label>
             </div>     
         </div>
@@ -143,16 +143,16 @@ export function WordList () {
                 <label htmlFor ="c1">Traditional</label>
             </div>
             <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton" checked={charType !== 'Trad'}></input>
+                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton"></input>
                 <label htmlFor ="c2">Simplified</label>
             </div>     
         </div>
       </div>
       <table>
-        <tr><th>Count</th><th>word/character</th><th>full definition</th><th>diffculty category</th></tr>
-        {displayJson.map((Json, i) => (
+        <thead><tr><th>Count</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
+        <tbody>{displayJson.map((Json, i) => (
           <DefDetailsRow charJson={Json} index={i+1}/>
-        ))}
+        ))}</tbody>
       </table>
     </div>
   );

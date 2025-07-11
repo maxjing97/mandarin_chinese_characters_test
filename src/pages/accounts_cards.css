@@ -102,3 +102,7 @@
 #add-deck input{
     font-size: 14pt;
 }
+#check-character {
+    width: 20px;
+    background-color: green;
+}

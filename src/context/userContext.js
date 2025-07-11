@@ -31,6 +31,66 @@ export default function UserProvider ({children}) {
             return resdata
         }
     }
+    //function to add data 
+    //functions to add and remove card
+    const addcard = async(uid, index, deckname, datatype, chartype) => {
+      try {
+        //get user id
+        const send_data = { 
+          user_id:uid, 
+          idx:index, 
+          deck_name:deckname, 
+          data_type:datatype, 
+          char_type:chartype,
+        }
+        const response = await fetch(`${API_URL}/add-data`,{
+            method: "POST",
+            headers:{
+                "Content-Type":"application/json",
+            },
+            body: JSON.stringify(send_data)
+        })
+        const resdata = await response.json() //get response data
+        if(!response.ok) {
+            console.log("server issues when adding data", resdata)
+            return 
+        } else {
+            return resdata
+        }
+    
+      } catch {
+        console.error("unknown issues when trying to add data")
+      }
+    }
+    const removecard = async(uid, index, deckname, datatype, chartype) => {
+      try {
+        //get user id
+        const send_data = { 
+          user_id:uid, 
+          idx:index, 
+          deck_name:deckname, 
+          data_type:datatype, 
+          char_type:chartype,
+        }
+        const response = await fetch(`${API_URL}/delete-card`,{
+            method: "POST",
+            headers:{
+                "Content-Type":"application/json",
+            },
+            body: JSON.stringify(send_data)
+        })
+        const resdata = await response.json() //get response data
+        if(!response.ok) {
+            console.log("server issues when adding data", resdata)
+            return 
+        } else {
+            return resdata
+        }
+    
+      } catch {
+        console.error("unknown issues when trying to add data")
+      }
+    }
 
     //destructure and rename data 
     const {data: rawcards, isSuccess, isError} = useQuery({
@@ -49,7 +109,7 @@ export default function UserProvider ({children}) {
 
 
     return (
-        <UserContext.Provider value={{userlogin, rawcards}}>
+        <UserContext.Provider value={{userlogin, rawcards, addcard, removecard}}>
             {children}
         </UserContext.Provider>
     )

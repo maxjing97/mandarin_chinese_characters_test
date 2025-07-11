@@ -2,11 +2,63 @@ import "./accounts_cards.css"
 import React, {useState, useRef, useEffect} from 'react';
 import {Link, useNavigate} from "react-router-dom"
 import {auth} from "../context/auth"
+import { useQueryClient } from '@tanstack/react-query';
 import { useUser } from "../context/userContext";
 import tradchar from './data/tradchars.json'; //import json fo 
 import simpchar from './data/simpchars.json'; //import json 
 import tradword from './data/tradwords.json'; //import json fo 
 import simpword from './data/simpwords.json'; //import json 
+
+
+//row details 
+const CharDetailsRow = ({charJson, index, deckname}) => { //current table row format displaying, for adding and deleting cards from the id
+  const queryClient = useQueryClient();
+  const [checked, setChecked] = useState(false)
+  const {userlogin, addcard, removecard} = useUser();
+  const handleChange = (e) => {
+    //if changing to checked, add card, etc, and more
+    if (checked) { //remove path call
+      removecard(userlogin.uid,index, deckname, "C", charJson["code"])
+    } else { //addcard call
+      addcard(userlogin.uid,index, deckname, "C", charJson["code"])
+    }
+    queryClient.invalidateQueries({queryKey: "cards"})
+    setChecked(prev=>!prev)
+  }
+  return (
+    <tr>
+      <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
+      <td>{charJson["word/character"]}</td>
+      <td>{charJson["definition"]}</td>
+      <td>{charJson["full_pronunciation"]}</td>
+      <td>{charJson["cat"]}</td>
+    </tr>
+  );
+};
+const DefDetailsRow = ({charJson, index, deckname}) => {
+  const queryClient = useQueryClient();
+  const [checked, setChecked] = useState(false)
+  const {userlogin, addcard, removecard} = useUser();
+  const handleChange = (e) => {
+    //if changing to checked, add card, etc, and more
+    if (checked) { //remove path call
+      removecard(userlogin.uid,index, deckname, "C", charJson["code"])
+    } else { //addcard call
+      addcard(userlogin.uid,index, deckname, "C", charJson["code"])
+    }
+    queryClient.invalidateQueries({queryKey: "cards"})
+    setChecked(prev=>!prev)
+  }
+  return (
+    <tr>
+      <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
+      <td>{charJson["word/character"]}</td>
+      <td>{charJson["definition"]}</td>
+      <td>{charJson["cat"]}</td>
+    </tr>
+  );
+};
+
 
 //simplified function to get all jsons for the 4 possible categories
 function getJsons(character_type, list_type) {
@@ -60,6 +112,8 @@ function AddDeck({close}) {
   }, [])
   //handle clicking submit for a character type
   const handleClick = (newCharType, newDataType) => {
+    setCharType(newCharType)//set values
+    setDataType(newDataType) 
     const jsons = getJsons(newCharType, newDataType)//get jsons
     setDisplayJson(jsons)
   }
@@ -79,7 +133,7 @@ function AddDeck({close}) {
         <div className="charbuttonContainer">
             <h2 className="selectCat">Select Character type: </h2>
             <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad", dataType)} className="charbutton"></input>
+                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad", dataType)} className="charbutton" checked={charType === 'Trad'}></input>
                 <label htmlFor ="c1">Traditional</label>
             </div>
             <div className="charbutton"> 
@@ -90,15 +144,28 @@ function AddDeck({close}) {
         <div className="charbuttonContainer">
             <h2 className="selectCat">Type:</h2>
             <div className="charbutton"> 
-                <input type="radio" name="wordtype" id="w1" onClick={() => handleClick("Trad", dataType)} className="charbutton"></input>
+                <input type="radio" name="wordtype" id="w1" onClick={() => handleClick(charType, "characters")} className="charbutton" checked={dataType === 'characters'}></input>
                 <label htmlFor ="w1">Unique Characters</label>
             </div>
             <div className="charbutton"> 
-                <input type="radio" name="wordtype" id="w2" onClick={() => handleClick("Simp", dataType)} className="charbutton"></input>
+                <input type="radio" name="wordtype" id="w2" onClick={() => handleClick(charType, "words")} className="charbutton"></input>
                 <label htmlFor ="w2">Words</label>
             </div>     
         </div>
       </div>
+      {dataType==="characters" ?
+      <table class="char_table">
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th></tr></thead>
+          <tbody>{displayJson.map((Json, i) => (
+            <CharDetailsRow charJson={Json} index={i} deckname={deckname}/>
+          ))}</tbody>        
+      </table>:
+      <table class="char_table">
+        <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
+        <tbody>{displayJson.map((Json, i) => (
+          <DefDetailsRow charJson={Json} index={i} deckname={deckname}/>
+        ))}</tbody>
+      </table>}
     </div>
   )        
 }
@@ -119,7 +186,7 @@ export default function Flashcards() {
 
   console.log("card data:", rawcards)
   return (
-    <div className="card_display"> 
+    <div id="characters-list"> 
       { !addDeck && 
       <div className="cards-display">
         <h2>My Flashcards</h2>
