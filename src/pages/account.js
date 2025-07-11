@@ -51,6 +51,8 @@ function Login({onPasswordEnter, change}) { //handler password
 
           <button className="password-reset" onClick={()=>change(3)}>Forgot your password?</button>
         </div>
+
+        <p>Login or create a count to create 5 flashcards decks to practice</p>
       </div>
     </div>
   );

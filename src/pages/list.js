@@ -29,7 +29,7 @@ const DefDetailsRow = ({charJson, index}) => {
 };
 
 
-//simplified function to get all jsons for the 5 possible categories
+//simplified function to get all jsons for the 4 possible categories
 function getJsons(character_type, list_type) {
   //get load in jsondata of can characters based on character type and practice type
   let jsonData = null 
@@ -54,17 +54,17 @@ function getJsons(character_type, list_type) {
 //component to display the list of characters
 export function CharList () {
   const navigate = useNavigate();
-  const [displayJson, setDisplayJson] = useState([]) //jsons to display (depends on the options chosen)
   const [charType, setCharType] = useState("Trad") //set character type
-
+  const [displayJson, setDisplayJson] = useState([]) //jsons to display (depends on the options chosen)
   //run after each mount only
   useEffect(() => {
     const jsons = getJsons(charType, "characters")//get jsons
     setDisplayJson(jsons)
   }, [])
   //handle clicking submit for a character type
-  const handleClick = (charType) => {
-    const jsons = getJsons(charType, "characters")//get jsons
+  const handleClick = (newCharType) => {
+    setCharType(newCharType)
+    const jsons = getJsons(newCharType, "characters")//get jsons
     setDisplayJson(jsons)
   }
   //handle back button 
@@ -85,11 +85,11 @@ export function CharList () {
         <div className="charbuttonContainer">
             <h2 className="selectCat">Select Character type: </h2>
             <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad")} className="charbutton"></input>
+                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad")} className="charbutton" checked={charType === 'Trad'}></input>
                 <label htmlFor ="c1">Traditional</label>
             </div>
             <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton"></input>
+                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton" checked={charType !== 'Trad'}></input>
                 <label htmlFor ="c2">Simplified</label>
             </div>     
         </div>
@@ -116,8 +116,9 @@ export function WordList () {
     setDisplayJson(jsons)
   }, [])
   //handle clicking submit for a character type
-  const handleClick = (charType) => {
-    const jsons = getJsons(charType, "words")//get jsons
+  const handleClick = (newCharType) => {
+    setCharType(newCharType)
+    const jsons = getJsons(newCharType, "words")//get jsons
     setDisplayJson(jsons)
   }
   //handle back button 
@@ -138,11 +139,11 @@ export function WordList () {
         <div className="charbuttonContainer">
             <h2 className="selectCat">Select Character type: </h2>
             <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad")} className="charbutton"></input>
+                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad")} className="charbutton" checked={charType === 'Trad'}></input>
                 <label htmlFor ="c1">Traditional</label>
             </div>
             <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton"></input>
+                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton" checked={charType !== 'Trad'}></input>
                 <label htmlFor ="c2">Simplified</label>
             </div>     
         </div>

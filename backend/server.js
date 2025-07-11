@@ -22,9 +22,9 @@ app.use(cors());  //enlabed cors
 
 //basic post request to send data for certain condition
 app.post('/add-data', (req, res) => {
-    const { user_id, idx, data_type, char_type} = req.body; //get the assumed json body
-    const query = `INSERT INTO flashcards (user_id, deck_id, idx, data_type, char_type) VALUES (?, ?, ?, ?);`;
-    db.query(query, [`${user_id}`,`${idx}`,`${data_type}`,`${char_type}`], (err, results) => {
+    const { user_id, idx, deck_name, data_type, char_type} = req.body; //get the assumed json body
+    const query = `INSERT INTO flashcards (user_id, deck_name, idx, data_type, char_type) VALUES (?, ?, ?, ?, ?);`;
+    db.query(query, [user_id,deck_name, idx,data_type,char_type], (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -68,14 +68,14 @@ app.post('/delete-deck', (req, res) => {
 
 //delete path for a single card
 app.post('/delete-card', (req, res) => {
-    const { user_id, deck_id, idx, data_type, char_type} = req.body; 
+    const { user_id, deck_name, idx, data_type, char_type} = req.body; 
     //format the query
     const query = `
         DELETE
         FROM flashcards
-        WHERE user_id=? AND deck_id=? AND idx=? AND data_type=? AND char_type=?
+        WHERE user_id=? AND deck_name=? AND idx=? AND data_type=? AND char_type=?
     `;
-    db.query(query, [user_id, deck_id, idx, data_type, char_type], (err, results) => {
+    db.query(query, [user_id, deck_name, idx, data_type, char_type], (err, results) => {
         if (err) {
             return res.status(500).json({ error: 'Database query failed' });
         } 

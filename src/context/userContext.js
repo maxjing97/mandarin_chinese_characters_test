@@ -12,7 +12,6 @@ export default function UserProvider ({children}) {
     const [userlogin, setUserlogin] = useState(null); //context variable to check if a user is logged in
     //async function to get data based on user id in userlogin (uid)
     const fetchRawcards = async() => {
-        console.log("ran context fetch with id:", userlogin.uid)
         const send_data = {
             user_id: userlogin.uid
         }
@@ -26,7 +25,6 @@ export default function UserProvider ({children}) {
         const resdata = await response.json() //get response data
         //if not ok, return error 
         if(!response.ok) {
-            console.log("error fetching card data:", resdata)
             return
         } else {
             //otherwise, get the json data 
