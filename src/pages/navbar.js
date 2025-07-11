@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from 'firebase/auth';
 
 const Navbar=()=>{
+    const navigate = useNavigate();
     const [accountText, setAccountText] = useState("❌") //index of components to show
     const {userlogin} = useUser()//get user info 
     const logout = async () => {
         await signOut(auth);
+        navigate("/")
     };
     //if the user is logged in, set into to 4 immediately
     useEffect(()=>{

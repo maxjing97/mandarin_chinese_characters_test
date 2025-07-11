@@ -55,12 +55,33 @@
   text-decoration: none;
   display: block;
 }
+.dropdown-content a:hover {
+  color: white;
+  background-color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
 
 /*trigged when covered*/
 .dropdown:hover .dropdown-content { 
   display: block;
 }
 
-.dropdown:hover .dropbtn {
-  background-color: #ddd;
+.dropdown button {
+  border: none;
+  background-color: white;
+  font-size: 12pt;
+  font-weight: bold;
+  padding: 12px 16px;
+  width : 160px;
+}
+.dropdown button:hover {
+  border: none;
+  background-color: rgb(255, 0, 0);
+  color: #f9f9f9;
+  font-size: 12pt;
+  font-weight: bold;
+  width : 160px;
+  padding: 12px 16px;
 }
