@@ -51,14 +51,14 @@ app.post('/get-all-data', (req, res) => {
 });
 //delete path for a deck
 app.post('/delete-deck', (req, res) => {
-    const { user_id, deck_id} = req.body; 
+    const { user_id, deck_name} = req.body; 
     //format the query
     const query = `
         DELETE
         FROM flashcards
-        WHERE user_id= ? AND deck_id= ?
+        WHERE user_id=? AND deck_name=?
     `;
-    db.query(query, [user_id, deck_id], (err, results) => {
+    db.query(query, [user_id, deck_name], (err, results) => {
         if (err) {
             return res.status(500).json({ error: 'Database query failed' });
         } 
@@ -82,7 +82,6 @@ app.post('/delete-card', (req, res) => {
         res.json(results);
     });
 });
-
 
 
 // Start server on port 2001

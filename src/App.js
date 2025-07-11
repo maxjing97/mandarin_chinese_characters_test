@@ -11,6 +11,7 @@ import {CharList, WordList} from "./pages/list"
 import {Account} from "./pages/account"
 import UserProvider from "./context/userContext"
 import{QueryClient, QueryClientProvider} from "@tanstack/react-query"
+import Flashcards from './pages/flashcards';
 const queryClient = new QueryClient() //log the query client to be used
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <div>
         <Routes>        {/*defining routes */}
           <Route path="/"  element={<Account/>} />{/*default page route */}
+          <Route path="/flashcards"  element={<Flashcards/>} />{/*visible after login only */}
           {/*practice pages */}
           <Route path="/characters"  element={<Characters/>} />
           <Route path="/words"  element={<Words/>} />

@@ -10,8 +10,8 @@ import tradword from './data/tradwords.json'; //import json fo
 import simpword from './data/simpwords.json'; //import json 
 
 
-//row details 
-const CharDetailsRow = ({charJson, index, deckname}) => { //current table row format displaying, for adding and deleting cards from the id
+//row details for the addcard part 
+const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current table row format displaying, for adding and deleting cards from the id
   const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false)
   const {userlogin, addcard, removecard} = useUser();
@@ -19,8 +19,10 @@ const CharDetailsRow = ({charJson, index, deckname}) => { //current table row fo
     //if changing to checked, add card, etc, and more
     if (checked) { //remove path call
       removecard(userlogin.uid,index, deckname, "C", charJson["code"])
+      setCount(prev=>prev-1) //decrement
     } else { //addcard call
       addcard(userlogin.uid,index, deckname, "C", charJson["code"])
+      setCount(prev=>prev+1) //increment
     }
     queryClient.invalidateQueries({queryKey: "cards"})
     setChecked(prev=>!prev)
@@ -35,16 +37,18 @@ const CharDetailsRow = ({charJson, index, deckname}) => { //current table row fo
     </tr>
   );
 };
-const DefDetailsRow = ({charJson, index, deckname}) => {
+const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
   const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false)
   const {userlogin, addcard, removecard} = useUser();
   const handleChange = (e) => {
     //if changing to checked, add card, etc, and more
     if (checked) { //remove path call
-      removecard(userlogin.uid,index, deckname, "C", charJson["code"])
+      removecard(userlogin.uid,index, deckname, "W", charJson["code"])
+      setCount(prev=>prev-1) //decrement
     } else { //addcard call
-      addcard(userlogin.uid,index, deckname, "C", charJson["code"])
+      addcard(userlogin.uid,index, deckname, "W", charJson["code"])
+      setCount(prev=>prev+1) //increment
     }
     queryClient.invalidateQueries({queryKey: "cards"})
     setChecked(prev=>!prev)
@@ -83,26 +87,52 @@ function getJsons(character_type, list_type) {
 }
 
 
-function Deck({data}) {
+function Deck({data, setDeckCount}) {
+  const {userlogin, removedeck} = useUser()
+  const queryClient = useQueryClient()
+  const handleRemove = () => {
+    //confirm with user 
+    const confirmed = window.confirm(`Are you sure you want to delete this deck, ${data[0]}`);
+    if(confirmed) {
+      removedeck(userlogin.uid, data[0])
+      //invalidate
+      setDeckCount(prev=>prev-1) //decrement 
+      queryClient.invalidateQueries({queryKey: "cards"})
+    } else {
+      return
+    }
+  }
+  
   return (
-    <div className="deck">
-
-    </div>
+    <button className="deck">
+      <h3>{data[0]}</h3>
+      <h3>{data[1].length} Cards</h3>
+      <button onClick={handleRemove} id="trash-deck">
+        ❌
+      </button>
+    </button>
   )
 }
 
 //add deck component: display list of characters with button
-function AddDeck({close}) {   
+function AddDeck({setAddDeck, setDeckCount}) {   
   const [deckname, setDeckname] = useState("")
   const [charType, setCharType] = useState("Trad")  
   const [dataType, setDataType] = useState("characters")
+  const [isSet, setisSet] = useState(false) //check if the name has been set yet
   const [displayJson, setDisplayJson] = useState([]) //jsons to display (depends on the options chosen)
-  //list 
+  const [count, setCount] = useState(0)//count of cards added 
+  const {cardsmap} = useUser()
   //check if the deckname has been taken
   const handledeckname = (e) =>{
-    const val = e.target.value
-    //check if the check name has been taken
-    setDeckname(val)
+    if (deckname.length ===0) {
+      alert("deck name must but be empty")
+    } else if (cardsmap.has(deckname.trim())) {
+      alert("deck name must but be unique")
+      setAddDeck(false)//close
+    } else {
+      setisSet(true)
+    }
   }
     
   //run after each mount only
@@ -117,6 +147,11 @@ function AddDeck({close}) {
     const jsons = getJsons(newCharType, newDataType)//get jsons
     setDisplayJson(jsons)
   }
+  //function to handle save
+  const handleSave = () => {
+    setDeckCount(prev=>prev+1) //increment number of decks
+    setAddDeck(false)//
+  }
 
   return (
     <div id="add-deck">
@@ -125,11 +160,15 @@ function AddDeck({close}) {
         type="text"
         value = {deckname}
         id="deck-name"
-        onChange={handledeckname}
+        onChange={(e)=>{setDeckname(e.target.value)}}
         placeholder="deck name"
+        disabled={isSet}
       />
-      <h3>Add Cards to the deck from the list of characters</h3>
+      <button id='card-name-save' onClick={handledeckname}>Save</button>
+      {isSet &&
       <div>
+      <h3>Add Cards to the deck from the list of characters</h3>
+      <div id="addchars-show">
         <div className="charbuttonContainer">
             <h2 className="selectCat">Select Character type: </h2>
             <div className="charbutton"> 
@@ -150,22 +189,24 @@ function AddDeck({close}) {
             <div className="charbutton"> 
                 <input type="radio" name="wordtype" id="w2" onClick={() => handleClick(charType, "words")} className="charbutton"></input>
                 <label htmlFor ="w2">Words</label>
-            </div>     
+            </div>  
         </div>
+        <button id="save-cards" onClick={handleSave}>{count} cards added, Save and Exit</button>
       </div>
       {dataType==="characters" ?
       <table class="char_table">
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th></tr></thead>
           <tbody>{displayJson.map((Json, i) => (
-            <CharDetailsRow charJson={Json} index={i} deckname={deckname}/>
+            <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
           ))}</tbody>        
       </table>:
       <table class="char_table">
         <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
         <tbody>{displayJson.map((Json, i) => (
-          <DefDetailsRow charJson={Json} index={i} deckname={deckname}/>
+          <DefDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
         ))}</tbody>
       </table>}
+      </div>}
     </div>
   )        
 }
@@ -173,35 +214,51 @@ function AddDeck({close}) {
 //components to display the flash card preview
 export default function Flashcards() { 
   const navigate = useNavigate();
-  const {userlogin, rawcards} = useUser()
-  const [decks, setDecks] = useState([])
+  const {cardsmap, rawdata} = useUser()
+  const [decks, setDecks] = useState([]) //get checks map
   const [addDeck, setAddDeck] = useState(false)//check if add deck is clicked, then show the popup
+  const [deckcount, setDeckCount] = useState(cardsmap.size)//count the number of decks
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     //if user is logged, in set to the actual data
-    if(rawcards) {
-      setDecks(rawcards)
+    if(cardsmap) {
+      setDecks(cardsmap)
+      setDeckCount(cardsmap.size)
     }
-  },[rawcards])
+  })
 
-  console.log("card data:", rawcards)
+  const handleAddDeck = () => {
+    if (deckcount === 5) {
+      alert("cannot create more than 5 decks with your account") //5 flashcard deck limit
+    } else {
+      setAddDeck(true)
+    }
+  }
+
   return (
-    <div id="characters-list"> 
-      { !addDeck && 
-      <div className="cards-display">
-        <h2>My Flashcards</h2>
-        {
-          decks.map((deck, index) => (
-            <Deck data={deck}/>
-          ))
-        }
-        {/* button to add a deck*/}
-        <button className="deck" onClick={()=>{setAddDeck(true)}}>
-          <img src="/media/add.png" alt="add" className="deck-icon"/>
-        </button>
+    <div id="main-decks-display"> 
+    
+      { !addDeck &&
+      <div className="main-decks-display">
+        <h2>My Flashcard Decks</h2>
+        <div id="full-decks-display">
+          {
+            [...decks].map((value, key) => ( 
+              <Deck data={value} key={key} deckname={key} setDeckCount={setDeckCount}/>
+            ))
+          }
+          {/* button to add a deck*/}
+          <button className="deck" onClick={handleAddDeck}>
+            <img src="/media/add.png" alt="add" className="deck-icon"/>
+          </button>
+        </div>
+        <p>{deckcount===0 ? `Get Started by creating a deck`:`Deck Count: ${deckcount}`}</p>
       </div>}
       { addDeck && 
-        <AddDeck close={setAddDeck}/>
+        <div className="main-decks-display">
+          <AddDeck setAddDeck={setAddDeck} setDeckCount={setDeckCount}/>
+        </div>
       }
     </div>
   );

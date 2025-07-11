@@ -4,7 +4,7 @@ import {Link, useNavigate} from "react-router-dom"
 import {auth} from "../context/auth"
 import { useUser } from "../context/userContext";
 import Flashcards from "./flashcards";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword, sendEmailVerification, signOut  } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword, sendEmailVerification  } from 'firebase/auth';
 
 
 //create components for entering password, register, reset password, and component to show flashcards review
@@ -47,9 +47,9 @@ function Login({onPasswordEnter, change}) { //handler password
         
         <div className="submit_section">
           <button className="account_submit_button" ref={buttonref} onClick={()=>onPasswordEnter(email, password)}>Login</button>
-          <button className="account_change_button" onClick={()=>change(2)}>Register</button>
+          <button className="account_change_button" onClick={()=>change(1)}>Register</button>
 
-          <button className="password-reset" onClick={()=>change(3)}>Forgot your password?</button>
+          <button className="password-reset" onClick={()=>change(2)}>Forgot your password?</button>
         </div>
 
         <p>Login or create a count to create 5 flashcards decks to practice</p>
@@ -188,21 +188,16 @@ export function Account() {
   //if the user is logged in, set into to 4 immediately
   useEffect(()=>{
     if (userlogin) {
-      setIndex(1)
+      navigate("/flashcards") //if user is already logged in, redirect to flashcards
     }
   })
-  //handle logouts
-  const logout = async () => {
-    await signOut(auth);
-    setIndex(0)//
-    navigate('/'); // Go to login page after logout
-  };
-  //handle login
+
+  //handle login,logout is handled in the nav bar
   const handlelogin = async(email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      setIndex(1)//if no errors, change inde 
+      navigate("/flashcards")//if no errors, go to flashcards
     } catch (error) {
       let message = 'Login failed. Please try again, with error: '+String(error);
       if (String(error).includes("invalid-email")) {
@@ -217,15 +212,12 @@ export function Account() {
   }
 
   //get components list 
-  const compList = [<Login onPasswordEnter={handlelogin} change={setIndex}/>,<Flashcards/>, 
+  const compList = [<Login onPasswordEnter={handlelogin} change={setIndex}/>, 
                     <Register change={setIndex}/>, <Reset change={setIndex}/>]
   return (
     <div id="accounts-all">
       <h1 className='stats-title'>Account</h1>
       {compList[index]}
-      { userlogin && 
-        <button className="account_change_button" onClick={()=>logout()}>Logout</button>
-      }
     </div>
   );
 }

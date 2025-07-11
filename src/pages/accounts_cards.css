@@ -91,13 +91,48 @@
     background-color: azure;
     width: 120px;
     height: 170px;
-    border-width: 2px;
+    margin: 0 10px;
     padding: 0;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+.main-decks-display {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+#trash-deck {
+    width: 50px;
+    background-color: white;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+#trash-deck:hover {
+    width: 50px;
+    background-color: black;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
 }
 .deck-icon {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+#full-decks-display {
+    display: flex;
+    flex-direction: row;
 }
 #add-deck input{
     font-size: 14pt;
@@ -105,4 +140,49 @@
 #check-character {
     width: 20px;
     background-color: green;
+}
+#addchars-show {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    visibility: visible;
+}
+#deck-name {
+    height: 20px;
+}
+#card-name-save {
+    height: 23px;
+    margin: auto 0;
+    padding: 30px auto;
+    background-color: rgb(44, 72, 255);
+    color: white;
+    font-size: 12pt;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    border-color: aliceblue;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+}
+#save-cards {
+    margin-top: 10px;
+    padding: 10px;
+    margin-bottom: 0;
+    background-color: rgb(44, 72, 255);
+    color: #a6dcb0;
+    font-size: 15pt;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    border-color: aliceblue;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
 }

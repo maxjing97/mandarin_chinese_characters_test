@@ -10,6 +10,27 @@ const UserContext = createContext(null);
 export const useUser = () => useContext(UserContext);
 export default function UserProvider ({children}) {
     const [userlogin, setUserlogin] = useState(null); //context variable to check if a user is logged in
+    const [cardsmap, setCardsmap] = useState(new Map()); //map from deck name to a list of json 
+
+    //function to get raw data 
+    const processrawdata = (rawdata) => {
+        //iterate through json of the list 
+        //get set of names
+        const currmap = new Map()
+        for (const json of rawdata) {
+            const currdeck = json["deck_name"]
+            if(currmap.has(currdeck)) { //check if the map already has the key
+                const currlist = currmap.get(currdeck)
+                currlist.push(json)
+                currmap.set(currdeck, currlist)
+            } else {
+                currmap.set(currdeck, [json])
+            }
+        }
+        setCardsmap(currmap)
+        return 
+    }
+
     //async function to get data based on user id in userlogin (uid)
     const fetchRawcards = async() => {
         const send_data = {
@@ -27,7 +48,8 @@ export default function UserProvider ({children}) {
         if(!response.ok) {
             return
         } else {
-            //otherwise, get the json data 
+            //otherwise, get the json data, and set the processed map
+            processrawdata(resdata)
             return resdata
         }
     }
@@ -86,7 +108,32 @@ export default function UserProvider ({children}) {
         } else {
             return resdata
         }
-    
+      } catch {
+        console.error("unknown issues when trying to add data")
+      }
+    }
+    //function to remove an entire deck
+    const removedeck = async(uid, deck_name) => {
+      try {
+        //get user id
+        const send_data = { 
+          user_id:uid, 
+          deck_name:deck_name, 
+        }
+        const response = await fetch(`${API_URL}/delete-deck`,{
+            method: "POST",
+            headers:{
+                "Content-Type":"application/json",
+            },
+            body: JSON.stringify(send_data)
+        })
+        const resdata = await response.json() //get response data
+        if(!response.ok) {
+            console.log("server issues when adding data", resdata)
+            return 
+        } else {
+            return resdata
+        }
       } catch {
         console.error("unknown issues when trying to add data")
       }
@@ -94,7 +141,7 @@ export default function UserProvider ({children}) {
 
     //destructure and rename data 
     const {data: rawcards, isSuccess, isError} = useQuery({
-        queryKey: ["cards"],
+        queryKey: "cards",
         queryFn: fetchRawcards,
         enabled: !!userlogin, //run if there is a userlogin
         staleTime: 1000*60*60*24, //time to keep query stale in ms 
@@ -109,7 +156,7 @@ export default function UserProvider ({children}) {
 
 
     return (
-        <UserContext.Provider value={{userlogin, rawcards, addcard, removecard}}>
+        <UserContext.Provider value={{userlogin, rawcards, cardsmap, addcard, removecard, removedeck}}>
             {children}
         </UserContext.Provider>
     )

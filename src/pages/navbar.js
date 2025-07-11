@@ -2,10 +2,16 @@ import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import "../App.css"
 import { useUser } from "../context/userContext";
+import {auth} from "../context/auth"
+import { useNavigate } from "react-router-dom";
+import { signOut } from 'firebase/auth';
 
 const Navbar=()=>{
     const [accountText, setAccountText] = useState("❌") //index of components to show
     const {userlogin} = useUser()//get user info 
+    const logout = async () => {
+        await signOut(auth);
+    };
     //if the user is logged in, set into to 4 immediately
     useEffect(()=>{
         if (userlogin) {
@@ -14,8 +20,6 @@ const Navbar=()=>{
             setAccountText("Account ❌")
         }
     })
-    //check if logged in, change account text
-    useUser()
 
     return (    
         <div className='navBar'>
@@ -37,6 +41,10 @@ const Navbar=()=>{
             </div>
             <div className="dropdown">
                 <h1 className="main-option"><Link to="/">{accountText}</Link></h1>
+                {userlogin && <div className="dropdown-content">
+                    <Link to="/flashcards">My Flashcards</Link>
+                    <button onClick={logout}>Logout</button>
+                </div>}
             </div>
             <div className="dropdown">
                 <h1 className="main-option"><Link to="/about">More</Link></h1>
