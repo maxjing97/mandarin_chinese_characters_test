@@ -24,7 +24,7 @@ const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current ta
       addcard(userlogin.uid,index, deckname, "C", charJson["code"])
       setCount(prev=>prev+1) //increment
     }
-    queryClient.invalidateQueries({queryKey: ["cards"]})
+    queryClient.invalidateQueries(["cards"])
     setChecked(prev=>!prev)
   }
   return (
@@ -51,7 +51,7 @@ const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
       addcard(userlogin.uid,index, deckname, "W", charJson["code"])
       setCount(prev=>prev+1) //increment
     }
-    queryClient.invalidateQueries({queryKey: ["cards"]})
+    queryClient.invalidateQueries(["cards"])
     setChecked(prev=>!prev)
   }
   return (
@@ -94,7 +94,7 @@ function Deck({data, setDeckCount, setMainclosed, setAltcomp}) {
       removedeck(userlogin.uid, data[0])
       //invalidate
       setDeckCount(prev=>prev-1) //decrement 
-      queryClient.invalidateQueries({queryKey:["cards"]})
+      queryClient.invalidateQueries(["cards"])
     } else {
       return
     }
@@ -164,7 +164,7 @@ function AddDeck({setMainclosed, setDeckCount}) {
   }
 
   return (
-    <div id="add-deck">
+    <div>
       <h3>Give a name for the deck</h3>
       <input
         type="text"
