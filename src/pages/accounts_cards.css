@@ -189,3 +189,9 @@
 .char_table {
     width: 600px;
 }
+
+#table-button {
+    font-size: 15pt;
+    font-weight:bold;
+    background-color: white;
+}

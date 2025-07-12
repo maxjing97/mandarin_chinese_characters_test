@@ -12,7 +12,6 @@ import simpword from './data/simpwords.json'; //import json
 
 //row details for the addcard part 
 const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current table row format displaying, for adding and deleting cards from the id
-  console.log("input data to a char row:", charJson)
   const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false)
   const {userlogin, addcard, removecard} = useUser();
@@ -29,11 +28,11 @@ const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current ta
     setChecked(prev=>!prev)
   }
   return (
-    <tr>
+    <tr style={{backgroundColor: checked ? "rgb(71, 237, 112)":"white"}}>
       <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
-      <td>{charJson["word/character"]}</td>
-      <td>{charJson["definition"]}</td>
-      <td>{charJson["full_pronunciation"]}</td>
+      <td id="addtable-entry"><button onClick={()=>handleChange()} id="table-button">{charJson["word/character"]}</button></td>
+      <td><button onClick={()=>handleChange()} id="table-button">{charJson["definition"]}</button></td>
+      <td><button onClick={()=>handleChange()} id="table-button">{charJson["full_pronunciation"]}</button></td>
       <td>{charJson["cat"]}</td>
       <td>{index}</td>
     </tr>
@@ -56,10 +55,10 @@ const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
     setChecked(prev=>!prev)
   }
   return (
-    <tr>
+    <tr style={{backgroundColor: checked ? "rgb(71, 237, 112)":"white"}}>
       <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
-      <td>{charJson["word/character"]}</td>
-      <td>{charJson["definition"]}</td>
+      <td><button onClick={()=>handleChange()} id="table-button">{charJson["word/character"]}</button></td>
+      <td><button onClick={()=>handleChange()} id="table-button">{charJson["definition"]}</button></td>
       <td>{charJson["cat"]}</td>
       <td>{index}</td>
     </tr>
@@ -179,13 +178,13 @@ function AddDeck({setAddDeck, setDeckCount}) {
         <button id="save-cards" onClick={handleSave}>{count} cards added, Save and Exit</button>
       </div>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="characters")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th><th>index</th></tr></thead>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{JsonToList(tradchar).map((Json,i) => (
             <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="characters")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th><th>index</th></tr></thead>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{JsonToList(simpchar).map((Json,i) => (
             <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
           ))}</tbody>        
@@ -212,7 +211,7 @@ export default function Flashcards() {
   const navigate = useNavigate();
   const {cardsmap, rawdata} = useUser()
   const [decks, setDecks] = useState([]) //get checks map
-  const [addDeck, setAddDeck] = useState(false)//check if add deck is clicked, then show the popup
+  const [addDeck, setAddDeck] = useState(false)//check to close the main
   const [deckcount, setDeckCount] = useState(cardsmap.size)//count the number of decks
   const queryClient = useQueryClient()
 

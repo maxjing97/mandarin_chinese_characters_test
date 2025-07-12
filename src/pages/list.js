@@ -95,7 +95,7 @@ export function CharList () {
         </div>
       </div>
       <table class="char_table">
-        <tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th></tr>
+        <tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr>
         {displayJson.map((Json, i) => (
           <CharDetailsRow charJson={Json} index={i+1}/>
         ))}
