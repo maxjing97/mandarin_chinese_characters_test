@@ -9,9 +9,25 @@ import simpchar from './data/simpchars.json'; //import json
 import tradword from './data/tradwords.json'; //import json fo 
 import simpword from './data/simpwords.json'; //import json 
 
+//function to get characterjson based on index, datatype:("C", "W") and chartype: ("t","s")
+//simplified function to get all jsons for the 4 possible categories
+function getInfo(index, chartype, datatype) {
+  //get load in jsondata of can characters based on character type and practice type
+  if(datatype == "C" && chartype == "t") {
+    return tradchar[index.toString()]
+  } else if (datatype === "C" && chartype == "s") {
+    return simpchar[index.toString()]
+  } else if(datatype == "W" && chartype == "t") {
+    return tradword[index.toString()]
+  } else if (datatype == "W" && chartype == "s") {
+    return simpword[index.toString()]
+  }
+  return null
+}
 
 //row details for the addcard part 
 const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current table row format displaying, for adding and deleting cards from the id
+  console.log("char json data:", charJson)
   const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false)
   const {userlogin, addcard, removecard} = useUser();
@@ -65,17 +81,56 @@ const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
   );
 };
 
+//show card details, including type
+function Card({dbjson, infojson, deckname}) {
+  const{char_type,data_type,deck_name,idx,user_id} = dbjson //destructure data from database
+  
+  useEffect(()=>{
+    console.log("card db data:", dbjson)
+    console.log("card local data:", infojson)
+  },[])
+  //console.log("card details:", getInfo(idx,char_type,data_type))
+  return (
+    <div className="info-card">
+      <p>Definition: </p>
 
+    </div>
+  )
+}
 
 //get deck details from clicking set, get all detail of cards
 function DeckCards({data,setMainclosed}) {  
-  //store count of cards
+  //get json information of cards, 
+  const [infoList, setInfoList] = useState([])
+  //store the type of data (words or characters) (should be the same length as the infolist)
+  const [typeList, setTypeList] = useState([])
   
+   
+  useEffect(()=>{
+    const info_list = []
+    const type_list = []
+    const datalist = data[1]
+    for(const json of datalist) {
+      console.log("current json:", json)
+      const{char_type,data_type,deck_name,idx,user_id} = json
+      const info = getInfo(idx,char_type,data_type)
+      console.log("information:", info)
+      info_list.push(info)
+      type_list.push(data_type)
+    }
+    console.log("info list sent", info_list)
+    setInfoList(info_list)
+    setTypeList(type_list)
+  },[])
+
   return (
     <div>
       <h3>"{data[0]}" Deck</h3>
-      <p>{JSON.stringify(data[1])}</p>
-
+      <div id="view-deck-cards">
+        {data[1].map((json, index)=>(
+          <Card dbjson={json} infojson={infoList[index]} deckname={data[0]}/>
+        ))}
+      </div>
       <button onClick={()=>setMainclosed(false)} id="menu-button">
           Exit to menu
       </button>
@@ -205,26 +260,26 @@ function AddDeck({setMainclosed, setDeckCount}) {
       </div>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="characters")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
-          <tbody>{JsonToList(tradchar).map((Json,i) => (
-            <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
+          <tbody>{Object.entries(tradchar).map((Json,i) => (
+            <CharDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} setCount={setCount}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="characters")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
-          <tbody>{JsonToList(simpchar).map((Json,i) => (
-            <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
+          <tbody>{Object.entries(simpchar).map((Json,i) => (
+            <CharDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} setCount={setCount}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="words")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
-          <tbody>{JsonToList(tradword).map((Json,i) => (
-            <DefDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
+          <tbody>{Object.entries(tradword).map((Json,i) => (
+            <DefDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} setCount={setCount}/>
           ))}</tbody>
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="words")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
-          <tbody>{JsonToList(simpword).map((Json,i) => (
-            <DefDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
+          <tbody>{Object.entries(simpword).map((Json,i) => (
+            <DefDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} setCount={setCount}/>
           ))}</tbody>
         </table>
       </div>}
