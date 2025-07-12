@@ -141,7 +141,7 @@ export default function UserProvider ({children}) {
 
     //destructure and rename data 
     const {data: rawcards, isSuccess, isError} = useQuery({
-        queryKey: "cards",
+        queryKey: ["cards"],
         queryFn: fetchRawcards,
         enabled: !!userlogin, //run if there is a userlogin
         staleTime: 1000*60*60*24, //time to keep query stale in ms 

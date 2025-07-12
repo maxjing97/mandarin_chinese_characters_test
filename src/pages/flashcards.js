@@ -24,7 +24,7 @@ const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current ta
       addcard(userlogin.uid,index, deckname, "C", charJson["code"])
       setCount(prev=>prev+1) //increment
     }
-    queryClient.invalidateQueries({queryKey: "cards"})
+    queryClient.invalidateQueries({queryKey: ["cards"]})
     setChecked(prev=>!prev)
   }
   return (
@@ -51,7 +51,7 @@ const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
       addcard(userlogin.uid,index, deckname, "W", charJson["code"])
       setCount(prev=>prev+1) //increment
     }
-    queryClient.invalidateQueries({queryKey: "cards"})
+    queryClient.invalidateQueries({queryKey: ["cards"]})
     setChecked(prev=>!prev)
   }
   return (
@@ -67,9 +67,26 @@ const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
 
 
 
-function Deck({data, setDeckCount}) {
+//get deck details from clicking set, get all detail of cards
+function DeckCards({data,setMainclosed}) {  
+  //store count of cards
+  
+  return (
+    <div>
+      <h3>"{data[0]}" Deck</h3>
+      <p>{JSON.stringify(data[1])}</p>
+
+      <button onClick={()=>setMainclosed(false)} id="menu-button">
+          Exit to menu
+      </button>
+    </div>
+  )
+}
+
+function Deck({data, setDeckCount, setMainclosed, setAltcomp}) {
   const {userlogin, removedeck} = useUser()
   const queryClient = useQueryClient()
+  //display if details are being shown
   const handleRemove = () => {
     //confirm with user 
     const confirmed = window.confirm(`Are you sure you want to delete this deck, ${data[0]}`);
@@ -77,25 +94,34 @@ function Deck({data, setDeckCount}) {
       removedeck(userlogin.uid, data[0])
       //invalidate
       setDeckCount(prev=>prev-1) //decrement 
-      queryClient.invalidateQueries({queryKey: "cards"})
+      queryClient.invalidateQueries({queryKey:["cards"]})
     } else {
       return
     }
   }
+  //handle when function is called to show details
+  const handleDetails = () =>{
+    setMainclosed(true)
+    setAltcomp(<DeckCards data={data} setMainclosed={setMainclosed}/>)
+  }
   
   return (
-    <button className="deck">
-      <h3>{data[0]}</h3>
-      <h3>{data[1].length} Cards</h3>
-      <button onClick={handleRemove} id="trash-deck">
-        ❌
-      </button>
-    </button>
+    <div>
+      <div className="deck">
+        <button id="goto-deck" onClick={handleDetails}>
+        <h3>{data[0]}</h3>
+        <h3>{data[1].length} Cards</h3>
+        </button>
+        <button onClick={handleRemove} id="trash-deck">
+          ❌
+        </button>
+      </div>
+    </div>
   )
 }
 
 //add deck component: display list of characters with button
-function AddDeck({setAddDeck, setDeckCount}) {   
+function AddDeck({setMainclosed, setDeckCount}) {   
   const [deckname, setDeckname] = useState("")
   const [charType, setCharType] = useState("Trad")  
   const [dataType, setDataType] = useState("characters")
@@ -108,7 +134,7 @@ function AddDeck({setAddDeck, setDeckCount}) {
       alert("deck name must but be empty")
     } else if (cardsmap.has(deckname.trim())) {
       alert("deck name must but be unique")
-      setAddDeck(false)//close
+      setMainclosed(false)//close
     } else {
       setisSet(true)
     }
@@ -134,7 +160,7 @@ function AddDeck({setAddDeck, setDeckCount}) {
   //function to handle save
   const handleSave = () => {
     setDeckCount(prev=>prev+1) //increment number of decks
-    setAddDeck(false)//
+    setMainclosed(false)//close
   }
 
   return (
@@ -211,7 +237,8 @@ export default function Flashcards() {
   const navigate = useNavigate();
   const {cardsmap, rawdata} = useUser()
   const [decks, setDecks] = useState([]) //get checks map
-  const [addDeck, setAddDeck] = useState(false)//check to close the main
+  const [ismainclosed, setMainclosed] = useState(false)//check to close the main
+  const [altcomp, setAltcomp] = useState(null)//set alternative component to show
   const [deckcount, setDeckCount] = useState(cardsmap.size)//count the number of decks
   const queryClient = useQueryClient()
 
@@ -222,37 +249,38 @@ export default function Flashcards() {
       setDeckCount(cardsmap.size)
     }
   })
-
+  //function to add a deck
   const handleAddDeck = () => {
     if (deckcount === 5) {
       alert("cannot create more than 5 decks with your account") //5 flashcard deck limit
     } else {
-      setAddDeck(true)
+      setMainclosed(true)
+      setAltcomp(<AddDeck setMainclosed={setMainclosed} setDeckCount={setDeckCount}/>)//set the component to show
     }
   }
 
   return (
     <div id="main-decks-display"> 
     
-      { !addDeck &&
+      { !ismainclosed &&
       <div className="main-decks-display">
         <h2>My Flashcard Decks</h2>
         <div id="full-decks-display">
           {
             [...decks].map((value, key) => ( 
-              <Deck data={value} key={key} deckname={key} setDeckCount={setDeckCount}/>
+              <Deck data={value} key={key} deckname={key} setDeckCount={setDeckCount} setMainclosed={setMainclosed} setAltcomp={setAltcomp}/>
             ))
           }
           {/* button to add a deck*/}
-          <button className="deck" onClick={handleAddDeck}>
+          <button id="add-deck" onClick={handleAddDeck}>
             <img src="/media/add.png" alt="add" className="deck-icon"/>
           </button>
         </div>
         <p>{deckcount===0 ? `Get Started by creating a deck`:`Deck Count: ${deckcount}`}</p>
       </div>}
-      { addDeck && 
+      { ismainclosed && 
         <div className="main-decks-display">
-          <AddDeck setAddDeck={setAddDeck} setDeckCount={setDeckCount}/>
+          {altcomp}   
         </div>
       }
     </div>

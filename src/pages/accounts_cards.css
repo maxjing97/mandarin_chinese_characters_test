@@ -87,10 +87,10 @@
     text-align: center;
     align-items: center;
 }
-.deck {
+#add-deck {
     background-color: azure;
-    width: 120px;
-    height: 170px;
+    width: 150px;
+    height: 200px;
     margin: 0 10px;
     padding: 0;
     border-radius: 10px;
@@ -98,6 +98,40 @@
     -moz-border-radius: 10px;
     -ms-border-radius: 10px;
     -o-border-radius: 10px;
+}
+.deck {
+    background-color: azure;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    width: 150px;
+    height: 200px;
+    margin: 0 10px;
+    padding: 0;
+    border: 2px solid black;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+.deck h3 {
+    padding: 0;
+    margin-top: 0;
+}
+#goto-deck {
+    background-color: azure;
+    border: none;
+    padding-bottom: 20px;
+    margin: auto;
+}
+#goto-deck:hover {
+    background-color: rgb(219, 36, 79);
+    color: aliceblue;
+    border: none;
+    padding-bottom: 20px;
+    margin: auto;
 }
 .main-decks-display {
     display: flex;
@@ -110,6 +144,7 @@
 #trash-deck {
     width: 50px;
     background-color: white;
+    margin: auto;
     border-radius: 10px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -194,4 +229,26 @@
     font-size: 15pt;
     font-weight:bold;
     background-color: white;
+}
+
+#menu-button {
+    width: 150px;
+    font-size: large;
+    background-color: white;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+#menu-button:hover {
+    width: 150px;
+    font-size: large;
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
 }
