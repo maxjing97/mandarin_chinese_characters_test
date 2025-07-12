@@ -82,45 +82,62 @@ const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
 };
 
 //show card details, including type
-function Card({dbjson, infojson, deckname}) {
+function Card({dbjson, infojson, handleRemove}) {
+
   const{char_type,data_type,deck_name,idx,user_id} = dbjson //destructure data from database
-  
-  useEffect(()=>{
-    console.log("card db data:", dbjson)
-    console.log("card local data:", infojson)
-  },[])
+
   //console.log("card details:", getInfo(idx,char_type,data_type))
   return (
+    <div>
+    { infojson && 
     <div className="info-card">
-      <p>Definition: </p>
+      <h3>{infojson["word/character"]}</h3>
+      <p>Definition: {infojson["definition"]}</p>
 
+      <p>Character type: {infojson["code"]==="s" ? "Simplified":"Traditional"}</p> 
+      {data_type=="C" &&
+        <p>Pronunciation: {infojson["full_pronunciation"]}</p>
+      }
+
+      <button onClick={()=>handleRemove(idx,data_type,char_type)} id="trash-deck">
+        ❌
+      </button>
+    </div>
+    }
     </div>
   )
 }
 
 //get deck details from clicking set, get all detail of cards
 function DeckCards({data,setMainclosed}) {  
+  const queryClient = useQueryClient()
+  const {userlogin, removecard} = useUser()
   //get json information of cards, 
   const [infoList, setInfoList] = useState([])
   //store the type of data (words or characters) (should be the same length as the infolist)
   const [typeList, setTypeList] = useState([])
-  
-   
+  const [cardcount, setCardCount] = useState(0)//getCount of cards
+
+  //delete a card if needed
+  const handleRemove=(idx, data_type, char_type)=>{
+    removecard(userlogin.uid,idx, data[0], data_type, char_type)
+    queryClient.invalidateQueries(["cards"])
+    setCardCount(prev=>prev-1)//incrment
+  }
+
   useEffect(()=>{
     const info_list = []
     const type_list = []
     const datalist = data[1]
     for(const json of datalist) {
-      console.log("current json:", json)
       const{char_type,data_type,deck_name,idx,user_id} = json
       const info = getInfo(idx,char_type,data_type)
-      console.log("information:", info)
       info_list.push(info)
       type_list.push(data_type)
     }
-    console.log("info list sent", info_list)
     setInfoList(info_list)
     setTypeList(type_list)
+    setCardCount(info_list.length)
   },[])
 
   return (
@@ -128,9 +145,10 @@ function DeckCards({data,setMainclosed}) {
       <h3>"{data[0]}" Deck</h3>
       <div id="view-deck-cards">
         {data[1].map((json, index)=>(
-          <Card dbjson={json} infojson={infoList[index]} deckname={data[0]}/>
+          <Card dbjson={json} datatype={typeList[index]} infojson={infoList[index]} handleRemove={handleRemove}/>
         ))}
       </div>
+      <p>Count : {cardcount}</p>
       <button onClick={()=>setMainclosed(false)} id="menu-button">
           Exit to menu
       </button>
