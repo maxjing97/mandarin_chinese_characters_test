@@ -12,6 +12,7 @@ import simpword from './data/simpwords.json'; //import json
 
 //row details for the addcard part 
 const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current table row format displaying, for adding and deleting cards from the id
+  console.log("input data to a char row:", charJson)
   const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false)
   const {userlogin, addcard, removecard} = useUser();
@@ -34,6 +35,7 @@ const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current ta
       <td>{charJson["definition"]}</td>
       <td>{charJson["full_pronunciation"]}</td>
       <td>{charJson["cat"]}</td>
+      <td>{index}</td>
     </tr>
   );
 };
@@ -59,32 +61,11 @@ const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
       <td>{charJson["word/character"]}</td>
       <td>{charJson["definition"]}</td>
       <td>{charJson["cat"]}</td>
+      <td>{index}</td>
     </tr>
   );
 };
 
-
-//simplified function to get all jsons for the 4 possible categories
-function getJsons(character_type, list_type) {
-  //get load in jsondata of can characters based on character type and practice type
-  let jsonData = null 
-  let retjsonlist = []
-  if(list_type === "characters" && character_type === "Trad") {
-    jsonData = tradchar
-  } else if (list_type === "characters" && character_type === "Simp") {
-    jsonData = simpchar
-  } else if(list_type === "words" && character_type === "Trad") {
-    jsonData = tradword
-  } else if (list_type === "words" && character_type === "Simp") {
-    jsonData = simpword
-  }
-  //first get all json matching the category range 
-  for (const key in jsonData) {
-    const json = jsonData[key] //get json list
-    retjsonlist.push(json)
-  }
-  return retjsonlist 
-}
 
 
 function Deck({data, setDeckCount}) {
@@ -120,7 +101,6 @@ function AddDeck({setAddDeck, setDeckCount}) {
   const [charType, setCharType] = useState("Trad")  
   const [dataType, setDataType] = useState("characters")
   const [isSet, setisSet] = useState(false) //check if the name has been set yet
-  const [displayJson, setDisplayJson] = useState([]) //jsons to display (depends on the options chosen)
   const [count, setCount] = useState(0)//count of cards added 
   const {cardsmap} = useUser()
   //check if the deckname has been taken
@@ -134,18 +114,23 @@ function AddDeck({setAddDeck, setDeckCount}) {
       setisSet(true)
     }
   }
-    
-  //run after each mount only
-  useEffect(() => {
-    const jsons = getJsons(charType, dataType)//get jsons
-    setDisplayJson(jsons)
-  }, [])
+  //get json list 
+//simplified function to get all jsons for the 4 possible categories
+  const JsonToList = (jsonData) => {
+    //get load in jsondata of can characters based on character type and practice type
+    let retjsonlist = []
+    //first get all json matching the category range 
+    for (const key in jsonData) {
+      const json = jsonData[key] //get json list
+      retjsonlist.push(json)
+    }
+    return retjsonlist 
+  }
+
   //handle clicking submit for a character type
   const handleClick = (newCharType, newDataType) => {
     setCharType(newCharType)//set values
     setDataType(newDataType) 
-    const jsons = getJsons(newCharType, newDataType)//get jsons
-    setDisplayJson(jsons)
   }
   //function to handle save
   const handleSave = () => {
@@ -193,19 +178,30 @@ function AddDeck({setAddDeck, setDeckCount}) {
         </div>
         <button id="save-cards" onClick={handleSave}>{count} cards added, Save and Exit</button>
       </div>
-      {dataType==="characters" ?
-      <table class="char_table">
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th></tr></thead>
-          <tbody>{displayJson.map((Json, i) => (
+        <table class="char_table" hidden={!(charType=="Trad" && dataType=="characters")}>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th><th>index</th></tr></thead>
+          <tbody>{JsonToList(tradchar).map((Json,i) => (
             <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
           ))}</tbody>        
-      </table>:
-      <table class="char_table">
-        <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
-        <tbody>{displayJson.map((Json, i) => (
-          <DefDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
-        ))}</tbody>
-      </table>}
+        </table>
+        <table class="char_table" hidden={!(charType=="Simp" && dataType=="characters")}>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>diffculty category</th><th>index</th></tr></thead>
+          <tbody>{JsonToList(simpchar).map((Json,i) => (
+            <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
+          ))}</tbody>        
+        </table>
+        <table class="char_table" hidden={!(charType=="Trad" && dataType=="words")}>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
+          <tbody>{JsonToList(tradword).map((Json,i) => (
+            <DefDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
+          ))}</tbody>
+        </table>
+        <table class="char_table" hidden={!(charType=="Simp" && dataType=="words")}>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
+          <tbody>{JsonToList(simpword).map((Json,i) => (
+            <DefDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount}/>
+          ))}</tbody>
+        </table>
       </div>}
     </div>
   )        
