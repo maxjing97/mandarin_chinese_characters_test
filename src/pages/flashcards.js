@@ -57,9 +57,11 @@ const CharDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => { 
       if (checked) { //remove path call if it is checked and not fixed 
         toggleAdd(data,checked)
         setbackgroundcolor("white")
+        setChecked(false)
       } else { //addcard call
         toggleAdd(data,checked)
         setbackgroundcolor("rgb(71, 237, 112)")
+        setChecked(true)
       }
     }
   }
@@ -105,9 +107,11 @@ const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => {
       if (checked) { //remove path call if it is checked and not fixed 
         toggleAdd(data,checked)
         setbackgroundcolor("white")
+        setChecked(false)
       } else { //addcard call
         toggleAdd(data,checked)
         setbackgroundcolor("rgb(71, 237, 112)")
+        setChecked(true)
       }
     }
   }
@@ -369,7 +373,7 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
   const handleSave = () => {
     //iterate through map and save all data
     for (const key of addmap.keys()) {
-      const {uid, index, deckname, datatype, chartype} = addmap[key]
+      const {uid, index, deckname, datatype, chartype} = addmap.get(key)
       addcard(uid ,index, deckname, datatype, chartype)
     }
     queryClient.invalidateQueries(["cards"])
