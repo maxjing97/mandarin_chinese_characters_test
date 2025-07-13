@@ -26,12 +26,11 @@ function getInfo(index, chartype, datatype) {
 }
 
 //row details for the addcard part 
-const CharDetailsRow = ({charJson, index, deckname, setCount, contained}) => { //current table row format displaying, for adding and deleting cards from the id
+const CharDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => { //current table row format displaying, for adding and deleting cards from the id
   const [checked, setChecked] = useState(false)
   const [fixed, setfixed] = useState(false) //set if fixed (set as fixed if in contained)
   const [backgroundcolor, setbackgroundcolor] = useState("white")//set background color 
-  const {userlogin, addcard, removecard, isFetching} = useUser();
-  const queryClient = useQueryClient()
+  const {userlogin} = useUser();
   //if the current charJson is already in the list of contained jsons, we mark as checked to avoid duplicates
   useEffect(() => {
     //loop through list of contained json files
@@ -48,23 +47,20 @@ const CharDetailsRow = ({charJson, index, deckname, setCount, contained}) => { /
   const handleChange = (e) => {
     //if changing to checked, add card, etc, and more
     if (!fixed) {
+      const data = { 
+        uid:userlogin.uid,
+        index:index,
+        deckname:deckname,
+        datatype:"C",
+        chartype:charJson["code"]
+      }
       if (checked) { //remove path call if it is checked and not fixed 
-        removecard(userlogin.uid,index, deckname, "C", charJson["code"])
-        queryClient.invalidateQueries(["cards"])
-        //if data is loading, pause
-        while(isFetching) {}
-        setCount(prev=>prev-1) //decrement
-        setChecked(prev=>!prev)
+        toggleAdd(data,checked)
         setbackgroundcolor("white")
       } else { //addcard call
-        addcard(userlogin.uid,index, deckname, "C", charJson["code"])
-        queryClient.invalidateQueries(["cards"])
-        setCount(prev=>prev+1) //increment
-        setChecked(prev=>!prev)
+        toggleAdd(data,checked)
         setbackgroundcolor("rgb(71, 237, 112)")
       }
-      setTimeout(() => {
-      }, 250); //quarter s timeout 
     }
   }
   return (
@@ -78,12 +74,11 @@ const CharDetailsRow = ({charJson, index, deckname, setCount, contained}) => { /
     </tr>
   );
 };
-const DefDetailsRow = ({charJson, index, deckname, setCount, contained}) => {
+const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => {
   const [checked, setChecked] = useState(false)
   const [fixed, setfixed] = useState(false) //set if fixed (set as fixed if in contained)
   const [backgroundcolor, setbackgroundcolor] = useState("white")//set background color 
-  const {userlogin, addcard, removecard, isFetching} = useUser();
-  const queryClient = useQueryClient()
+  const {userlogin} = useUser();
   //if the current charJson is already in the list of contained jsons, we mark as checked to avoid duplicates
   useEffect(() => {
     //loop through list of contained json files
@@ -100,17 +95,18 @@ const DefDetailsRow = ({charJson, index, deckname, setCount, contained}) => {
   const handleChange = (e) => {
     //if changing to checked, add card, etc, and more
     if (!fixed) {
+      const data = { 
+        uid:userlogin.uid,
+        index:index,
+        deckname:deckname,
+        datatype:"W",
+        chartype:charJson["code"]
+      }
       if (checked) { //remove path call if it is checked and not fixed 
-        removecard(userlogin.uid,index, deckname, "W", charJson["code"])
-        queryClient.invalidateQueries(["cards"])
-        setCount(prev=>prev-1) //decrement
-        setChecked(prev=>!prev)
+        toggleAdd(data,checked)
         setbackgroundcolor("white")
       } else { //addcard call
-        addcard(userlogin.uid,index, deckname, "W", charJson["code"])
-        queryClient.invalidateQueries(["cards"])
-        setCount(prev=>prev+1) //increment
-        setChecked(prev=>!prev)
+        toggleAdd(data,checked)
         setbackgroundcolor("rgb(71, 237, 112)")
       }
     }
@@ -218,9 +214,9 @@ function DeckCards({data,setClosed}) {
       for (const key of removejson.keys()) {
         const [index, deckname, data_type, char_type]= removejson.get(key) //destructure 
         removecard(userlogin.uid, index, deckname, data_type, char_type)
-        queryClient.invalidateQueries(["cards"])
         setCardCount(prev=>prev-1)//incrment
       }
+      queryClient.invalidateQueries(["cards"])
       setRemovesize(0)
       setClosed(true) //return to menu
     } else {
@@ -324,7 +320,8 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
   const [dataType, setDataType] = useState("characters")
   const [isSet, setisSet] = useState(false) //check if the name has been set yet
   const [count, setCount] = useState(0)//count of cards added 
-  const {cardsmap, isFetching} = useUser()
+  const [addmap, setAddmap] = useState(new Map())//map to store information of about cards to adds
+  const {cardsmap, isFetching, removecard, addcard} = useUser()
   const queryClient = useQueryClient()
   useEffect(()=>{
     if(defaultdeckname) {
@@ -346,6 +343,22 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
       setisSet(true)
     }
   }
+  //function to add or remove from the add map based on the datasent
+  const toggleAdd = (data, checked) =>{
+    const {uid, index, deckname, datatype, chartype} = data//destructure
+    const key = `${index}-${datatype}-${chartype}` //get key
+    if (checked) { //remove path call if it is checked and not fixed 
+      const copy = addmap//remove from map
+      copy.delete(key)
+      setAddmap(copy)
+      setCount(prev=>prev-1)
+    } else { //addcard call
+      const copy = addmap//remove from map
+      copy.set(key,data)
+      setAddmap(copy)
+      setCount(prev=>prev+1)
+    }
+  }
 
   //handle clicking submit for a character type
   const handleClick = (newCharType, newDataType) => {
@@ -354,6 +367,12 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
   }
   //function to handle save
   const handleSave = () => {
+    //iterate through map and save all data
+    for (const key of addmap.keys()) {
+      const {uid, index, deckname, datatype, chartype} = addmap[key]
+      addcard(uid ,index, deckname, datatype, chartype)
+    }
+    queryClient.invalidateQueries(["cards"])
     refresh()//call refresh function if any
     setDeckCount(prev=>prev+1) //increment number of decks
     setClosed(true)//close
@@ -406,25 +425,25 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="characters")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{Object.entries(tradchar).map((Json,i) => (
-            <CharDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} setCount={setCount} contained={contained}/>
+            <CharDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="characters")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{Object.entries(simpchar).map((Json,i) => (
-            <CharDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} setCount={setCount} contained={contained}/>
+            <CharDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="words")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{Object.entries(tradword).map((Json,i) => (
-            <DefDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} setCount={setCount} contained={contained}/>
+            <DefDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="words")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{Object.entries(simpword).map((Json,i) => (
-            <DefDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} setCount={setCount} contained={contained}/>
+            <DefDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>
         </table>
       </div>}
