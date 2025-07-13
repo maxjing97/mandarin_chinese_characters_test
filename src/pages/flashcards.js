@@ -128,6 +128,7 @@ function DeckCards({data,deck_name,setClosed}) {
   const [cardcount, setCardCount] = useState(0)//getCount of cards
   const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
+  const [addclosed, setAddclosed] = useState(true)//store if the addcard component is closed
 
   //trigger button to remove all cards in the json list 
   const removeCards = () => {
@@ -180,29 +181,36 @@ function DeckCards({data,deck_name,setClosed}) {
     setTypeList(type_list)
     setCardCount(info_list.length)
   },[])
-
+  {/*open add deck if prompted*/}
   return (
     <div>
       <h3>"{data[0]}" Deck</h3>
-      <div id="view-deck-cards">
-        {data[1].map((json, index)=>(
-          <Card key={index} dbjson={json} datatype={typeList[index]} infojson={infoList[index]} toggleRemove={toggleRemove}/>
-        ))}
+      {addclosed &&
+      <div>
+        <div id="view-deck-cards">
+          {data[1].map((json, index)=>(
+            <Card key={index} dbjson={json} datatype={typeList[index]} infojson={infoList[index]} toggleRemove={toggleRemove}/>
+          ))}
+        </div>
+        <p>Count : {cardcount}</p>
+        <div id="deck-options-selector">
+          <button onClick={()=>setClosed(true)} id="menu-button">
+              Exit to menu
+          </button>
+          {removesize > 0 && 
+          <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
+            Delete {removesize } selected card{removesize === 1 ? "":"s"}
+          </button>
+          }
+          <button onClick={()=>setAddclosed(false)} id="menu-button">
+            Add Card
+          </button>
+        </div>
       </div>
-      <p>Count : {cardcount}</p>
-      <div id="deck-options-selector">
-        <button onClick={()=>setClosed(true)} id="menu-button">
-            Exit to menu
-        </button>
-        {removesize > 0 && 
-        <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
-          Delete {removesize } selected card{removesize === 1 ? "":"s"}
-        </button>
-        }
-        <button onClick={()=>setClosed(true)} id="menu-button">
-          Add Card
-        </button>
-      </div>
+      }
+      {!addclosed &&
+        <AddDeck setClosed={setAddclosed} defaultdeckname={data[0]}/>
+      }
     </div>
   )
 }
@@ -244,16 +252,22 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
   )
 }
 
-//add deck component: display list of characters with button (default parameter for when the deckname is fixed)
-function AddDeck({setClosed, setDeckCount, defaultdeckname = null}) {   
+//add deck component: display list of characters with button (default parameter for when the deckname is fixed). setDeckCount to empty when do deck is added, but we are trying to add to a deck
+function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null}) {   
   const [deckname, setDeckname] = useState("")
+  const [showdecknameinput, setShowdecknameinput] = useState(true) //set if deckname input is shown
   const [charType, setCharType] = useState("Trad")  
   const [dataType, setDataType] = useState("characters")
   const [isSet, setisSet] = useState(false) //check if the name has been set yet
   const [count, setCount] = useState(0)//count of cards added 
   const {cardsmap} = useUser()
   useEffect(()=>{
-    //at start, if default deckname is not null, we 
+    if(defaultdeckname) {
+      setDeckname(defaultdeckname)//set the deckname
+      setShowdecknameinput(false)
+      setisSet(true) //show the rest 
+    } 
+    //at start, if default deckname is not null, we disable the showing of the input 
   },[])
 
   //check if the deckname has been taken
@@ -281,16 +295,20 @@ function AddDeck({setClosed, setDeckCount, defaultdeckname = null}) {
 
   return (
     <div>
-      <h3>Give a name for the deck</h3>
-      <input
-        type="text"
-        value = {deckname}
-        id="deck-name"
-        onChange={(e)=>{setDeckname(e.target.value)}}
-        placeholder="deck name"
-        disabled={isSet}
-      />
-      <button id='card-name-save' onClick={handledeckname}>Save</button>
+      {showdecknameinput && 
+      <div>
+        <h3>Give a name for the deck</h3>
+        <input
+          type="text"
+          value = {deckname}
+          id="deck-name"
+          onChange={(e)=>{setDeckname(e.target.value)}}
+          placeholder="deck name"
+          disabled={isSet}
+        />
+        <button id='card-name-save' onClick={handledeckname}>Save</button>
+      </div>
+      }
       {isSet &&
       <div>
       <h3>Add Cards to the deck from the list of characters</h3>
