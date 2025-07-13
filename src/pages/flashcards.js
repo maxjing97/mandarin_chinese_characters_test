@@ -196,7 +196,7 @@ function DeckCards({data,deck_name,setMainclosed}) {
         </button>
         {removesize > 0 && 
         <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
-          Delete selected card{removesize === 1 ? "":"s"}
+          Delete {removesize } selected card{removesize === 1 ? "":"s"}
         </button>
         }
       </div>
