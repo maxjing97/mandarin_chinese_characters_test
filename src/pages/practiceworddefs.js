@@ -70,6 +70,8 @@ const Results = ({accuracies, num_test, componentJsons}) => {
           <DetailsRow charJson={Json}/>
         ))}
       </table>
+      <p>Save your missed characters to a flashcard deck!</p>
+      <PracticeAddDeck dataType={"words"} mainjson={compList}/>
     </div>
   );
 };
