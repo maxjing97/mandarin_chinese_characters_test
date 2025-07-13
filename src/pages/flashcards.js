@@ -375,9 +375,10 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
     for (const key of addmap.keys()) {
       const {uid, index, deckname, datatype, chartype} = addmap.get(key)
       addcard(uid ,index, deckname, datatype, chartype)
+      refresh()//call refresh function if any
     }
     queryClient.invalidateQueries(["cards"])
-    refresh()//call refresh function if any
+    
     setDeckCount(prev=>prev+1) //increment number of decks
     setClosed(true)//close
   }
