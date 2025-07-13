@@ -142,8 +142,12 @@
     justify-content: center;
 }
 #trash-deck {
-    width: 50px;
-    background-color: white;
+    width: 65px;
+    text-align: center;
+    font-size: 12pt;
+    font-weight: bold;
+    color: white;
+    background-color: rgb(255, 53, 53);
     margin: auto;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -152,7 +156,10 @@
     -o-border-radius: 10px;
 }
 #trash-deck:hover {
-    width: 50px;
+    width: 65px;
+    text-align: center;
+    font-size: 12pt;
+    color: white;
     background-color: black;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -273,4 +280,10 @@
     -moz-border-radius: 10px;
     -ms-border-radius: 10px;
     -o-border-radius: 10px;
+}
+#deck-options-selector{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }

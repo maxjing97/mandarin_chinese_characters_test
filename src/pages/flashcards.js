@@ -27,7 +27,6 @@ function getInfo(index, chartype, datatype) {
 
 //row details for the addcard part 
 const CharDetailsRow = ({charJson, index, deckname, setCount}) => { //current table row format displaying, for adding and deleting cards from the id
-  console.log("char json data:", charJson)
   const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false)
   const {userlogin, addcard, removecard} = useUser();
@@ -81,12 +80,22 @@ const DefDetailsRow = ({charJson, index, deckname, setCount}) => {
   );
 };
 
-//show card details, including type
-function Card({dbjson, infojson, handleRemove}) {
-
+//show card details, including type. Allow cards to be selected 
+function Card({dbjson, infojson, toggleRemove}) {
+  const [checked, setChecked] = useState(false) //check if a card has been checked (for deletion)
   const{char_type,data_type,deck_name,idx,user_id} = dbjson //destructure data from database
 
-  //console.log("card details:", getInfo(idx,char_type,data_type))
+  //handle cheked
+  const handleCheck = () => {
+    if(checked) {
+      toggleRemove(checked, idx, data_type, char_type)
+      setChecked(false)
+    } else {
+      toggleRemove(checked, idx, data_type, char_type)
+      setChecked(true)
+    }
+  }
+
   return (
     <div>
     { infojson && 
@@ -99,8 +108,8 @@ function Card({dbjson, infojson, handleRemove}) {
         <p>Pronunciation: {infojson["full_pronunciation"]}</p>
       }
 
-      <button onClick={()=>handleRemove(idx,data_type,char_type)} id="trash-deck">
-        ❌
+      <button onClick={handleCheck} id="trash-deck" style={{backgroundColor: !checked ? "rgb(255, 53, 53)":"rgb(32, 216, 47)"}}> {/*conditionally change style based on selection*/}
+        {!checked ? "Delete": "Keep"}
       </button>
     </div>
     }
@@ -109,7 +118,7 @@ function Card({dbjson, infojson, handleRemove}) {
 }
 
 //get deck details from clicking set, get all detail of cards
-function DeckCards({data,setMainclosed}) {  
+function DeckCards({data,deck_name,setMainclosed}) {  
   const queryClient = useQueryClient()
   const {userlogin, removecard} = useUser()
   //get json information of cards, 
@@ -117,12 +126,44 @@ function DeckCards({data,setMainclosed}) {
   //store the type of data (words or characters) (should be the same length as the infolist)
   const [typeList, setTypeList] = useState([])
   const [cardcount, setCardCount] = useState(0)//getCount of cards
+  const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
+  const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
 
-  //delete a card if needed
-  const handleRemove=(idx, data_type, char_type)=>{
-    removecard(userlogin.uid,idx, data[0], data_type, char_type)
-    queryClient.invalidateQueries(["cards"])
-    setCardCount(prev=>prev-1)//incrment
+  //trigger button to remove all cards in the json list 
+  const removeCards = () => {
+    const confirm = window.confirm("remove selected cards?")
+    if (confirm) {
+      for (const key of removejson.keys()) {
+        console.log("removing card listed:", removejson.get(key))
+        const [index, deckname, data_type, char_type]= removejson.get(key) //destructure 
+        removecard(userlogin.uid, index, deckname, data_type, char_type)
+        queryClient.invalidateQueries(["cards"])
+        setCardCount(prev=>prev-1)//incrment
+      }
+      setRemovesize(0)
+      setMainclosed(false)
+    } else {
+      return
+    }
+  }
+
+  //add/remove a card to the deletion list a card if needed
+  const toggleRemove=(checked,idx, data_type, char_type)=>{
+    const key = `${idx}-${data_type}-${char_type}` //key
+    console.log("current remove object",removejson)
+    console.log("current remove object length", removejson.size)
+    //if already checked, remove from deletion list
+    if (checked) {
+      const copy = removejson
+      copy.delete(key)
+      setRemovejson(copy)
+      setRemovesize(prev=>prev-1)
+    } else { //else, add to list: key is the idx, data_type, char_type
+      const copy = removejson
+      copy.set(key,[idx, data[0], data_type, char_type]) 
+      setRemovejson(copy)
+      setRemovesize(prev=>prev+1)
+    }
   }
 
   useEffect(()=>{
@@ -145,13 +186,20 @@ function DeckCards({data,setMainclosed}) {
       <h3>"{data[0]}" Deck</h3>
       <div id="view-deck-cards">
         {data[1].map((json, index)=>(
-          <Card dbjson={json} datatype={typeList[index]} infojson={infoList[index]} handleRemove={handleRemove}/>
+          <Card key={index} dbjson={json} datatype={typeList[index]} infojson={infoList[index]} toggleRemove={toggleRemove}/>
         ))}
       </div>
       <p>Count : {cardcount}</p>
-      <button onClick={()=>setMainclosed(false)} id="menu-button">
-          Exit to menu
-      </button>
+      <div id="deck-options-selector">
+        <button onClick={()=>setMainclosed(false)} id="menu-button">
+            Exit to menu
+        </button>
+        {removesize > 0 && 
+        <button onClick={()=>removeCards()} id="menu-button">
+          Delete selected card{removesize === 1 ? "":"s"}
+        </button>
+        }
+      </div>
     </div>
   )
 }
@@ -186,7 +234,7 @@ function Deck({data, setDeckCount, setMainclosed, setAltcomp}) {
         <h3>{data[1].length} Cards</h3>
         </button>
         <button onClick={handleRemove} id="trash-deck">
-          ❌
+          Delete
         </button>
       </div>
     </div>
