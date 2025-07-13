@@ -175,8 +175,7 @@ function DeckCards({data,setClosed}) {
   const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
   const [addclosed, setAddclosed] = useState(true)//store if the addcard component is closed
-  console.log("testing cards map",cardsmap)
-  console.log("testing card info list",infoList)
+
 
   //prepare the original data
   useEffect(()=>{
@@ -449,8 +448,6 @@ export function PracticeAddDeck({dataType, mainjson}) {
     //if user is logged, in set to the actual data
     if(cardsmap) {
       setDecks(cardsmap)
-      console.log("mainjson passed:", mainjson)
-      console.log("datatype passed:", dataType)
       setDeckCount(cardsmap.size)
     }
   })
@@ -493,7 +490,6 @@ export function PracticeAddDeck({dataType, mainjson}) {
 
   //since the randomly characters maybe out of order, we have the manually find the index using a search
   const findIndex = (json) => {
-    console.log("finding the index in practice json:", json)
     //based on the types, find the data needed 
     let currdata = null
     if(dataType === "characters" && json["code"] === "t") {
@@ -502,11 +498,17 @@ export function PracticeAddDeck({dataType, mainjson}) {
       currdata = simpchar
     } else if(dataType === "words" && json["code"] === "t") {
       currdata = tradword
-    } else if (dataType === "W" && json["code"] === "s") {
+    } else if (dataType === "words" && json["code"] === "s") {
       currdata = simpword
-    
     }
-    return 1
+    //loop through and find the key based on the definition, character and particular dataset found
+    for(const key in currdata) {
+      const currcharjson = currdata[key] //current character json
+      if(currcharjson["definition"]===json["definition"] && currcharjson["word/character"]===json["word/character"]) {
+        return key
+      }
+    }
+    return -1
   }
 
   return (
@@ -544,13 +546,13 @@ export function PracticeAddDeck({dataType, mainjson}) {
         <table class="char_table" hidden={!(dataType==="characters")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{mainjson.map((Json,i) => (
-            <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount} contained={contained}/>
+            <CharDetailsRow charJson={Json} index={findIndex(Json)} deckname={deckname} setCount={setCount} contained={contained}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(dataType==="words")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{mainjson.map((Json,i) => (
-            <DefDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount} contained={contained}/>
+            <DefDetailsRow charJson={Json} index={findIndex(Json)} deckname={deckname} setCount={setCount} contained={contained}/>
           ))}</tbody>
         </table>
       </div>}
@@ -587,13 +589,8 @@ export default function Flashcards() {
     } else {
       setAltclosed(false)
       //prepare test data
-      const test_list = []
-      for(const key in tradword) {
-        test_list.push(tradword[key])
-      }
-      const list = test_list.slice(2000, 2200)
-      console.log("list before passing:", list)
-      setAltcomp(<PracticeAddDeck dataType={"words"} mainjson={list}/>)//set the component to show the add cards component <AddDeck setClosed={setAltclosed} setDeckCount={setDeckCount}/>
+
+      setAltcomp(<AddDeck setClosed={setAltclosed} setDeckCount={setDeckCount}/>)//set the component to show the add cards component 
     }
   }
 
