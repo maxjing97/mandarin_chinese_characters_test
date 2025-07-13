@@ -463,10 +463,11 @@ export function PracticeAddDeck({dataType, mainjson}) {
   const [isSet, setisSet] = useState(false) //check if the name has been set yet
   const [count, setCount] = useState(0)//count of cards added 
   const [contained, setContained] = useState([])//list of jsons contained (the jsons in each deck)
-  const [infoList, setInfoList] = useState([]) //get json information of the current deck of cards selected
   const [deckcount, setDeckCount] = useState(0)//count the number of decks
-  const {cardsmap} = useUser()
-  
+  const [addmap, setAddmap] = useState(new Map())//map to store information of about cards to adds
+  const {cardsmap, isFetching, removecard, addcard} = useUser()
+  const queryClient = useQueryClient()
+
   useEffect(() => {
     //if user is logged, in set to the actual data
     if(cardsmap) {
@@ -504,9 +505,30 @@ export function PracticeAddDeck({dataType, mainjson}) {
     setDeckname(name)
     setisSet(true)
   }
-
-  //function to handle save
+  //function to add or remove from the add map based on the datasent
+  const toggleAdd = (data, checked) =>{
+    const {uid, index, deckname, datatype, chartype} = data//destructure
+    const key = `${index}-${datatype}-${chartype}` //get key
+    if (checked) { //remove path call if it is checked and not fixed 
+      const copy = addmap//remove from map
+      copy.delete(key)
+      setAddmap(copy)
+      setCount(prev=>prev-1)
+    } else { //addcard call
+      const copy = addmap//remove from map
+      copy.set(key,data)
+      setAddmap(copy)
+      setCount(prev=>prev+1)
+    }
+  }
+  //function to handle save ()
   const handleSave = () => {
+    //iterate through map and save all data
+    for (const key of addmap.keys()) {
+      const {uid, index, deckname, datatype, chartype} = addmap.get(key)
+      addcard(uid ,index, deckname, datatype, chartype)
+    }
+    queryClient.invalidateQueries(["cards"])
     setDeckCount(prev=>prev+1) //increment number of decks
     navigate("/flashcards")//close
   }
@@ -569,13 +591,13 @@ export function PracticeAddDeck({dataType, mainjson}) {
         <table class="char_table" hidden={!(dataType==="characters")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{mainjson.map((Json,i) => (
-            <CharDetailsRow charJson={Json} index={findIndex(Json)} deckname={deckname} setCount={setCount} contained={contained}/>
+            <CharDetailsRow charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(dataType==="words")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{mainjson.map((Json,i) => (
-            <DefDetailsRow charJson={Json} index={findIndex(Json)} deckname={deckname} setCount={setCount} contained={contained}/>
+            <DefDetailsRow charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>
         </table>
       </div>}
