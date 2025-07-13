@@ -114,7 +114,7 @@ export default function Words() {
                 <h2 className="selectCat">Select Character type</h2>
                 <div className="rangebuttonContainer">
                     <div className="charbutton"> 
-                        <input type="radio" name="chartype" id="c1" onClick={() => setCharType("Trad")} className="charbutton"></input>
+                        <input type="radio" name="chartype" id="c1" onClick={() => setCharType("Trad")} className="charbutton" checked={CharType==="Trad"}></input>
                         <label htmlFor ="c1">Traditional</label>
                     </div>
                     <div className="charbutton"> 
