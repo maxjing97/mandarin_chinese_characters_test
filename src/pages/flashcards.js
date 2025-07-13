@@ -27,11 +27,11 @@ function getInfo(index, chartype, datatype) {
 
 //row details for the addcard part 
 const CharDetailsRow = ({charJson, index, deckname, setCount, contained}) => { //current table row format displaying, for adding and deleting cards from the id
-  const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false)
   const [fixed, setfixed] = useState(false) //set if fixed (set as fixed if in contained)
   const [backgroundcolor, setbackgroundcolor] = useState("white")//set background color 
-  const {userlogin, addcard, removecard} = useUser();
+  const {userlogin, addcard, removecard, isFetching} = useUser();
+  const queryClient = useQueryClient()
   //if the current charJson is already in the list of contained jsons, we mark as checked to avoid duplicates
   useEffect(() => {
     //loop through list of contained json files
@@ -49,17 +49,22 @@ const CharDetailsRow = ({charJson, index, deckname, setCount, contained}) => { /
     //if changing to checked, add card, etc, and more
     if (!fixed) {
       if (checked) { //remove path call if it is checked and not fixed 
-      removecard(userlogin.uid,index, deckname, "C", charJson["code"])
-      setCount(prev=>prev-1) //decrement
-      setChecked(prev=>!prev)
-      setbackgroundcolor("white")
-    } else { //addcard call
-      addcard(userlogin.uid,index, deckname, "C", charJson["code"])
-      setCount(prev=>prev+1) //increment
-      setChecked(prev=>!prev)
-      setbackgroundcolor("rgb(71, 237, 112)")
-    }
-    queryClient.invalidateQueries(["cards"])
+        removecard(userlogin.uid,index, deckname, "C", charJson["code"])
+        queryClient.invalidateQueries(["cards"])
+        //if data is loading, pause
+        while(isFetching) {}
+        setCount(prev=>prev-1) //decrement
+        setChecked(prev=>!prev)
+        setbackgroundcolor("white")
+      } else { //addcard call
+        addcard(userlogin.uid,index, deckname, "C", charJson["code"])
+        queryClient.invalidateQueries(["cards"])
+        setCount(prev=>prev+1) //increment
+        setChecked(prev=>!prev)
+        setbackgroundcolor("rgb(71, 237, 112)")
+      }
+      setTimeout(() => {
+      }, 250); //quarter s timeout 
     }
   }
   return (
@@ -74,11 +79,11 @@ const CharDetailsRow = ({charJson, index, deckname, setCount, contained}) => { /
   );
 };
 const DefDetailsRow = ({charJson, index, deckname, setCount, contained}) => {
-  const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false)
   const [fixed, setfixed] = useState(false) //set if fixed (set as fixed if in contained)
   const [backgroundcolor, setbackgroundcolor] = useState("white")//set background color 
-  const {userlogin, addcard, removecard} = useUser();
+  const {userlogin, addcard, removecard, isFetching} = useUser();
+  const queryClient = useQueryClient()
   //if the current charJson is already in the list of contained jsons, we mark as checked to avoid duplicates
   useEffect(() => {
     //loop through list of contained json files
@@ -96,17 +101,18 @@ const DefDetailsRow = ({charJson, index, deckname, setCount, contained}) => {
     //if changing to checked, add card, etc, and more
     if (!fixed) {
       if (checked) { //remove path call if it is checked and not fixed 
-      removecard(userlogin.uid,index, deckname, "C", charJson["code"])
-      setCount(prev=>prev-1) //decrement
-      setChecked(prev=>!prev)
-      setbackgroundcolor("white")
-    } else { //addcard call
-      addcard(userlogin.uid,index, deckname, "C", charJson["code"])
-      setCount(prev=>prev+1) //increment
-      setChecked(prev=>!prev)
-      setbackgroundcolor("rgb(71, 237, 112)")
-    }
-    queryClient.invalidateQueries(["cards"])
+        removecard(userlogin.uid,index, deckname, "W", charJson["code"])
+        queryClient.invalidateQueries(["cards"])
+        setCount(prev=>prev-1) //decrement
+        setChecked(prev=>!prev)
+        setbackgroundcolor("white")
+      } else { //addcard call
+        addcard(userlogin.uid,index, deckname, "W", charJson["code"])
+        queryClient.invalidateQueries(["cards"])
+        setCount(prev=>prev+1) //increment
+        setChecked(prev=>!prev)
+        setbackgroundcolor("rgb(71, 237, 112)")
+      }
     }
   }
   return (
@@ -158,8 +164,10 @@ function Card({dbjson, infojson, toggleRemove}) {
 }
 
 //get deck details from clicking set, get all detail of cards
-function DeckCards({data,deck_name,setClosed}) {  
+function DeckCards({data,setClosed}) {  
   const queryClient = useQueryClient()
+  const {rawdata, cardsmap, isLoading} = useUser() //get the new information from the context
+  const [currData, setCurrData] = useState(data)//current card data (format given here)
   const {userlogin, removecard} = useUser()
   const [infoList, setInfoList] = useState([]) //get json information of cards, 
   const [typeList, setTypeList] = useState([])  //store the type of data (words or characters) (should be the same length as the infolist)
@@ -168,19 +176,55 @@ function DeckCards({data,deck_name,setClosed}) {
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
   const [addclosed, setAddclosed] = useState(true)//store if the addcard component is closed
 
+
+  //prepare the original data
+  useEffect(()=>{
+    const info_list = []
+    const type_list = []
+    const datalist = currData[1]
+    for(const json of datalist) {
+      const{char_type,data_type,deck_name,idx,user_id} = json
+      const info = getInfo(idx,char_type,data_type)
+      info_list.push(info)
+      type_list.push(data_type)
+    }
+    setInfoList(info_list)
+    setTypeList(type_list)
+    setCardCount(info_list.length)
+  },[currData, rawdata, cardsmap]) //change only if the current data used changes
+
+  //function to trigger the refresh of the card data, by retreving current cardsmap data from the context, which should be refreshed after invalidating query. Useful when add is called
+  const refresh = () =>{
+    //invalidate queries
+    //loop through the deck indices in the map to find a matching json object
+    console.log("current cards map data:", cardsmap)
+    const deckname = currData[0]
+    //get the single json object mapping the deckname to a list of jsons
+    let newdata = [] //get new list json data of cards
+    for(const key of cardsmap.keys()) {
+      if(key === deckname) {
+        console.log()
+        newdata = cardsmap.get(key)
+        break
+      }
+    }
+    //add deckname to the list 
+    newdata = [deckname,newdata]
+    setCurrData(newdata)//set the current data based on deckname
+  }
+
   //trigger button to remove all cards in the json list 
   const removeCards = () => {
     const confirm = window.confirm("remove selected cards?")
     if (confirm) {
       for (const key of removejson.keys()) {
-        console.log("removing card listed:", removejson.get(key))
         const [index, deckname, data_type, char_type]= removejson.get(key) //destructure 
         removecard(userlogin.uid, index, deckname, data_type, char_type)
         queryClient.invalidateQueries(["cards"])
         setCardCount(prev=>prev-1)//incrment
       }
       setRemovesize(0)
-      setClosed(true)
+      setClosed(true) //return to menu
     } else {
       return
     }
@@ -189,8 +233,6 @@ function DeckCards({data,deck_name,setClosed}) {
   //add/remove a card to the deletion list a card if needed
   const toggleRemove=(checked,idx, data_type, char_type)=>{
     const key = `${idx}-${data_type}-${char_type}` //key
-    console.log("current remove object",removejson)
-    console.log("current remove object length", removejson.size)
     //if already checked, remove from deletion list
     if (checked) {
       const copy = removejson
@@ -205,28 +247,15 @@ function DeckCards({data,deck_name,setClosed}) {
     }
   }
 
-  useEffect(()=>{
-    const info_list = []
-    const type_list = []
-    const datalist = data[1]
-    for(const json of datalist) {
-      const{char_type,data_type,deck_name,idx,user_id} = json
-      const info = getInfo(idx,char_type,data_type)
-      info_list.push(info)
-      type_list.push(data_type)
-    }
-    setInfoList(info_list)
-    setTypeList(type_list)
-    setCardCount(info_list.length)
-  },[])
+
   {/*open add deck if prompted*/}
   return (
     <div>
-      <h3>"{data[0]}" Deck</h3>
+      <h3>"{currData[0]}" Deck</h3>
       {addclosed &&
       <div>
         <div id="view-deck-cards">
-          {data[1].map((json, index)=>(
+          {currData[1].map((json, index)=>(
             <Card key={index} dbjson={json} datatype={typeList[index]} infojson={infoList[index]} toggleRemove={toggleRemove}/>
           ))}
         </div>
@@ -247,7 +276,7 @@ function DeckCards({data,deck_name,setClosed}) {
       </div>
       }
       {!addclosed &&
-        <AddDeck setClosed={setAddclosed} defaultdeckname={data[0]} contained={infoList}/>
+        <AddDeck setClosed={setAddclosed} defaultdeckname={data[0]} contained={infoList} refresh={refresh}/>
       }
     </div>
   )
@@ -262,7 +291,6 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
     const confirmed = window.confirm(`Are you sure you want to delete this deck, ${data[0]}`);
     if(confirmed) {
       removedeck(userlogin.uid, data[0])
-      //invalidate
       setDeckCount(prev=>prev-1) //decrement 
       queryClient.invalidateQueries(["cards"])
     } else {
@@ -291,14 +319,15 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
 }
 
 //add deck component: display list of characters with button (default parameter for when the deckname is fixed). setDeckCount to empty when do deck is added, but we are trying to add to a deck
-function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contained=[]}) {   
+function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contained=[], refresh=()=>{}}) {   
   const [deckname, setDeckname] = useState("")
   const [showdecknameinput, setShowdecknameinput] = useState(true) //set if deckname input is shown
   const [charType, setCharType] = useState("Trad")  
   const [dataType, setDataType] = useState("characters")
   const [isSet, setisSet] = useState(false) //check if the name has been set yet
   const [count, setCount] = useState(0)//count of cards added 
-  const {cardsmap} = useUser()
+  const {cardsmap, isFetching} = useUser()
+  const queryClient = useQueryClient()
   useEffect(()=>{
     if(defaultdeckname) {
       setDeckname(defaultdeckname)//set the deckname
@@ -327,6 +356,7 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
   }
   //function to handle save
   const handleSave = () => {
+    refresh()//call refresh function if any
     setDeckCount(prev=>prev+1) //increment number of decks
     setClosed(true)//close
   }

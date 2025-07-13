@@ -78,7 +78,6 @@ export default function UserProvider ({children}) {
             console.log("server issues when adding data", resdata)
             return 
         } else {
-            fetchRawcards()//queryClient.invalidateQueries(["cards"])
             return resdata
         }
     
@@ -109,7 +108,6 @@ export default function UserProvider ({children}) {
             console.log("server issues when adding data", resdata)
             return 
         } else {
-            fetchRawcards()
             return resdata
         }
       } catch {
@@ -136,7 +134,6 @@ export default function UserProvider ({children}) {
             console.log("server issues when adding data", resdata)
             return 
         } else {
-            fetchRawcards()
             return resdata
         }
       } catch {
@@ -145,11 +142,12 @@ export default function UserProvider ({children}) {
     }
 
     //destructure and rename data 
-    const {data: rawcards, isSuccess, isError} = useQuery({
+    const {data: rawcards, isSuccess, isError, isFetching} = useQuery({
         queryKey: ["cards"],
         queryFn: fetchRawcards,
         enabled: !!userlogin, //run if there is a userlogin
-        staleTime: 1000*60*60*24, //time to keep query stale in ms 
+        staleTime: 1000*60*60*24, //time to keep query stale in ms
+        cacheTime: 0, //time inactive queries stay 
     })
 
     useEffect(() => {
@@ -161,7 +159,7 @@ export default function UserProvider ({children}) {
 
 
     return (
-        <UserContext.Provider value={{userlogin, rawcards, cardsmap, addcard, removecard, removedeck}}>
+        <UserContext.Provider value={{userlogin, rawcards,isFetching, cardsmap, addcard, removecard, removedeck}}>
             {children}
         </UserContext.Provider>
     )
