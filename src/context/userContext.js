@@ -9,6 +9,7 @@ const API_URL = (process.env.NODE_ENV === 'development') ? "http://localhost:200
 const UserContext = createContext(null);
 export const useUser = () => useContext(UserContext);
 export default function UserProvider ({children}) {
+    const queryClient = useQueryClient();
     const [userlogin, setUserlogin] = useState(null); //context variable to check if a user is logged in
     const [cardsmap, setCardsmap] = useState(new Map()); //map from deck name to a list of json 
 
@@ -77,6 +78,7 @@ export default function UserProvider ({children}) {
             console.log("server issues when adding data", resdata)
             return 
         } else {
+            fetchRawcards()//queryClient.invalidateQueries(["cards"])
             return resdata
         }
     
@@ -84,6 +86,7 @@ export default function UserProvider ({children}) {
         console.error("unknown issues when trying to add data")
       }
     }
+    //remove a card from a deck
     const removecard = async(uid, index, deckname, datatype, chartype) => {
       try {
         //get user id
@@ -106,6 +109,7 @@ export default function UserProvider ({children}) {
             console.log("server issues when adding data", resdata)
             return 
         } else {
+            fetchRawcards()
             return resdata
         }
       } catch {
@@ -132,6 +136,7 @@ export default function UserProvider ({children}) {
             console.log("server issues when adding data", resdata)
             return 
         } else {
+            fetchRawcards()
             return resdata
         }
       } catch {
