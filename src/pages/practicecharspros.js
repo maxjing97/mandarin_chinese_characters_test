@@ -1,5 +1,6 @@
 import './practice.css';
 import React, { Component, useState, useEffect, useRef } from 'react';
+import { PracticeAddDeck } from './flashcards';
 import { useNavigate, useLocation } from 'react-router-dom';
 import tradchar from './data/tradchars.json'; //import json fo 
 import simpchar from './data/simpchars.json'; //import json 
@@ -98,6 +99,18 @@ function getJsons(bottom, top, numtest,practice_type, character_type) {
   return new_random_chars 
 }
 
+//handle cases of alternative character
+//set the display character (handle cases of alt characters)
+const getdisplaystring =(charJson)=>{
+  if(charJson["alt"].length===0){ //if no alt 
+    return charJson["word/character"]
+  } else {
+    const v1 = charJson["word/character"]
+    const v2 = charJson["alt"]
+    return `${v1} or ${v2}`
+  }
+} 
+
 //function to get the pronunciation components, and the list of correct values 
 //range is a list of highest to 
 function getComponents(bottom, top , num_test, character_type, test_type, practice_type) { 
@@ -115,8 +128,8 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
   let supporting ="test_definition" //get the supporting text key to help the user: either definition or the pronuciation
 
   for (const json of jsonlist) {
-    componentsList.push(<TextDisplay char={json["word/character"]} sup={json[supporting]}/>)
-    componentsList.push(<DefinitionPart char={json["word/character"]} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
+    componentsList.push(<TextDisplay char={getdisplaystring(json)} sup={json[supporting]}/>)
+    componentsList.push(<DefinitionPart char={getdisplaystring(json)} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
     correctvals.push(json[test_key])
   }
 

@@ -1,5 +1,6 @@
 import './practice.css';
 import React, { Component, useState, useEffect, useRef } from 'react';
+import { PracticeAddDeck } from './flashcards';
 import { useNavigate, useLocation } from 'react-router-dom';
 import tradchar from './data/tradchars.json'; //import json fo 
 import simpchar from './data/simpchars.json'; //import json 
@@ -69,6 +70,8 @@ const Results = ({accuracies, num_test, componentJsons}) => {
           <DetailsRow charJson={Json}/>
         ))}
       </table>
+      <p>Save your missed characters to a flashcard deck!</p>
+      <PracticeAddDeck dataType={"characters"} mainjson={compList}/>
     </div>
   );
 };
@@ -99,6 +102,18 @@ function getJsons(bottom, top, numtest,practice_type, character_type) {
   return new_random_chars 
 }
 
+//handle cases of alternative character
+//set the display character (handle cases of alt characters)
+const getdisplaystring =(charJson)=>{
+  if(charJson["alt"].length===0){ //if no alt 
+    return charJson["word/character"]
+  } else {
+    const v1 = charJson["word/character"]
+    const v2 = charJson["alt"]
+    return `${v1} or ${v2}`
+  }
+} 
+
 //function to get the definition components. Get a list of the character jsons, list of lists of definitions, and the list of the correct defintion it
 function getComponents(bottom, top , num_test, character_type, test_type, practice_type) { 
   const componentsList = [];
@@ -123,9 +138,10 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
         def_dict[String(i)] = rlist[j][test_key] //dict keys must be strings
         j++ //increment only when the correct key has not pass
       }
-    }//iterrate through the non-correct definitions set difference to create a def list
-    componentsList.push(<TextDisplay char={json["word/character"]} sup={json[supporting]}/>)
-    componentsList.push(<DefinitionPart char={json["word/character"]} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
+    }//iterrate through the non-correct definitions set difference to create a def lis
+    
+    componentsList.push(<TextDisplay char={getdisplaystring(json)} sup={json[supporting]}/>)
+    componentsList.push(<DefinitionPart char={getdisplaystring(json)} definition={json["definition"]} full_pronunciation={json["full_pronunciation"]}/>)
     correctvals.push(currdef)
     defslist.push(def_dict)
   }

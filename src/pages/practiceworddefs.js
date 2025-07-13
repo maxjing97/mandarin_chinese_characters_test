@@ -1,5 +1,6 @@
 import './practice.css';
 import React, { Component, useState, useEffect, useRef } from 'react';
+import { PracticeAddDeck } from './flashcards';
 import { useNavigate, useLocation } from 'react-router-dom';
 import tradword from './data/tradwords.json'; //import json fo 
 import simpword from './data/simpwords.json'; //import json 

@@ -7,10 +7,20 @@ import tradword from './data/tradwords.json'; //import json fo
 import simpword from './data/simpwords.json'; //import json 
 
 const CharDetailsRow = ({charJson, index}) => { //current table row format displaying 
+  //set the display character (handle cases of alt characters)
+  const getdisplaystring =(charJson)=>{
+    if(charJson["alt"].length===0){ //if no alt 
+      return charJson["word/character"]
+    } else {
+      const v1 = charJson["word/character"]
+      const v2 = charJson["alt"]
+      return `${v1} or ${v2}`
+    }
+  } 
   return (
     <tr>
       <td>{index}</td>
-      <td>{charJson["word/character"]}</td>
+      <td>{getdisplaystring(charJson)}</td>
       <td>{charJson["definition"]}</td>
       <td>{charJson["full_pronunciation"]}</td>
       <td>{charJson["cat"]}</td>
@@ -18,6 +28,7 @@ const CharDetailsRow = ({charJson, index}) => { //current table row format displ
   );
 };
 const DefDetailsRow = ({charJson, index}) => {
+  
   return (
     <tr>
       <td>{index}</td>

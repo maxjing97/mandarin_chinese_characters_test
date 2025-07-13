@@ -288,3 +288,29 @@
     align-items: center;
     justify-content: center;
 }
+#practice-deck-selector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    margin: auto;
+}
+.deck-button {
+    display: flex;
+    flex-direction: row;
+    font-size: 14pt;
+    align-items: center;
+    height: 35px;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
+.deck-button .decklabel {
+    background-color: white;
+    font-weight: bold;
+}

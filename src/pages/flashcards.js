@@ -1,6 +1,6 @@
 import "./accounts_cards.css"
 import React, {useState, useRef, useEffect, use} from 'react';
-import {Link, useNavigate} from "react-router-dom"
+import {Link, useNavigate, useNavigationType} from "react-router-dom"
 import {auth} from "../context/auth"
 import { useQueryClient } from '@tanstack/react-query';
 import { useUser } from "../context/userContext";
@@ -169,13 +169,14 @@ function DeckCards({data,setClosed}) {
   const {rawdata, cardsmap, isLoading} = useUser() //get the new information from the context
   const [currData, setCurrData] = useState(data)//current card data (format given here)
   const {userlogin, removecard} = useUser()
-  const [infoList, setInfoList] = useState([]) //get json information of cards, 
+  const [infoList, setInfoList] = useState([]) //get json information of the current deck of cards, 
   const [typeList, setTypeList] = useState([])  //store the type of data (words or characters) (should be the same length as the infolist)
   const [cardcount, setCardCount] = useState(0)//getCount of cards
   const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
   const [addclosed, setAddclosed] = useState(true)//store if the addcard component is closed
-
+  console.log("testing cards map",cardsmap)
+  console.log("testing card info list",infoList)
 
   //prepare the original data
   useEffect(()=>{
@@ -197,13 +198,11 @@ function DeckCards({data,setClosed}) {
   const refresh = () =>{
     //invalidate queries
     //loop through the deck indices in the map to find a matching json object
-    console.log("current cards map data:", cardsmap)
     const deckname = currData[0]
     //get the single json object mapping the deckname to a list of jsons
     let newdata = [] //get new list json data of cards
     for(const key of cardsmap.keys()) {
       if(key === deckname) {
-        console.log()
         newdata = cardsmap.get(key)
         break
       }
@@ -433,11 +432,143 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
     </div>
   )        
 }
+//Special add deck component (allows adding to any deck, given a list of json, used to add to cards after a practice session and missed cards)
+export function PracticeAddDeck({dataType, mainjson}) {   
+  const navigate = useNavigate()
+  const [decks, setDecks] = useState(new Map()) //get decks map
+  const [deckname, setDeckname] = useState("") //current selected deckname
+  const [inputdeckname, setInputdeckname] = useState("") //current deckname typed if any
+  const [isSet, setisSet] = useState(false) //check if the name has been set yet
+  const [count, setCount] = useState(0)//count of cards added 
+  const [contained, setContained] = useState([])//list of jsons contained (the jsons in each deck)
+  const [infoList, setInfoList] = useState([]) //get json information of the current deck of cards selected
+  const [deckcount, setDeckCount] = useState(0)//count the number of decks
+  const {cardsmap} = useUser()
+  
+  useEffect(() => {
+    //if user is logged, in set to the actual data
+    if(cardsmap) {
+      setDecks(cardsmap)
+      console.log("mainjson passed:", mainjson)
+      console.log("datatype passed:", dataType)
+      setDeckCount(cardsmap.size)
+    }
+  })
+
+  //check if the newdeckname has been taken
+  const handlenewdeckname = (e) =>{
+    if (deckcount === 5) {
+      alert("cannot create new decks at this time")
+    }
+    else if (inputdeckname.length ===0) {
+      alert("deck name must but be empty")
+    } else if (cardsmap.has(inputdeckname.trim())) { //check if this is key in the map
+      alert("deck name must but be unique, try again")
+      setInputdeckname("") //reset the string
+    } else {
+      setDeckname(inputdeckname) //set the actual deckname used to be the same as the input
+      setisSet(true)
+    }
+  }
+  //handle if an existing deckname has been checked
+  const currdeckname = (name,data) =>{
+    //find the json of characters contained in the current deck
+    const info_list = []
+    const datalist = data[1]
+    for(const json of datalist) {
+      const{char_type,data_type,deck_name,idx,user_id} = json
+      const info = getInfo(idx,char_type,data_type)
+      info_list.push(info)
+    }
+    setContained(info_list)
+    setDeckname(name)
+    setisSet(true)
+  }
+
+  //function to handle save
+  const handleSave = () => {
+    setDeckCount(prev=>prev+1) //increment number of decks
+    navigate("/flashcards")//close
+  }
+
+  //since the randomly characters maybe out of order, we have the manually find the index using a search
+  const findIndex = (json) => {
+    console.log("finding the index in practice json:", json)
+    //based on the types, find the data needed 
+    let currdata = null
+    if(dataType === "characters" && json["code"] === "t") {
+      currdata = tradchar
+    } else if (dataType === "characters" && json["code"] === "s") {
+      currdata = simpchar
+    } else if(dataType === "words" && json["code"] === "t") {
+      currdata = tradword
+    } else if (dataType === "W" && json["code"] === "s") {
+      currdata = simpword
+    
+    }
+    return 1
+  }
+
+  return (
+    <div>
+    { cardsmap &&
+    <div> 
+      <h3>{deckcount > 0? "Select a Deck or create a new one": "Get started by creating a deck"}</h3>
+      <div id="practice-deck-selector"> {/*collapse decks map into a list mapping into the key and a 2 length array */}
+        {[...decks].map((value, key)=>( 
+          <div className="deck-button"> 
+              <input type="radio" name="chartype" id={key} onClick={() => currdeckname(value[0],value)} className="charbutton" checked={deckname === value[0]} disabled={isSet}></input>
+              <label class="decklabel" htmlFor ={key}>{value[0]}</label>
+          </div>
+        ))}      
+        <div className="deck-button"> 
+          <input type="radio" name="chartype" id="new" className="charbutton" disabled={isSet}></input>
+          <label class="decklabel" >+</label>
+          <input
+            type="text"
+            value = {inputdeckname}
+            id="deck-name"
+            onChange={(e)=>{setInputdeckname(e.target.value)}}
+            placeholder="add new deck"
+            disabled={isSet}
+          />
+          <button id='card-name-save' onClick={handlenewdeckname}>Save</button>
+        </div>
+      </div>
+      {isSet &&
+      <div>
+      <h3>Add Cards to the deck selected, {deckname} ,from the list of characters missed</h3>
+      <div id="addchars-show">
+        <button id="save-cards" onClick={handleSave}>{count} cards added, Save and Exit</button>
+      </div>
+        <table class="char_table" hidden={!(dataType==="characters")}>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
+          <tbody>{mainjson.map((Json,i) => (
+            <CharDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount} contained={contained}/>
+          ))}</tbody>        
+        </table>
+        <table class="char_table" hidden={!(dataType==="words")}>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
+          <tbody>{mainjson.map((Json,i) => (
+            <DefDetailsRow charJson={Json} index={i} deckname={deckname} setCount={setCount} contained={contained}/>
+          ))}</tbody>
+        </table>
+      </div>}
+    </div>
+    }
+    {!cardsmap &&
+    <div>
+      <p>Not logged in! Create your account to save flashcards in the future</p>
+    </div>
+    }
+    </div>
+  )        
+}
 
 //components to display the flash card preview
 export default function Flashcards() { 
   const {cardsmap} = useUser()
-  const [decks, setDecks] = useState([]) //get checks map
+  const [decks, setDecks] = useState([]) //get decks map
   const [isaltclosed, setAltclosed] = useState(true)//check to close the alternative tab (addCard)
   const [altcomp, setAltcomp] = useState(null)//set alternative component to show
   const [deckcount, setDeckCount] = useState(cardsmap.size)//count the number of decks
@@ -455,7 +586,14 @@ export default function Flashcards() {
       alert("cannot create more than 5 decks with your account") //5 flashcard deck limit
     } else {
       setAltclosed(false)
-      setAltcomp(<AddDeck setClosed={setAltclosed} setDeckCount={setDeckCount}/>)//set the component to show
+      //prepare test data
+      const test_list = []
+      for(const key in tradword) {
+        test_list.push(tradword[key])
+      }
+      const list = test_list.slice(2000, 2200)
+      console.log("list before passing:", list)
+      setAltcomp(<PracticeAddDeck dataType={"words"} mainjson={list}/>)//set the component to show the add cards component <AddDeck setClosed={setAltclosed} setDeckCount={setDeckCount}/>
     }
   }
 
@@ -467,7 +605,7 @@ export default function Flashcards() {
         <div id="full-decks-display">
           {
             [...decks].map((value, key) => ( 
-              <Deck data={value} key={key} deckname={key} setDeckCount={setDeckCount} setClosed={setAltclosed} setAltcomp={setAltcomp}/>
+              <Deck data={value} key={key} setDeckCount={setDeckCount} setClosed={setAltclosed} setAltcomp={setAltcomp}/>
             ))
           }
           {/* button to add a deck*/}
