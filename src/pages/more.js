@@ -33,9 +33,9 @@ export function About() {
 
       Edits were made with additional resources <br></br><br></br>
 
-      This is an open source project with the <a href="https://github.com/maxjing97/mandarin_chinese_characters_test">github link</a> here.    
+      This is an open source project with the <a href="https://github.com/maxjing97/mandarin_chinese_characters_test">github link</a> here.<br></br>
       
-
+      Contact maxjing97@gmail for support or questions. 
       </p>
 
     </div>
