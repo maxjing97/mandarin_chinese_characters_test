@@ -33,7 +33,7 @@ const DefinitionPart = ({char, definition, full_pronunciation}) => {
 const DetailsRow = ({charJson}) => {
   return (
     <tr>
-      <td>{charJson["word/character"]}</td>
+      <td>{getdisplaystring(charJson)}</td>
       <td>{charJson["definition"]}</td>
       <td>{charJson["full_pronunciation"]}</td>
     </tr>
@@ -105,7 +105,7 @@ function getJsons(bottom, top, numtest,practice_type, character_type) {
 //handle cases of alternative character
 //set the display character (handle cases of alt characters)
 const getdisplaystring =(charJson)=>{
-  if(charJson["alt"].length===0){ //if no alt 
+  if(!charJson["alt"] || charJson["alt"].length===0){ //if no alt or null (check null first)
     return charJson["word/character"]
   } else {
     const v1 = charJson["word/character"]
