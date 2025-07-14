@@ -51,8 +51,6 @@ const Results = ({accuracies, num_test, componentJsons}) => {
       compList.push(currentJson)
     }
   }
-
-
   useEffect(()=>{
     return () => {} 
   }, []) //call only once on mount
@@ -68,38 +66,9 @@ const Results = ({accuracies, num_test, componentJsons}) => {
           <DetailsRow charJson={Json}/>
         ))}
       </table>
-      <p>Save your missed characters to a flashcard deck!</p>
-      <PracticeAddDeck dataType={"characters"} mainjson={compList}/>
     </div>
   );
 };
-
-function getJsons(bottom, top, numtest,practice_type, character_type) {
-  //get load in jsondata of can characters based on character type and practice type
-  let jsonData = null 
-  let retjsonlist = []
-  if(practice_type === "characters" && character_type === "Trad") {
-    jsonData = tradchar
-  } else if (practice_type === "characters" && character_type === "Simp") {
-    jsonData = simpchar
-  }
-  //first get all json matching the category range 
-  for (const key in jsonData) {
-    const json = jsonData[key] //get json list
-    if(json["cat"]<= top && json["cat"] >= bottom ) { //narrow down by category (in range) and add to the final list 
-      retjsonlist.push(json)
-    }
-  }
-  //select numtest unique json objects from this
-  //randomly select numtest from the list 
-  let new_random_chars = new Set()
-  while (new_random_chars.size < numtest) {
-    const random = retjsonlist[Math.floor(Math.random()*retjsonlist.length)] //select from our current list 
-    new_random_chars.add(random)
-  }
-  new_random_chars = Array.from(new_random_chars) //convert to list
-  return new_random_chars 
-}
 
 //handle cases of alternative character
 //set the display character (handle cases of alt characters)
@@ -115,10 +84,9 @@ const getdisplaystring =(charJson)=>{
 
 //function to get the pronunciation components, and the list of correct values 
 //range is a list of highest to 
-function getComponents(bottom, top , num_test, character_type, test_type, practice_type) { 
+function getComponents(jsonlist, test_type) { 
   const componentsList = [];
   const correctvals = [];
-  const jsonlist = getJsons(bottom, top,num_test,practice_type, character_type)//get the proper list of subjson
   //iterate to create components
   //based on the test type: isolate the key for the correct value to test the user on
   let test_key = ""
@@ -139,12 +107,12 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
 }
 
 export default function PracticeCardPronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
-  
   const navigate = useNavigate();
   const location = useLocation();
   //get destructured data
-  const { range, num_test, character_type, test_type, practice_type} = location.state 
-  
+  const { infojsons,typelist, test_type} = location.state 
+  const [numtest, setNumtest] = useState(0)//set num_test, number tested
+
   const [componentList, setComponentList] = useState([])//store the fixed list of components 
   const [correctList, setCorrectList] = useState([])//store the fixed list of correct values 
   const [correctJsons, setCorrectJsons] = useState([])//store the fixed list json objects containing full information for the characters 
@@ -159,7 +127,15 @@ export default function PracticeCardPronunciation(props) { //main parent image c
   
   // This effect will only run once after the component mounts. user this to get the necessary data
   useEffect(() => {
-    const [componentList, correctVals, correctJsons] = getComponents(range[0], range[1], num_test, character_type, test_type, practice_type) //pass range as a shallow object
+    //find the number of jsons that are actually a single character
+    const truejsons = []
+    for(let i=0; i<typelist.length;i++) {
+      if(typelist[i]==="C") {
+        truejsons.push(infojsons[i])
+      }
+    }
+    setNumtest(truejsons.length) //set the number of tesed.
+    const [componentList, correctVals, correctJsons] = getComponents(truejsons, test_type) //pass range as a shallow object
     setComponentList(componentList)
     setCorrectList(correctVals)
     setCorrectJsons(correctJsons)
@@ -197,7 +173,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
         setIndex(0);
         setIsText(1);
         setCorrectMessage("") //clear mesage at the end
-        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
+        setComponentList([<Results accuracies={accuracy_list} num_test={numtest} componentJsons={correctJsons}/>])
       }
     } else if (gap === 2) { //if gap is two, we keep the same pattern
       if (index < (componentList.length-2)) {
@@ -207,7 +183,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
         setIndex(0);
         setIsText(1);
         setCorrectMessage("") //clear mesage at the end
-        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
+        setComponentList([<Results accuracies={accuracy_list} num_test={numtest} componentJsons={correctJsons}/>])
       }
     }
   }
@@ -250,7 +226,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
     //in the case, we are not at the results page, show a warning window before exiting to menu
     const confirmed = window.confirm("Are you sure you want to proceed?"); //confirm for this case as a precaution to avoid exiting to menu
     if (confirmed) {
-      navigate('/characters') //exist back to characters
+      navigate('/flashcards') //exist back to characters
     } 
   }
 
@@ -290,7 +266,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
       <button onClick={menuExit} className="back">
       ⬅ Back to Menu
       </button>
-      <h3>Try to type the pronuciation ({test_type === "prt"? "without": "with"} tone) for {num_test} characters</h3>
+      <h3>Try to type the pronuciation ({test_type === "prt"? "without": "with"} tone) for {numtest} characters</h3>
 
       <div className="text_container">
         {/* render all components with varying visiblity to avoid unmounting, destroying vital state variables. Renders components in order*/}
@@ -315,7 +291,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
           </div>
         </div>
         <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
-        {(Math.floor(index/2) < num_test) ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
+        {(Math.floor(index/2) < numtest) ? `Word ${Math.floor(index/2)} of ${numtest} total`: 
         `Repeating missed characters`}</p> 
       </div>
       

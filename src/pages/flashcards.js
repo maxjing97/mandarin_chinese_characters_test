@@ -249,9 +249,11 @@ function DeckCards({data,setClosed, setAltcomp}) {
   const handlePractice = (type) => {
     const data = {
       infojsons: infoList,//get list of infojsons
-      typejsons: typeList
+      typelist: typeList,
+      test_type: type
     }
-    if (type === "pro") { //if pronunciation is selected
+    if (type === "prt" || type === "pwt") { //if pronunciation is selected
+      //since now, our cards hva
       navigate("/flashcards-pronunciation", {state: data})
     } else {
       navigate("/flashcards-definition", {state: data})
@@ -274,19 +276,26 @@ function DeckCards({data,setClosed, setAltcomp}) {
           <button onClick={()=>setClosed(true)} id="menu-button">
             Exit to menu
           </button>
-          {countChars() > 0 && 
-          <button onClick={()=>handlePractice("pro")} id="menu-practice-button">
-            Practice Pronunciation for {countChars()} Flashcards 
-          </button>
+          {(countChars() > 0 && removesize === 0) && 
+          <div>
+            <button onClick={()=>handlePractice("prt")} id="menu-practice-button">
+              Practice Pronunciation (no tones) for {countChars()} Flashcards 
+            </button>
+            <button onClick={()=>handlePractice("pwt")} id="menu-practice-button">
+              Practice Pronunciation (with tones) for {countChars()} Flashcards 
+            </button>
+          </div>
           }
           {removesize > 0 && 
           <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
             Delete {removesize } selected card{removesize === 1 ? "":"s"}
           </button>
           }
+          {removesize === 0 &&
           <button onClick={()=>handlePractice("def")} id="menu-practice-button">
             Practice Definition for all Cards 
           </button>
+          }
           <button onClick={()=>setAddclosed(false)} id="menu-button">
             Add Card
           </button>
@@ -664,7 +673,6 @@ export default function Flashcards() {
     } else {
       setAltclosed(false)
       //prepare test data
-
       setAltcomp(<AddDeck refresh={refresh} setDeckCount={setDeckCount}/>)//set the component to show the add cards component 
     }
   }

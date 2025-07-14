@@ -49,7 +49,7 @@ const DetailsRow = ({charJson}) => {
     <tr>
       <td>{getdisplaystring(charJson)}</td>
       <td>{charJson["definition"]}</td>
-      <td>{charJson["full_pronunciation"]}</td>
+      <td>{displaypronunciation}</td>
     </tr>
   );
 };
@@ -82,8 +82,6 @@ const Results = ({accuracies, num_test, componentJsons}) => {
           <DetailsRow charJson={Json}/>
         ))}
       </table>
-      <p>Save your missed characters to a flashcard deck!</p>
-      <PracticeAddDeck dataType={"characters"} mainjson={compList}/>
     </div>
   );
 };
@@ -234,7 +232,7 @@ export default function PracticeCardDefinition(props) { //main parent image comp
     //in the case, we are not at the results page, show a warning window before exiting to menu
     const confirmed = window.confirm("Are you sure you want to proceed?"); //confirm for this case as a precaution to avoid exiting to menu
     if (confirmed) {
-      navigate('/characters') //exist back to characters
+      navigate('/flashcards') //exist back to characters
     } 
   }
 
