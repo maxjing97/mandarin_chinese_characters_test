@@ -3,9 +3,10 @@ require('dotenv').config({ path: '../.env' });
 
 
 const dbPassword = process.env.DB_PASSWORD;
+const hostname = process.env.DB_HOSTNAME;
 //store the connection 
 const connection = mysql.createConnection({
-    host: 'sampler1.cq76q0u0qtke.us-east-1.rds.amazonaws.com', // Your MySQL host (default is localhost)
+    host: `${hostname}`, // Your MySQL host (default is localhost)
     user: 'admin',      // Your MySQL username
     password: `${dbPassword}`,  // Your MySQL password
     database: 'mandarin_app',    // Your database name

@@ -79,6 +79,7 @@
     "side-channel-list": "^1.0.0",
     "side-channel-map": "^1.0.1",
     "side-channel-weakmap": "^1.0.2",
+    "sqlite3": "^5.1.7",
     "sqlstring": "^2.3.3",
     "statuses": "^2.0.1",
     "toidentifier": "^1.0.1",
@@ -87,7 +88,6 @@
     "vary": "^1.1.2",
     "wrappy": "^1.0.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
