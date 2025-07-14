@@ -159,7 +159,7 @@ export default function UserProvider ({children}) {
 
 
     return (
-        <UserContext.Provider value={{userlogin, rawcards,isFetching, cardsmap, addcard, removecard, removedeck}}>
+        <UserContext.Provider value={{userlogin, rawcards,isFetching, cardsmap, addcard, removecard, removedeck,fetchRawcards}}>
             {children}
         </UserContext.Provider>
     )

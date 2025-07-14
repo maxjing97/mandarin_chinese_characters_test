@@ -164,9 +164,9 @@ function Card({dbjson, infojson, toggleRemove}) {
 }
 
 //get deck details from clicking set, get all detail of cards
-function DeckCards({data,setClosed}) {  
+function DeckCards({data,setClosed, setAltcomp}) {  
   const queryClient = useQueryClient()
-  const {rawdata, cardsmap, isLoading} = useUser() //get the new information from the context
+  const {rawdata, cardsmap, fetchRawcards} = useUser() //get the new information from the context
   const [currData, setCurrData] = useState(data)//current card data (format given here)
   const {userlogin, removecard} = useUser()
   const [infoList, setInfoList] = useState([]) //get json information of the current deck of cards, 
@@ -175,7 +175,6 @@ function DeckCards({data,setClosed}) {
   const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
   const [addclosed, setAddclosed] = useState(true)//store if the addcard component is closed
-
 
   //prepare the original data
   useEffect(()=>{
@@ -191,24 +190,16 @@ function DeckCards({data,setClosed}) {
     setInfoList(info_list)
     setTypeList(type_list)
     setCardCount(info_list.length)
-  },[currData, rawdata, cardsmap]) //change only if the current data used changes
+  },[currData]) //change only if the current data used changes
 
-  //function to trigger the refresh of the card data, by retreving current cardsmap data from the context, which should be refreshed after invalidating query. Useful when add is called
-  const refresh = () =>{
-    //invalidate queries
-    //loop through the deck indices in the map to find a matching json object
-    const deckname = currData[0]
-    //get the single json object mapping the deckname to a list of jsons
-    let newdata = [] //get new list json data of cards
-    for(const key of cardsmap.keys()) {
-      if(key === deckname) {
-        newdata = cardsmap.get(key)
-        break
-      }
-    }
-    //add deckname to the list 
-    newdata = [deckname,newdata]
+  //function to trigger the refresh of the card data, by retreving the newly added data
+  const refresh = (newcarddata) =>{ //newcard data is a list of jsons, just like currData[1]
+    const deckname = currData[0] 
+    const newlist = currData[1].concat(newcarddata)
+    //have same format of deckname, then a list of jsons in a length 2 list
+    const newdata = [deckname,newlist] //add deckname to the list 
     setCurrData(newdata)//set the current data based on deckname
+    setAddclosed(true)
   }
 
   //trigger button to remove all cards in the json list 
@@ -274,7 +265,7 @@ function DeckCards({data,setClosed}) {
       </div>
       }
       {!addclosed &&
-        <AddDeck setClosed={setAddclosed} defaultdeckname={data[0]} contained={infoList} refresh={refresh}/>
+        <AddDeck defaultdeckname={data[0]} contained={infoList} refresh={refresh}/>
       }
     </div>
   )
@@ -298,7 +289,7 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
   //handle when function is called to show details
   const handleDetails = () =>{
     setClosed(false) //expose the card deck
-    setAltcomp(<DeckCards data={data} setClosed={setClosed}/>)
+    setAltcomp(<DeckCards data={data} setClosed={setClosed} setAltcomp={setAltcomp}/>)
   }
   
   return (
@@ -317,7 +308,7 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
 }
 
 //add deck component: display list of characters with button (default parameter for when the deckname is fixed). setDeckCount to empty when do deck is added, but we are trying to add to a deck
-function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contained=[], refresh=()=>{}}) {   
+function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], refresh=()=>{}}) {   
   const [deckname, setDeckname] = useState("")
   const [showdecknameinput, setShowdecknameinput] = useState(true) //set if deckname input is shown
   const [charType, setCharType] = useState("Trad")  
@@ -325,7 +316,7 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
   const [isSet, setisSet] = useState(false) //check if the name has been set yet
   const [count, setCount] = useState(0)//count of cards added 
   const [addmap, setAddmap] = useState(new Map())//map to store information of about cards to adds
-  const {cardsmap, isFetching, removecard, addcard} = useUser()
+  const {cardsmap, isFetching, removecard, addcard, rawcards} = useUser()
   const queryClient = useQueryClient()
   useEffect(()=>{
     if(defaultdeckname) {
@@ -367,20 +358,22 @@ function AddDeck({setClosed, setDeckCount=()=>{}, defaultdeckname = null, contai
   //handle clicking submit for a character type
   const handleClick = (newCharType, newDataType) => {
     setCharType(newCharType)//set values
-    setDataType(newDataType) 
+    setDataType(newDataType)  
   }
   //function to handle save
   const handleSave = () => {
     //iterate through map and save all data
+    const newcarddata = []///list of new datajoins
     for (const key of addmap.keys()) {
-      const {uid, index, deckname, datatype, chartype} = addmap.get(key)
+      const data = addmap.get(key)
+      newcarddata.push(data)
+      const {uid, index, deckname, datatype, chartype} = data
       addcard(uid ,index, deckname, datatype, chartype)
-      refresh()//call refresh function if any
     }
     queryClient.invalidateQueries(["cards"])
-    
+    while (isFetching) {} 
+    refresh(newcarddata)//call refresh function if any with the provided data
     setDeckCount(prev=>prev+1) //increment number of decks
-    setClosed(true)//close
   }
 
   return (
@@ -628,6 +621,10 @@ export default function Flashcards() {
       setDeckCount(cardsmap.size)
     }
   })
+  const refresh = (newcarddata) => {
+    setAltclosed(true)
+  }
+
   //function to add a deck
   const handleAddDeck = () => {
     if (deckcount === 5) {
@@ -636,7 +633,7 @@ export default function Flashcards() {
       setAltclosed(false)
       //prepare test data
 
-      setAltcomp(<AddDeck setClosed={setAltclosed} setDeckCount={setDeckCount}/>)//set the component to show the add cards component 
+      setAltcomp(<AddDeck refresh={refresh} setDeckCount={setDeckCount}/>)//set the component to show the add cards component 
     }
   }
 
