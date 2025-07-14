@@ -87,11 +87,12 @@
     text-align: center;
     align-items: center;
 }
-#add-deck {
+.add-deck {
     background-color: azure;
     width: 150px;
     height: 200px;
     margin: 0 10px;
+    font-size: 14pt;
     padding: 0;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -282,11 +283,38 @@
     -ms-border-radius: 10px;
     -o-border-radius: 10px;
 }
-#deck-options-selector{
+#menu-practice-button {
+    width: 170px;
+    margin: 0 10px ;
+    font-size: 15pt;
+    font-weight: bold;
+    color: white;
+    background-color: rgb(45, 171, 255);
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+#menu-practice-button:hover {
+    width: 170px;
+    margin: 0 10px ;
+    font-size: 15pt;
+    font-weight: bold;
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+#deck-options-selector, #deck-practice-selector{
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    margin-top: 10px;
 }
 #practice-deck-selector {
     display: flex;

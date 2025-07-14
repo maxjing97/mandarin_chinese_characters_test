@@ -163,14 +163,15 @@ function Card({dbjson, infojson, toggleRemove}) {
   )
 }
 
-//get deck details from clicking set, get all detail of cards
+//get deck details from clicking set, get all detail of cards, allowing redirect to practice
 function DeckCards({data,setClosed, setAltcomp}) {  
   const queryClient = useQueryClient()
+  const navigate = useNavigate() //navigate
   const {rawdata, cardsmap, fetchRawcards} = useUser() //get the new information from the context
   const [currData, setCurrData] = useState(data[1])//current card datalist from the db (format given here) initialze here
   const {userlogin, removecard} = useUser()
   const [infoList, setInfoList] = useState([]) //get json information of the current deck of cards, 
-  const [typeList, setTypeList] = useState([])  //store the type of data (words or characters) (should be the same length as the infolist)
+  const [typeList, setTypeList] = useState([])  //store the type of data (words or characters) (should be the same length as the infolist) ("C" or "W")
   const [cardcount, setCardCount] = useState(0)//getCount of cards
   const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
@@ -192,6 +193,17 @@ function DeckCards({data,setClosed, setAltcomp}) {
     setTypeList(type_list)
     setCardCount(info_list.length)
   },[currData]) //change only if the current data used changes
+
+  //count the number of single character data 
+  const countChars = () => {
+    let count = 0
+    for (const char of typeList) {
+      if(char==="C") {
+        count++
+      }
+    }
+    return count
+  }
 
   //function to trigger the refresh of the card data, by retreving the newly added data
   const refresh = (newcarddata) =>{ //newcard data is a list of jsons, just like currData[1]
@@ -233,7 +245,18 @@ function DeckCards({data,setClosed, setAltcomp}) {
       setRemovesize(prev=>prev+1)
     }
   }
-
+  //handle practice 
+  const handlePractice = (type) => {
+    const data = {
+      infojsons: infoList,//get list of infojsons
+      typejsons: typeList
+    }
+    if (type === "pro") { //if pronunciation is selected
+      navigate("/flashcards-pronunciation", {state: data})
+    } else {
+      navigate("/flashcards-definition", {state: data})
+    }
+  }
 
   {/*open add deck if prompted*/}
   return (
@@ -247,19 +270,28 @@ function DeckCards({data,setClosed, setAltcomp}) {
           ))}
         </div>
         <p>Count : {cardcount}</p>
-        <div id="deck-options-selector">
+        <div id="deck-practice-selector">
           <button onClick={()=>setClosed(true)} id="menu-button">
-              Exit to menu
+            Exit to menu
           </button>
+          {countChars() > 0 && 
+          <button onClick={()=>handlePractice("pro")} id="menu-practice-button">
+            Practice Pronunciation for {countChars()} Flashcards 
+          </button>
+          }
           {removesize > 0 && 
           <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
             Delete {removesize } selected card{removesize === 1 ? "":"s"}
           </button>
           }
+          <button onClick={()=>handlePractice("def")} id="menu-practice-button">
+            Practice Definition for all Cards 
+          </button>
           <button onClick={()=>setAddclosed(false)} id="menu-button">
             Add Card
           </button>
         </div>
+        <p>Note: pronunciation can only be practiced for cards with single or unique characters listed under the multi-character word list under the learn tab.</p>
       </div>
       }
       {!addclosed &&
@@ -649,7 +681,7 @@ export default function Flashcards() {
             ))
           }
           {/* button to add a deck*/}
-          <button id="add-deck" onClick={handleAddDeck}>
+          <button className="add-deck" onClick={handleAddDeck}>
             <img src="/media/add.png" alt="add" className="deck-icon"/>
           </button>
         </div>

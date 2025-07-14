@@ -6,6 +6,8 @@ import Words from './pages/mainwords';
 import PracticeCharPronunciation from './pages/practicecharspros';
 import PracticeCharDefinition from "./pages/practicecharsdefs";
 import PracticeWordDefinition from "./pages/practiceworddefs";
+import PracticeCardDefinition from "./pages/practicecardsdefs"
+import PracticeCardPronunciation from "./pages/practicecardspros"
 import {Entry, About, Resources} from './pages/more';
 import {CharList, WordList} from "./pages/list"
 import {Account} from "./pages/account"
@@ -21,14 +23,15 @@ function App() {
           <div>
         <Routes>        {/*defining routes */}
           <Route path="/"  element={<Account/>} />{/*default page route */}
-          <Route path="/flashcards"  element={<Flashcards/>} />{/*visible after login only */}
+          <Route path="/flashcards" element={<Flashcards/>} />{/*visible after login only: main flashcard selection paths*/}
+          <Route path="/flashcards-definition" element={<PracticeCardDefinition/>} />{/*visible after login only: main flashcard selection paths*/}
+          <Route path="/flashcards-pronunciation" element={<PracticeCardPronunciation/>} />{/*visible after login only: main flashcard selection paths*/}
           {/*practice pages */}
           <Route path="/characters"  element={<Characters/>} />
           <Route path="/words"  element={<Words/>} />
             {/*defining routes within the practice page*/}
             <Route path="/practice_char_pronunciation"  element={<PracticeCharPronunciation/>} />
             <Route path="/practice_char_definition"  element={<PracticeCharDefinition/>} />
-
             <Route path="/practice_word_definition"  element={<PracticeWordDefinition/>} />
           {/*routes for the more page*/}
           <Route path="/resources"  element={<Resources />}/>
