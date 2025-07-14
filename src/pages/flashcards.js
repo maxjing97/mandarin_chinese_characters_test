@@ -48,11 +48,11 @@ const CharDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => { 
     //if changing to checked, add card, etc, and more
     if (!fixed) {
       const data = { 
-        uid:userlogin.uid,
-        index:index,
-        deckname:deckname,
-        datatype:"C",
-        chartype:charJson["code"]
+        user_id:userlogin.uid,
+        idx:index,
+        deck_name:deckname,
+        data_type:"C",
+        char_type:charJson["code"]
       }
       if (checked) { //remove path call if it is checked and not fixed 
         toggleAdd(data,checked)
@@ -98,11 +98,11 @@ const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => {
     //if changing to checked, add card, etc, and more
     if (!fixed) {
       const data = { 
-        uid:userlogin.uid,
-        index:index,
-        deckname:deckname,
-        datatype:"W",
-        chartype:charJson["code"]
+        user_id:userlogin.uid,
+        idx:index,
+        deck_name:deckname,
+        data_type:"C",
+        char_type:charJson["code"]
       }
       if (checked) { //remove path call if it is checked and not fixed 
         toggleAdd(data,checked)
@@ -167,7 +167,7 @@ function Card({dbjson, infojson, toggleRemove}) {
 function DeckCards({data,setClosed, setAltcomp}) {  
   const queryClient = useQueryClient()
   const {rawdata, cardsmap, fetchRawcards} = useUser() //get the new information from the context
-  const [currData, setCurrData] = useState(data)//current card data (format given here)
+  const [currData, setCurrData] = useState(data[1])//current card datalist from the db (format given here) initialze here
   const {userlogin, removecard} = useUser()
   const [infoList, setInfoList] = useState([]) //get json information of the current deck of cards, 
   const [typeList, setTypeList] = useState([])  //store the type of data (words or characters) (should be the same length as the infolist)
@@ -180,13 +180,14 @@ function DeckCards({data,setClosed, setAltcomp}) {
   useEffect(()=>{
     const info_list = []
     const type_list = []
-    const datalist = currData[1]
+    const datalist = currData
     for(const json of datalist) {
       const{char_type,data_type,deck_name,idx,user_id} = json
       const info = getInfo(idx,char_type,data_type)
       info_list.push(info)
       type_list.push(data_type)
     }
+    setCurrData(datalist)
     setInfoList(info_list)
     setTypeList(type_list)
     setCardCount(info_list.length)
@@ -194,12 +195,9 @@ function DeckCards({data,setClosed, setAltcomp}) {
 
   //function to trigger the refresh of the card data, by retreving the newly added data
   const refresh = (newcarddata) =>{ //newcard data is a list of jsons, just like currData[1]
-    const deckname = currData[0] 
-    const newlist = currData[1].concat(newcarddata)
-    //have same format of deckname, then a list of jsons in a length 2 list
-    const newdata = [deckname,newlist] //add deckname to the list 
-    setCurrData(newdata)//set the current data based on deckname
-    setAddclosed(true)
+    const newlist = currData.concat(newcarddata)
+    setCurrData(newlist)//set the current data based on deckname
+    setAddclosed(true)//close adding frame
   }
 
   //trigger button to remove all cards in the json list 
@@ -240,11 +238,11 @@ function DeckCards({data,setClosed, setAltcomp}) {
   {/*open add deck if prompted*/}
   return (
     <div>
-      <h3>"{currData[0]}" Deck</h3>
+      <h3>"{data[0]}" Deck</h3>
       {addclosed &&
       <div>
         <div id="view-deck-cards">
-          {currData[1].map((json, index)=>(
+          {currData.map((json, index)=>(
             <Card key={index} dbjson={json} datatype={typeList[index]} infojson={infoList[index]} toggleRemove={toggleRemove}/>
           ))}
         </div>
@@ -340,8 +338,8 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
   }
   //function to add or remove from the add map based on the datasent
   const toggleAdd = (data, checked) =>{
-    const {uid, index, deckname, datatype, chartype} = data//destructure
-    const key = `${index}-${datatype}-${chartype}` //get key
+    const {user_id,idx, deck_name, data_type, char_type} = data//destructure
+    const key = `${idx}-${data_type}-${char_type}` //get key
     if (checked) { //remove path call if it is checked and not fixed 
       const copy = addmap//remove from map
       copy.delete(key)
@@ -367,8 +365,8 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
     for (const key of addmap.keys()) {
       const data = addmap.get(key)
       newcarddata.push(data)
-      const {uid, index, deckname, datatype, chartype} = data
-      addcard(uid ,index, deckname, datatype, chartype)
+      const {user_id,idx, deck_name, data_type, char_type} = data
+      addcard(user_id,idx, deck_name, data_type, char_type)
     }
     queryClient.invalidateQueries(["cards"])
     while (isFetching) {} 
