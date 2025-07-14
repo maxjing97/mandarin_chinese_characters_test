@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 //API  based on if the environment is dev or production
-const API_URL = (process.env.NODE_ENV === 'development') ? "http://localhost:2008" : ""
+const API_URL = (process.env.NODE_ENV === 'development') ? "http://localhost:2008" : process.env.PROD_SERVER
 
 const UserContext = createContext(null);
 export const useUser = () => useContext(UserContext);
