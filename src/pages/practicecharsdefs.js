@@ -150,7 +150,6 @@ function getComponents(bottom, top , num_test, character_type, test_type, practi
 }
 
 export default function PracticeCharDefinition(props) { //main parent image component (to avoid remounts when changing child components shown)
-
   const navigate = useNavigate();
   const location = useLocation();
   const { range, num_test, character_type, test_type, practice_type} = location.state 

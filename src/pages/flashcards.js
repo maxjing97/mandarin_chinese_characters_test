@@ -101,7 +101,7 @@ const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => {
         user_id:userlogin.uid,
         idx:index,
         deck_name:deckname,
-        data_type:"C",
+        data_type:"W",
         char_type:charJson["code"]
       }
       if (checked) { //remove path call if it is checked and not fixed 
@@ -499,8 +499,8 @@ export function PracticeAddDeck({dataType, mainjson}) {
   }
   //function to add or remove from the add map based on the datasent
   const toggleAdd = (data, checked) =>{
-    const {uid, index, deckname, datatype, chartype} = data//destructure
-    const key = `${index}-${datatype}-${chartype}` //get key
+    const {user_id, idx, deck_name, data_type, char_type} = data//destructure
+    const key = `${idx}-${data_type}-${char_type}` //get key
     if (checked) { //remove path call if it is checked and not fixed 
       const copy = addmap//remove from map
       copy.delete(key)
@@ -516,12 +516,14 @@ export function PracticeAddDeck({dataType, mainjson}) {
   //function to handle save ()
   const handleSave = () => {
     //iterate through map and save all data
+    const newcarddata = []///list of new datajoins
     for (const key of addmap.keys()) {
-      const {uid, index, deckname, datatype, chartype} = addmap.get(key)
-      addcard(uid ,index, deckname, datatype, chartype)
+      const data = addmap.get(key)
+      newcarddata.push(data)
+      const {user_id,idx, deck_name, data_type, char_type} = data
+      addcard(user_id,idx, deck_name, data_type, char_type)
     }
     queryClient.invalidateQueries(["cards"])
-    setDeckCount(prev=>prev+1) //increment number of decks
     navigate("/flashcards")//close
   }
 
