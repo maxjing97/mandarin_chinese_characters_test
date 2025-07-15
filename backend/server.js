@@ -21,10 +21,10 @@ app.use(limiter);
 app.use(cors());  //enlabed cors
 
 //basic post request to send data for certain condition
-app.post('/add-data', (req, res) => {
+app.post('/add-data', async(req, res) => {
     const { user_id, idx, deck_name, data_type, char_type} = req.body; //get the assumed json body
     const query = `INSERT INTO flashcards (user_id, deck_name, idx, data_type, char_type) VALUES (?, ?, ?, ?, ?);`;
-    db.query(query, [user_id,deck_name, idx,data_type,char_type], (err, results) => {
+    await db.query(query, [user_id,deck_name, idx,data_type,char_type], (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -32,7 +32,7 @@ app.post('/add-data', (req, res) => {
     });
 });
 //basic get request
-app.post('/get-all-data', (req, res) => {
+app.post('/get-all-data', async(req, res) => {
     const {user_id} = req.body;
     //format the query
     const query = `
@@ -40,17 +40,16 @@ app.post('/get-all-data', (req, res) => {
         FROM flashcards
         WHERE user_id= ?
     `;
-    db.query(query, [user_id], (err, results) => {
-        if (err) {
-            console.log("request failed for user id:", user_id)
-            console.log("error message:", err.message)
-            return res.status(500).json({ error: 'Database query failed' });
-        } 
-        res.json(results);
-    });
+    try {
+        const [results] = await db.query(query, [user_id])
+        res.status(200).json(results);
+    } catch (err) {
+        res.status(500).json({message: "internal server"})
+    }
+    
 });
 //delete path for a deck
-app.post('/delete-deck', (req, res) => {
+app.post('/delete-deck', async(req, res) => {
     const { user_id, deck_name} = req.body; 
     //format the query
     const query = `
@@ -58,16 +57,16 @@ app.post('/delete-deck', (req, res) => {
         FROM flashcards
         WHERE user_id=? AND deck_name=?
     `;
-    db.query(query, [user_id, deck_name], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Database query failed' });
-        } 
-        res.json(results);
-    });
+    try {
+        const [results] = await db.query(query, [user_id, deck_name])
+        res.status(200).json(results);
+    } catch (err) {
+        res.status(500).json({message: "internal server"})
+    }
 });
 
 //delete path for a single card
-app.post('/delete-card', (req, res) => {
+app.post('/delete-card', async(req, res) => {
     const { user_id, deck_name, idx, data_type, char_type} = req.body; 
     //format the query
     const query = `
@@ -75,12 +74,12 @@ app.post('/delete-card', (req, res) => {
         FROM flashcards
         WHERE user_id=? AND deck_name=? AND idx=? AND data_type=? AND char_type=?
     `;
-    db.query(query, [user_id, deck_name, idx, data_type, char_type], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Database query failed' });
-        } 
-        res.json(results);
-    });
+    try {
+        const [results] = await db.query(query, [user_id, deck_name, idx, data_type, char_type])
+        res.status(200).json(results);
+    } catch (err) {
+        res.status(500).json({message: "internal server"})
+    }
 });
 
 

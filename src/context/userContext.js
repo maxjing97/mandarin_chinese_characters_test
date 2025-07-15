@@ -5,6 +5,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 //API  based on if the environment is dev or production
 const API_URL = process.env.REACT_APP_PROD_SERVER
+console.log("in development?:",process.env.NODE_ENV === 'development')
 
 const UserContext = createContext(null);
 export const useUser = () => useContext(UserContext);
