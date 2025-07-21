@@ -1,9 +1,23 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config({ path: '../.env' });
+import mysql from 'mysql2/promise'
+import {Connector} from '@google-cloud/cloud-sql-connector';
+import path from "path"
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config(); //load env variables
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(__dirname, './service_key.json');
 
+
+const connector = new Connector();
+const clientOpts = await connector.getOptions({
+  instanceConnectionName: 'potent-plasma-466606-d0:us-central1:mainmysql',
+  ipType: 'PUBLIC',
+});
 
 
 const connection = mysql.createPool({
+  ...clientOpts,
   host: process.env.DB_HOSTNAME,
   user: 'admin',
   password: process.env.DB_PASSWORD,
@@ -24,4 +38,4 @@ async function testPoolConnection() {
 }
 testPoolConnection()
 
-module.exports = connection;
+export default connection;

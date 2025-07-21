@@ -2,6 +2,7 @@
 
 # Ignore environment variable files
 .env
+service_key.json
 
 # dependencies
 /node_modules
@@ -10,6 +11,7 @@
 
 # testing
 /coverage
+
 
 # production
 /build
