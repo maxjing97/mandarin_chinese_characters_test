@@ -167,9 +167,11 @@ function Card({dbjson, infojson, toggleRemove}) {
 function DeckCards({data,setClosed, setAltcomp}) {  
   const queryClient = useQueryClient()
   const navigate = useNavigate() //navigate
-  const {rawdata, cardsmap, fetchRawcards} = useUser() //get the new information from the context
+  const {rawdata, cardsmap, changedeckname,userlogin, removecard} = useUser() //get the new information from the context
   const [currData, setCurrData] = useState(data[1])//current card datalist from the db (format given here) initialze here
-  const {userlogin, removecard} = useUser()
+  const [deckname, setDeckname] = useState(data[0])//set deckname
+  const [newname, setNewName] = useState(data[0])////current deckname to be set when changed
+  const [showName,setShowName] = useState(false) //show the component to set a new deckanme
   const [infoList, setInfoList] = useState([]) //get json information of the current deck of cards, 
   const [typeList, setTypeList] = useState([])  //store the type of data (words or characters) (should be the same length as the infolist) ("C" or "W")
   const [cardcount, setCardCount] = useState(0)//getCount of cards
@@ -259,11 +261,48 @@ function DeckCards({data,setClosed, setAltcomp}) {
       navigate("/flashcards-definition", {state: data})
     }
   }
+  //handle new deckname save
+  const handledecknamechange = ()=> {
+    if (newname.length ===0) {
+      alert("new deck name must but not be empty")
+      setNewName(deckname) //set to default
+      setShowName(false) //close
+      return
+    } else if (cardsmap.has(newname.trim())) {
+      alert("new deck name must but be unique, try again")
+      setNewName(deckname) //set to default
+      setShowName(false) //close
+      return
+    } else {
+      changedeckname(userlogin.uid, deckname,newname)
+      queryClient.invalidateQueries(["cards"])
+      setDeckname(newname) //set the actual deckname shown to be this
+      setShowName(false) //close
+    }
+  }
 
   {/*open add deck if prompted*/}
   return (
-    <div>
-      <h3>"{data[0]}" Deck</h3>
+    <div id="flashcards-main">
+      {!showName ?
+        <div id="deckname">
+          <button id='edit-card-name' onClick={()=>setShowName(true)}>✎</button>   
+          <h3>{deckname}</h3>
+        </div>
+        :
+        <div id="deckname-edit">
+          <h3>Select a new deck name:</h3>
+          <input
+            type="text"
+            value = {newname}
+            id="deck-name"
+            onChange={(e)=>{setNewName(e.target.value)}}
+            placeholder=""
+          />
+          <button id='card-name-save' onClick={handledecknamechange}>Save</button>   
+        </div>
+      }
+
       {addclosed &&
       <div>
         <div id="view-deck-cards">
@@ -369,7 +408,7 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
   //check if the deckname has been taken
   const handledeckname = (e) =>{
     if (deckname.length ===0) {
-      alert("deck name must but be empty")
+      alert("deck name must but not be empty")
     } else if (cardsmap.has(deckname.trim())) {
       alert("deck name must but be unique, try again")
       setDeckname("") //reset the string

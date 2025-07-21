@@ -16,6 +16,12 @@
     -ms-border-radius: 10px;
     -o-border-radius: 10px;
 }
+#flashcards-main {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
 .submit_section {
     padding-top: 10px;
     display: flex;
@@ -341,4 +347,26 @@
 .deck-button .decklabel {
     background-color: white;
     font-weight: bold;
+}
+#deckname {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto;
+}
+#deckname-edit{
+    display: column;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px;
+}
+#edit-card-name {
+    font-size: 12pt;
+    margin: 12pt;
+    border: 2px solid black;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
 }

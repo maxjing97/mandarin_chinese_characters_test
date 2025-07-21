@@ -81,7 +81,22 @@ app.post('/delete-card', async(req, res) => {
         res.status(500).json({message: "internal server"})
     }
 });
-
+//update flashcards name for a single card
+app.post('/update-deckname', async(req, res) => {
+    const { user_id, deck_name, new_name} = req.body; 
+    //format the query
+    const query = `
+        UPDATE flashcards
+        SET deck_name=?
+        WHERE user_id=? AND deck_name=?;
+    `;
+    try {
+        const [results] = await connection.query(query, [new_name, user_id,deck_name])
+        res.status(200).json(results);
+    } catch (err) {
+        res.status(500).json({message: "internal server"})
+    }
+});
 
 // Start server on port 2001
 const PORT = 2008;

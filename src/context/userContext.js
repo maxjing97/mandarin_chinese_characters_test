@@ -141,6 +141,30 @@ export default function UserProvider ({children}) {
         console.error("unknown issues when trying to add data")
       }
     }
+    //function to change deck name
+    const changedeckname = async(uid, deck_name, new_name) => {
+        try {
+            const data = {
+                user_id:uid,
+                deck_name:deck_name,
+                new_name:new_name,
+            }
+            const response = await fetch(`${API_URL}/update-deckname`, {
+                method: "POST",
+                headers: {
+                    "Content-Type":"application/json",
+                },
+                body: JSON.stringify(data)
+            })
+            if(!response.ok) {
+                console.log("updating cards name failed")
+            } else {
+                console.log("succesfully updated card name")
+            }
+        } catch (e) {
+            console.error("unknown error when changing deck name", e)
+        }
+    }
 
     //destructure and rename data 
     const {data: rawcards, isSuccess, isError, isFetching} = useQuery({
@@ -160,7 +184,8 @@ export default function UserProvider ({children}) {
 
 
     return (
-        <UserContext.Provider value={{userlogin, rawcards,isFetching, cardsmap, addcard, removecard, removedeck,fetchRawcards}}>
+        <UserContext.Provider value={{userlogin, rawcards,isFetching, cardsmap, 
+        addcard, removecard, removedeck, fetchRawcards, changedeckname}}>
             {children}
         </UserContext.Provider>
     )
