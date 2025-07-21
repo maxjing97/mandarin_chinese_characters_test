@@ -1,12 +1,16 @@
 import mysql from 'mysql2/promise'
 import {Connector} from '@google-cloud/cloud-sql-connector';
 import path from "path"
-import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import os from 'os';
+import fs from 'fs';
 dotenv.config(); //load env variables
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(__dirname, './service_key.json');
+const googlekey = process.env.GOOGLE_IAM
+//process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(__dirname, './service_key.json');
+// Write the JSON key to a temporary file
+const tmpFilePath = path.join(os.tmpdir(), 'temp_key.json'); //get a temporary path
+fs.writeFileSync(tmpFilePath, googlekey);
+process.env.GOOGLE_APPLICATION_CREDENTIALS  = tmpFilePath
 
 
 const connector = new Connector();
