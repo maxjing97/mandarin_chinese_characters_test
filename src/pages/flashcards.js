@@ -352,6 +352,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
 //main component shown at the home flashcards page, under flashcards.
 function Deck({data, setDeckCount, setClosed, setAltcomp}) {
   const {userlogin, removedeck} = useUser()
+  const navigate = useNavigate() //navigate
   const queryClient = useQueryClient()
   //display if details are being shown
   const handleRemove = () => {
@@ -362,6 +363,7 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
       setDeckCount(prev=>prev-1) //decrement 
       queryClient.invalidateQueries(["cards"])
     } else {
+      setClosed(true) //hide the card deck
       return
     }
   }
@@ -375,8 +377,8 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
     <div>
       <div className="deck" onClick={handleDetails}>
         <button id="goto-deck" onClick={handleDetails}>
-        <h3>{data[0]}</h3>
-        <h3>{data[1].length} Cards</h3>
+        <h2>{data[0]}</h2>
+        <h4>{data[1].length} Cards</h4>
         </button>
         <button onClick={handleRemove} id="trash-deck">
           Delete
