@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom' ;
 
 const maxCat = 2429 //constant storing the highest possible character difficulty category (may change as more characters are added)
 
-//this the main navigation part to select the characters
+//this the main navigation part to select the characters to practice for the word options
 export default function Words() {
     const navigate = useNavigate();
-    const [catrange, setCatrange] = useState([1, 100]); //sets the character range, matching default custom range selection
+    const [catrange, setCatrange] = useState([1, maxCat]); //sets the character range, default is all, matching default custom range selection
     const [numChars, setNumChars] = useState(10); //set text in the input box
     const [customLower, setCustomLower] = useState(1); //lower number in the range
     const [customUpper, setCustomUpper] = useState(100); //upper number in the range
@@ -48,7 +48,7 @@ export default function Words() {
         if (numChars < 10) {
             setError("Number of Characters selected less than 10")
         } else if (numChars > maxCat) {
-            setError("Number of Characters selected too large")
+            setError("Number selected to practice is too large")
         } else if (catrange[0] > catrange[1] || Math.abs(catrange[1]-catrange[0])<10 || catrange[0]<1 || catrange[1]>maxCat) {
             setError("Character range must be greater than 10 and have a valid range")
         } else if (Math.abs(catrange[1]-catrange[0])<numChars ) {
@@ -72,32 +72,36 @@ export default function Words() {
             <div className="container">
                 <h2 className="selectCat">Select Difficulty Range (1-{maxCat}) of Characters to test</h2>
                 <div className="rangebuttonContainer">
-                    <div className="charbutton"> 
-                        <input type="radio" name="range" id="r1" onClick={() => setCatrange([1, 500])} className="charbutton"></input>
-                        <label htmlFor ="r1">Beginner: (1-500)</label>
-                    </div>
-                    <div className="charbutton"> 
-                        <input type="radio" name="range" id="r2" onClick={() => setCatrange([500, 1000])} className="charbutton"></input>
-                        <label htmlFor ="r2">Advanced Begineer: (500-1000)</label>
-                    </div>                    
-                    <div className="charbutton"> 
-                        <input type="radio" name="range" id="r3" onClick={() => setCatrange([1000, 1500])} className="charbutton"></input>
-                        <label htmlFor ="r3">Intermediate: (1000-1500)</label>
-                    </div>                  
-                    <div className="charbutton"> 
-                        <input type="radio" name="range" id="r4" onClick={() => setCatrange([1500, 2000])} className="charbutton"></input>
-                        <label htmlFor ="r4">Intermediate+: (1500-2000)</label>
-                    </div>                                
-                    <div className="charbutton"> 
-                        <input type="radio" name="range" id="r5" onClick={() => setCatrange([2000, maxCat])} className="charbutton"></input>
-                        <label htmlFor ="r5">Advanced: (2000+)</label>
+                    <div className="charbutton" onClick={() => setCatrange([1, maxCat])}> 
+                        <input type="radio" name="range" id="r7"  className="charbutton" checked={catrange[0]===1 && catrange[1]===maxCat}></input>
+                        <label htmlFor ="r7">All</label>
                     </div>        
-                    <div className="charbutton"> 
-                        <input type="radio" name="range" id="r6" className="charbutton" onClick={handleCustomRange}></input>
+                    <div className="charbutton" onClick={handleCustomRange}> 
+                        <input type="radio" name="range" id="r6" className="charbutton" checked={catrange[0]===customLower && catrange[1]===customUpper}></input>
                         <label htmlFor ="r6">Custom Range: </label>
                         <input type="number" value = {customLower} onChange={handleLowerChange} className="numinput" id="lower-rad"/> to 
                         <input type="number" value = {customUpper} onChange={handleUpperChange} className="numinput" id="upper-rad"/>
-                    </div>        
+                    </div>  
+                    <div className="charbutton" onClick={() => setCatrange([1, 500])}> 
+                        <input type="radio" name="range" id="r1" className="charbutton" checked={catrange[0]===1 && catrange[1]===500}></input>
+                        <label htmlFor ="r1">1-500</label>
+                    </div>
+                    <div className="charbutton" onClick={() => setCatrange([500, 1000])}> 
+                        <input type="radio" name="range" id="r2"  className="charbutton" checked={catrange[0]===500}></input>
+                        <label htmlFor ="r2">500-1000</label>
+                    </div>                    
+                    <div className="charbutton" onClick={() => setCatrange([1000, 1500])}> 
+                        <input type="radio" name="range" id="r3"  className="charbutton" checked={catrange[0]===1000}></input>
+                        <label htmlFor ="r3">1000-1500</label>
+                    </div>                  
+                    <div className="charbutton" onClick={() => setCatrange([1500, 2000])}> 
+                        <input type="radio" name="range" id="r4"  className="charbutton" checked={catrange[0]===1500}></input>
+                        <label htmlFor ="r4">1500-2000</label>
+                    </div>                                
+                    <div className="charbutton" onClick={() => setCatrange([2000, maxCat])}> 
+                        <input type="radio" name="range" id="r5"  className="charbutton" checked={catrange[0]===2000}></input>
+                        <label htmlFor ="r5">2000+</label>
+                    </div>              
                 </div>
 
                 <div id="rangeinputbox">
@@ -113,12 +117,12 @@ export default function Words() {
 
                 <h2 className="selectCat">Select Character type</h2>
                 <div className="rangebuttonContainer">
-                    <div className="charbutton"> 
-                        <input type="radio" name="chartype" id="c1" onClick={() => setCharType("Trad")} className="charbutton" checked={CharType==="Trad"}></input>
+                    <div className="charbutton"  onClick={() => setCharType("Trad")}> 
+                        <input type="radio" name="chartype" id="c1" className="charbutton" checked={CharType==="Trad"}></input>
                         <label htmlFor ="c1">Traditional</label>
                     </div>
-                    <div className="charbutton"> 
-                        <input type="radio" name="chartype" id="c2" onClick={() => setCharType("Simp")} className="charbutton"></input>
+                    <div className="charbutton" onClick={() => setCharType("Simp")}> 
+                        <input type="radio" name="chartype" id="c2" className="charbutton" checked={CharType==="Simp"}></input>
                         <label htmlFor ="c2">Simplified</label>
                     </div>     
                 </div>

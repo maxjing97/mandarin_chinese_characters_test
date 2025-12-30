@@ -161,7 +161,7 @@ export default function PracticeCardDefinition(props) { //main parent image comp
   
   const [index, setIndex] = useState(0); //this index is key, cycling through through all words (60 for now 2 for ach)
   const [isText, setIsText] = useState(0); //states if we are on the definition part or not 
-  const [correctmessage, setCorrectMessage]  = useState("") //store the correct message
+  const [correctmessage, setCorrectMessage]  = useState("Select the correct definition") //store the correct message
   const [accuracies, setAccuracies] = useState([])//array for accuracies
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
   
@@ -243,7 +243,7 @@ export default function PracticeCardDefinition(props) { //main parent image comp
 
   return (
     <div className="all">
-      <button onClick={menuExit} className="back">
+      <button onClick={menuExit} className="back-menu">
       ⬅ Back to Menu
       </button>
       <h3>Select the correct definition for the character</h3>
@@ -267,11 +267,13 @@ export default function PracticeCardDefinition(props) { //main parent image comp
           <button onClick={() =>  handleSelection("4")} className="selectbutton">{defJsons[Math.floor(index/2)]["4"]}</button>
           </div>
         </div>
+
+        <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
+
         <div id="def_buttons">
           <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
           {(Math.floor(index/2) < num_test) ? `Word ${Math.floor(index/2)} of ${num_test} total`: 
           `Repeating missed characters`}</p> 
-          <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
         </div>
         <button className="back" style={{...styles.next_button, ...{display : (index % 2===1 ? "block":"none")}}} onClick={handleSubmit}>Try the Next Word ➡</button>
       </div>
@@ -286,7 +288,7 @@ let styles = {
     color: "black",
     fontSize: "14pt",
     display: "flex",
-    margin: "0 auto",
+    margin: "10 auto",
     padding: "10px",
     justifyContent: "center",
     borderRadius: '12px',

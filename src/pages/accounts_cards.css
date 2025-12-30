@@ -93,19 +93,7 @@
     text-align: center;
     align-items: center;
 }
-.add-deck {
-    background-color: azure;
-    width: 150px;
-    height: 200px;
-    margin: 0 10px;
-    font-size: 14pt;
-    padding: 0;
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
-}
+
 .deck {
     background-color: azure;
     display: flex;
@@ -116,6 +104,7 @@
     height: 200px;
     margin: 0 10px;
     padding: 0;
+    box-shadow: 3px 3px 0px 4px rgb(0, 0, 0);
     border: 2px solid black;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -127,19 +116,66 @@
     padding: 0;
     margin-top: 0;
 }
+.deck:hover{
+    display: flex;
+    box-shadow: none;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    width: 150px;
+    height: 200px;
+    margin: 0 10px;
+    padding: 0;
+    border: 2px solid rgb(0, 0, 0);
+    box-shadow: 3px 3px 3px 4px rgb(0, 0, 0);
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+.deck:active{ /*this class allows for special effects for when the div is clicked o*/
+    display: flex;
+    box-shadow: none;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    width: 150px;
+    height: 200px;
+    margin: 0 10px;
+    padding: 0;
+    border: 2px solid rgb(0, 0, 0);
+    box-shadow: none;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
 #goto-deck {
+    background-color: transparent;
+    border: none;
+    padding-bottom: 20px;
+    margin: auto;
+}
+.add-deck {
     background-color: azure;
-    border: none;
-    padding-bottom: 20px;
-    margin: auto;
+    width: 150px;
+    height: 200px;
+    margin: 0 10px;
+    font-size: 14pt;
+    padding: 0;
+    box-shadow: 3px 3px 0px 4px rgb(0, 0, 0);
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
 }
-#goto-deck:hover {
-    background-color: rgb(219, 36, 79);
-    color: aliceblue;
-    border: none;
-    padding-bottom: 20px;
-    margin: auto;
+.add-deck:active {
+    box-shadow: none;
 }
+
 .main-decks-display {
     display: flex;
     text-align: center;
@@ -205,20 +241,19 @@
     font-size: 14pt;
 }
 #card-name-save {
-    height: 23px;
-    margin: auto 0;
-    padding: 30px auto;
+    height: 27px;
+    display: inline-flex;
+    font-size: 14pt;     
+    margin: auto;
+    align-items: center;
+    justify-content: center; 
+    padding: 10px 20px;
     background-color: rgb(44, 72, 255);
     color: white;
-    font-size: 12pt;
     font-weight: bold;
     font-family: Arial, Helvetica, sans-serif;
     border-color: aliceblue;
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -ms-border-radius: 3px;
-    -o-border-radius: 3px;
+    border-radius: 10px;
 }
 #save-cards {
     margin-top: 10px;

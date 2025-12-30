@@ -120,7 +120,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
   const [isText, setIsText] = useState(0); //states if we are on the definition part or not 
   const [text, setText] = useState(""); //set text in the input box
   const [nextText, setnextText] = useState("Submit");//text to display in the next button
-  const [correctmessage, setCorrectMessage]  = useState("") //store the correct message
+  const [correctmessage, setCorrectMessage]  = useState("Type the correct pronunciation") //store the correct message
   const [accuracies, setAccuracies] = useState([])//array for accuracies
 
   const inputRef = useRef(null); //use to focus cursor. UseRef hooks create object that lasts through renders, and modifying does not trigger a re-render
@@ -263,7 +263,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
   }
   return (
     <div className="all">
-      <button onClick={menuExit} className="back">
+      <button onClick={menuExit} className="back-menu">
       ⬅ Back to Menu
       </button>
       <h3>Try to type the pronuciation ({test_type === "prt"? "without": "with"} tone) for {numtest} characters</h3>
@@ -319,6 +319,12 @@ let styles = {
   correct_text: {
     color: "black",
     fontSize: "14pt",
+    display: "flex",
+    margin: "10 auto",
+    padding: "10px",
+    justifyContent: "center",
+    borderRadius: '12px',
+    placeItems: "center",
   }, 
   skip: {
     backgroundColor: '#44e02f',     // vibrant green

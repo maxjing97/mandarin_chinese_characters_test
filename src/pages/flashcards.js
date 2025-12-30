@@ -163,11 +163,11 @@ function Card({dbjson, infojson, toggleRemove}) {
   )
 }
 
-//get deck details from clicking set, get all detail of cards, allowing redirect to practice
+//get deck details from clicking set, get all detail of cards within a certain flashcard deck, allowing redirect to practice 3 possibilitiies
 function DeckCards({data,setClosed, setAltcomp}) {  
   const queryClient = useQueryClient()
   const navigate = useNavigate() //navigate
-  const {rawdata, cardsmap, changedeckname,userlogin, removecard} = useUser() //get the new information from the context
+  const {rawdata, cardsmap, changedeckname,userlogin, removecard} = useUser() //get the new information, functions that link to the api from the context
   const [currData, setCurrData] = useState(data[1])//current card datalist from the db (format given here) initialze here
   const [deckname, setDeckname] = useState(data[0])//set deckname
   const [newname, setNewName] = useState(data[0])////current deckname to be set when changed
@@ -317,11 +317,11 @@ function DeckCards({data,setClosed, setAltcomp}) {
           </button>
           {(countChars() > 0 && removesize === 0) && 
           <div>
-            <button onClick={()=>handlePractice("prt")} id="menu-practice-button">
-              Practice Pronunciation (no tones) for {countChars()} Flashcards 
-            </button>
             <button onClick={()=>handlePractice("pwt")} id="menu-practice-button">
-              Practice Pronunciation (with tones) for {countChars()} Flashcards 
+              Practice Pronunciations with tones
+            </button>
+            <button onClick={()=>handlePractice("prt")} id="menu-practice-button">
+              Practice Pronunciations without tones
             </button>
           </div>
           }
@@ -332,7 +332,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
           }
           {removesize === 0 &&
           <button onClick={()=>handlePractice("def")} id="menu-practice-button">
-            Practice Definition for all Cards 
+            Practice Definitions for all cards 
           </button>
           }
           <button onClick={()=>setAddclosed(false)} id="menu-button">
@@ -349,12 +349,13 @@ function DeckCards({data,setClosed, setAltcomp}) {
   )
 }
 
+//main component shown at the home flashcards page, under flashcards.
 function Deck({data, setDeckCount, setClosed, setAltcomp}) {
   const {userlogin, removedeck} = useUser()
   const queryClient = useQueryClient()
   //display if details are being shown
   const handleRemove = () => {
-    //confirm with user 
+    //confirm with user
     const confirmed = window.confirm(`Are you sure you want to delete this deck, ${data[0]}`);
     if(confirmed) {
       removedeck(userlogin.uid, data[0])
@@ -372,7 +373,7 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
   
   return (
     <div>
-      <div className="deck">
+      <div className="deck" onClick={handleDetails}>
         <button id="goto-deck" onClick={handleDetails}>
         <h3>{data[0]}</h3>
         <h3>{data[1].length} Cards</h3>
@@ -458,7 +459,7 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
     <div>
       {showdecknameinput && 
       <div>
-        <h3>Give a name for the deck</h3>
+        <h3>Select a Name</h3>
         <input
           type="text"
           value = {deckname}
@@ -686,7 +687,7 @@ export function PracticeAddDeck({dataType, mainjson}) {
   )        
 }
 
-//components to display the flash card preview
+//components to display multiple flashcard decks. Renders, potentially, multiple deck components
 export default function Flashcards() { 
   const {cardsmap} = useUser()
   const [decks, setDecks] = useState([]) //get decks map
