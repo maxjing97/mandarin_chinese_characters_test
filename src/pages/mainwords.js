@@ -67,7 +67,7 @@ export default function Words() {
     };
 
     return (
-        <div className="page">
+        <header className="page">
             <h1 className="title">Test your knowledge of Multi-Character Words (詞)</h1>
             <div className="container">
                 <h2 className="selectCat">Select Difficulty Range (1-{maxCat}) of Characters to test</h2>
@@ -138,6 +138,6 @@ export default function Words() {
                 <p id="error">{error}</p> 
                 <p>More information about the difficulty range of multi-character words can be found by clicking on the learn page.</p>
             </div>
-        </div>
+        </header>
     );
 }

@@ -54,7 +54,7 @@ const DetailsRow = ({charJson}) => {
   );
 };
 //child component 4: component to display the final results and give a list of missed results 
-const Results = ({accuracies, num_test, componentJsons}) => {
+const Results = ({accuracies, num_test, componentJsons, setPracticing=()=>{}}) => {
   const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
   const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
 
@@ -75,13 +75,16 @@ const Results = ({accuracies, num_test, componentJsons}) => {
     <div className='results-display'>
       <h2>Results Page</h2>
       <p>First-time Accuracy {accuracy/num_test*100}% or {accuracy}/{num_test} correct</p>
-      <p>Missed Characters (if any)</p>
+      {compList.length > 0 && <p>Missed Characters </p>}
       <table style={{ display: compList.length > 0 ? 'block' : 'none' }}>
         <tr><th>word/character</th><th>definition</th><th>full pronunciation</th></tr>
         {compList.map((Json, i) => (
           <DetailsRow charJson={Json}/>
         ))}
       </table>
+      <button onClick={()=>setPracticing(false)} className="back-menu-results">
+      Finish
+      </button>
     </div>
   );
 };
@@ -148,10 +151,9 @@ function getComponents(jsonlist) {  //jsonlist, typelist
   return [componentsList, correctvals, jsonlist, defslist]
 }
 
-export default function PracticeCardDefinition(props) { //main parent image component (to avoid remounts when changing child components shown)
+export default function PracticeCardDefinition({infojsons=[],typelist=[], test_type, setPracticing=()=>{}}) { //main parent image component (to avoid remounts when changing child components shown)
   const navigate = useNavigate();
   const location = useLocation();
-  const { infojsons, typejsons} = location.state 
   const num_test = infojsons.length?? 0//number of tested is equal to the length of the input 
   //get destructured data
   const [componentList, setComponentList] = useState([])//store the fixed list of components 
@@ -191,7 +193,7 @@ export default function PracticeCardDefinition(props) { //main parent image comp
         setIndex(0);
         setIsText(1);
         setCorrectMessage("") //clear mesage at the end
-        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
+        setComponentList([<Results setPracticing={setPracticing} accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
       }
     } else if (gap === 2) { //if gap is two, we keep the same pattern
       if (index < (componentList.length-2)) {
@@ -201,7 +203,7 @@ export default function PracticeCardDefinition(props) { //main parent image comp
         setIndex(0);
         setIsText(1);
         setCorrectMessage("") //clear mesage at the end
-        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
+        setComponentList([<Results setPracticing={setPracticing} accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
       }
     }
   }
@@ -232,8 +234,10 @@ export default function PracticeCardDefinition(props) { //main parent image comp
     //in the case, we are not at the results page, show a warning window before exiting to menu
     const confirmed = window.confirm("Are you sure you want to proceed?"); //confirm for this case as a precaution to avoid exiting to menu
     if (confirmed) {
-      navigate('/flashcards') //exist back to characters
-    } 
+      setPracticing(false)
+    } else {
+      return
+    }
   }
 
   const handleSubmit = (e) => {
@@ -268,7 +272,9 @@ export default function PracticeCardDefinition(props) { //main parent image comp
           </div>
         </div>
 
-        <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
+        {correctmessage.length > 0 && 
+        <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p>
+        }
 
         <div id="def_buttons">
           <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>

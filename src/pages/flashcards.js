@@ -4,6 +4,8 @@ import {Link, useNavigate, useNavigationType} from "react-router-dom"
 import {auth} from "../context/auth"
 import { useQueryClient } from '@tanstack/react-query';
 import { useUser } from "../context/userContext";
+import PracticeCardDefinition from "./practicecardsdefs"
+import PracticeCardPronunciation from "./practicecardspros"
 import tradchar from './data/tradchars.json'; //import json fo 
 import simpchar from './data/simpchars.json'; //import json 
 import tradword from './data/tradwords.json'; //import json fo 
@@ -203,6 +205,9 @@ function DeckCards({data,setClosed, setAltcomp}) {
   const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
   const [addclosed, setAddclosed] = useState(true)//store if the addcard component is closed
+  const [practicing, setPracticing] = useState(false) //if a practice component is opened
+  const [practiceType, setPracticeType] = useState("")//type of practice set in handle practice
+  
   //prepare the original data
   useEffect(()=>{
     const info_list = []
@@ -311,12 +316,8 @@ function DeckCards({data,setClosed, setAltcomp}) {
       typelist: typeList,
       test_type: type
     }
-    if (type === "prt" || type === "pwt") { //if pronunciation is selected
-      //since now, our cards hva
-      navigate("/flashcards-pronunciation", {state: data})
-    } else {
-      navigate("/flashcards-definition", {state: data})
-    }
+    setPracticeType(type)
+    setPracticing(true)
   }
   //handle new deckname save
   const handledecknamechange = ()=> {
@@ -360,7 +361,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
         </div>
       }
 
-      {addclosed &&
+      {addclosed && !practicing &&
       <div>
         <div id="view-deck-cards">
           {currData.map((json, index)=>(
@@ -403,6 +404,15 @@ function DeckCards({data,setClosed, setAltcomp}) {
         </div>
         <p>Pronunciation can only be practiced for cards that are single characters (字). Check out the learn page for what constitutes a single character</p>
       </div>
+      }
+      {practicing && 
+        <div>
+          {(practiceType === "prt" || practiceType === "pwt") ?
+            <PracticeCardPronunciation infojsons={infoList} typelist={typeList} test_type={practiceType} setPracticing={setPracticing}/> 
+            :
+            <PracticeCardDefinition infojsons={infoList} typelist={typeList} test_type={practiceType} setPracticing={setPracticing}/> 
+          }
+        </div>
       }
       {!addclosed &&
         <AddDeck defaultdeckname={data[0]} contained={infoList} refresh={refresh}/>
@@ -565,27 +575,27 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
         <button id="save-cards" onClick={handleSave}>{count} cards added, Save and Exit</button>
       </div>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="characters")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
           <tbody>{Object.entries(tradchar).map((Json,i) => (
-            <CharDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
+            <CharDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="characters")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
           <tbody>{Object.entries(simpchar).map((Json,i) => (
-            <CharDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
+            <CharDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="words")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
           <tbody>{Object.entries(tradword).map((Json,i) => (
-            <DefDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
+            <DefDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="words")}>
           <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{Object.entries(simpword).map((Json,i) => (
-            <DefDetailsRow charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
+            <DefDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>
         </table>
       </div>}

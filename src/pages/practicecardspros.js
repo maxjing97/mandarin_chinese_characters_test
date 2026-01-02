@@ -38,7 +38,7 @@ const DetailsRow = ({charJson}) => {
   );
 };
 //child component 4: component to display the final results and give a list of missed results 
-const Results = ({accuracies, num_test, componentJsons}) => {
+const Results = ({accuracies, num_test, componentJsons, setPracticing=()=>{}}) => {
   const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
   const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
 
@@ -59,13 +59,16 @@ const Results = ({accuracies, num_test, componentJsons}) => {
     <div className='results-display'>
       <h2>Results Page</h2>
       <p>First-time Accuracy {accuracy/num_test*100}% or {accuracy}/{num_test} correct</p>
-      <p>Missed Characters (if any)</p>
+      {compList.length > 0 && <p>Missed Characters </p>}
       <table style={{ display: compList.length > 0 ? 'block' : 'none' }}>
         <tr><th>word/character</th><th>definition</th><th>full pronunciation</th></tr>
         {compList.map((Json, i) => (
           <DetailsRow charJson={Json}/>
         ))}
       </table>
+      <button onClick={()=>setPracticing(false)} className="back-menu-results">
+        Finish
+      </button>
     </div>
   );
 };
@@ -106,11 +109,10 @@ function getComponents(jsonlist, test_type) {
   return [componentsList, correctvals, jsonlist]
 }
 
-export default function PracticeCardPronunciation(props) { //main parent image component (to avoid remounts when changing child components shown)
+export default function PracticeCardPronunciation({infojsons=[],typelist=[], test_type, setPracticing=()=>{}}) { //main parent image component (to avoid remounts when changing child components shown)
   const navigate = useNavigate();
   const location = useLocation();
   //get destructured data
-  const { infojsons,typelist, test_type} = location.state 
   const [numtest, setNumtest] = useState(0)//set num_test, number tested
 
   const [componentList, setComponentList] = useState([])//store the fixed list of components 
@@ -173,7 +175,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
         setIndex(0);
         setIsText(1);
         setCorrectMessage("") //clear mesage at the end
-        setComponentList([<Results accuracies={accuracy_list} num_test={numtest} componentJsons={correctJsons}/>])
+        setComponentList([<Results setPracticing={setPracticing} accuracies={accuracy_list} num_test={numtest} componentJsons={correctJsons}/>])
       }
     } else if (gap === 2) { //if gap is two, we keep the same pattern
       if (index < (componentList.length-2)) {
@@ -183,7 +185,7 @@ export default function PracticeCardPronunciation(props) { //main parent image c
         setIndex(0);
         setIsText(1);
         setCorrectMessage("") //clear mesage at the end
-        setComponentList([<Results accuracies={accuracy_list} num_test={numtest} componentJsons={correctJsons}/>])
+        setComponentList([<Results setPracticing={setPracticing} accuracies={accuracy_list} num_test={numtest} componentJsons={correctJsons}/>])
       }
     }
   }
@@ -226,8 +228,10 @@ export default function PracticeCardPronunciation(props) { //main parent image c
     //in the case, we are not at the results page, show a warning window before exiting to menu
     const confirmed = window.confirm("Are you sure you want to proceed?"); //confirm for this case as a precaution to avoid exiting to menu
     if (confirmed) {
-      navigate('/flashcards') //exist back to characters
-    } 
+      setPracticing(false)
+    } else {
+      return
+    }
   }
 
   //function for the special tone keyboard
@@ -297,7 +301,9 @@ export default function PracticeCardPronunciation(props) { //main parent image c
       
       <button onClick={handleSubmit} style={{...styles.skip, ...{display: componentList.length !== 1 ? 'block' : 'none' }}}>{nextText}</button> {/* skip function inherted from parent component (display only the number of components is not 0)*/}
       
-      <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
+      {correctmessage.length > 0 && 
+      <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p>
+      }
 
       {/*only display tone keyboard for*/}
       <div style={{display : test_type === "pwt" ? 'block' : 'none'}}> 
