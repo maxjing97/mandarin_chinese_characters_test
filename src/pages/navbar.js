@@ -9,7 +9,7 @@ import { signOut } from 'firebase/auth';
 const Navbar=()=>{
     const navigate = useNavigate();
     const [accountText, setAccountText] = useState("❌") //index of components to show
-    const {userlogin} = useUser()//get user info 
+    const {userlogin} = useUser()//get user info - true if user has logged in 
     const logout = async () => {
         await signOut(auth);
         navigate("/")

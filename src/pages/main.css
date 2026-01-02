@@ -77,7 +77,8 @@ input[type="radio"]:checked{
     font-size: 14pt; 
     height: 16pt;
     font-weight: bold;  
-    margin: auto;
+    max-width: 100pt;
+    margin: 12pt;
 }
 
 .numinput {
@@ -95,6 +96,11 @@ input[type="radio"]:checked{
     font-weight: bold;  
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+p.rangeinputbox-text {
+    margin: 10 0;
+    padding: 0px;
 }
 
 #error {

@@ -1,12 +1,14 @@
 import './main.css';
 import React, { Component, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from "../context/userContext";
 
 const maxCat = 2429 //constant storing the highest possible character difficulty category (may change as more characters are added)
 
 //this the main navigation part to select the characters
 export default function Characters() {
     const navigate = useNavigate();
+    const {userlogin} = useUser()//get user info - true if user has logged in 
     const [catrange, setCatrange] = useState([1, maxCat]); //sets the character range, matching default custom range selection
     const [numChars, setNumChars] = useState(10); //set text in the input box
     const [customLower, setCustomLower] = useState(1); //lower number in the range
@@ -45,8 +47,8 @@ export default function Characters() {
         //convert to integer 
         console.log(numChars)
         console.log(catrange)
-        if (numChars < 10) {
-            setError("Number of Characters selected less than 10")
+        if (numChars < 5) {
+            setError("Number of Characters selected less than 5")
         } else if (numChars > maxCat) {
             setError("Number selected to practice is too large")
         } else if (catrange[0] > catrange[1] || Math.abs(catrange[1]-catrange[0])<10 || catrange[0]<1 || catrange[1]>maxCat) {
@@ -110,7 +112,7 @@ export default function Characters() {
                 </div>
 
                 <div id="rangeinputbox">
-                    <p className="selectCat"># to test:</p>
+                    <p className="rangeinputbox-text">Test me on</p>
                     <input
                         type="number"
                         value = {numChars}
@@ -118,6 +120,7 @@ export default function Characters() {
                         placeholder=""
                         className="textinput"
                     />
+                    <p className="rangeinputbox-text">items</p>
                 </div>
 
                 <h2 className="selectCat">Select Character type</h2>
@@ -139,6 +142,9 @@ export default function Characters() {
                     <button onClick={() => handleSubmit("def") } className="selectbutton">Definitions</button>
                 </div>
                 <p id="error">{error}</p> 
+                {!userlogin && 
+                    <p style={{fontSize: "14pt", fontWeight: 'bold', color: "rgba(197, 0, 0, 1)"}}>You are not logged in. You need to login or create an account to save flashcards.</p>
+                }
                 <p>More information about the difficulty range of characters can be found by clicking on the learn page.</p>
             </div>
         </div>

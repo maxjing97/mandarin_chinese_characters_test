@@ -2,6 +2,8 @@ import './practice.css';
 import React, { Component, useState, useEffect, useRef } from 'react';
 import { PracticeAddDeck } from './flashcards';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useUser } from "../context/userContext";
+
 import tradchar from './data/tradchars.json'; //import json fo 
 import simpchar from './data/simpchars.json'; //import json 
 //add component to display the challenge
@@ -41,6 +43,7 @@ const DetailsRow = ({charJson}) => {
 };
 //child component 4: component to display the final results and give a list of missed results 
 const Results = ({accuracies, num_test, componentJsons}) => {
+  const {userlogin} = useUser()//get user info - true if user has logged in 
   const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
   const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
 
@@ -70,8 +73,12 @@ const Results = ({accuracies, num_test, componentJsons}) => {
           <DetailsRow charJson={Json}/>
         ))}
       </table>
-      <p>Save your missed characters to a flashcard deck!</p>
-      <PracticeAddDeck dataType={"characters"} mainjson={compList}/>
+      {userlogin &&
+      <div>
+        <p>Save your missed characters to a flashcard deck!</p>
+        <PracticeAddDeck dataType={"words"} mainjson={compList}/>
+      </div>
+      }
     </div>
   );
 };
