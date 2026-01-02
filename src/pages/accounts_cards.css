@@ -119,7 +119,7 @@
     margin-top: 0;
 }
 
-.deck:active{ /*this class allows for special effects for when the div is clicked o*/
+.deck:active { /*this class allows for special effects for when the div is clicked o*/
     display: flex;
     box-shadow: none;
     flex-direction: column;
@@ -152,8 +152,27 @@
     text-align: center;
     margin: auto;
     padding: auto;
+    border: 2px solid rgb(140, 255, 83);
+    box-shadow: 3px 3px 3px 0px rgb(140, 255, 83);
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+.deck:active  {
+    box-shadow: none;
+    text-align: center;
+    margin: auto;
+    padding: auto;
+    border: none;
+}
+.deck:active #goto-deck {
+    box-shadow: none;
+    text-align: center;
+    margin: auto;
+    padding: auto;
     border: 2px solid rgb(0, 0, 0);
-    box-shadow: 3px 3px 3px 4px rgb(0, 0, 0);
     border-radius: 10px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
