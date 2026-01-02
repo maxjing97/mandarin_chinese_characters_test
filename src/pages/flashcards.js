@@ -687,7 +687,7 @@ export function PracticeAddDeck({dataType, mainjson}) {
     const copy = addmap//add to the current map
     for(const json of mainjson) {
       const idx = findIndex(json)
-      const data_type = dataType==="words" ? "W":"S"
+      const data_type = dataType==="words" ? "W":"C"
       const char_type = json["code"]
       const data = {user_id : userlogin.uid, idx:idx, deck_name : deckname, data_type:data_type, char_type:json["code"]}//destructure
       const key = `${idx}-${data_type}-${char_type}` //get key

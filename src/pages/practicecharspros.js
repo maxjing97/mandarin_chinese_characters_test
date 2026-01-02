@@ -73,7 +73,7 @@ const Results = ({accuracies, num_test, componentJsons}) => {
       {userlogin &&
       <div>
         <p>Save your missed characters to a flashcard deck!</p>
-        <PracticeAddDeck dataType={"words"} mainjson={compList}/>
+        <PracticeAddDeck dataType={"characters"} mainjson={compList}/>
       </div>
       }
     </div>
