@@ -240,8 +240,8 @@ function DeckCards({data,setClosed, setAltcomp}) {
 
   //trigger button to remove all cards in the json list 
   const removeCards = () => {
-    const confirm = window.confirm("remove selected cards?")
-    if (confirm) {
+    //allow for simple removal if the deck would not be deleted
+    if (removesize < cardcount) {
       let newData = currData
       for (const key of removejson.keys()) {
         const [index, deckname, data_type, char_type]= removejson.get(key) //destructure 
@@ -255,12 +255,29 @@ function DeckCards({data,setClosed, setAltcomp}) {
       setRemovesize(0)
       setRemovejson(new Map())
       queryClient.invalidateQueries(["cards"])
-      //return to menu if all cards are deleted, else keep in the same deck
-      if (cardcount - removesize === 0) {
-        setClosed(true) //return to menu
-      } 
     } else {
-      return
+      const confirm = window.confirm("Removing all cards left will delete the deck. Proceed?")
+      if (confirm) {
+        let newData = currData
+        for (const key of removejson.keys()) {
+          const [index, deckname, data_type, char_type]= removejson.get(key) //destructure 
+          removecard(userlogin.uid, index, deckname, data_type, char_type)
+          setCardCount(prev=>prev-1)//incrment
+          //remove from the deck (keep all values that do not match all the key conditions) demorgan's law
+          //remove cases where the card matches the index, chartype, datatype, and 
+          newData = newData.filter( prev=>(parseInt(prev.idx) != parseInt(index) || prev.char_type != char_type || prev.data_type != data_type) )
+        }
+        setCurrData(newData)
+        setRemovesize(0)
+        setRemovejson(new Map())
+        queryClient.invalidateQueries(["cards"])
+        //return to menu if all cards are deleted, else keep in the same deck
+        if (cardcount - removesize === 0) {
+          setClosed(true) //return to menu
+        } 
+      } else {
+        return
+      }
     }
   }
   //undo remove
@@ -426,11 +443,8 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
   }
   
   return (
-    <div className="deck">
-      <button onClick={handleRemove} id="trash-deck">
-        ✖
-      </button>
-      <button id="goto-deck" onClick={handleDetails}>
+    <div className="deck" onClick={handleDetails}>
+      <button id="goto-deck" >
       <h2>{data[0]}</h2>
       <h4>{data[1].length} Cards</h4>
       </button>
