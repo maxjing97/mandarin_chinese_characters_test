@@ -334,7 +334,6 @@
     margin: 5pt auto;
 }
 #menu-button {
-    width: 150px;
     margin: 0 10px ;
     font-size: large;
     background-color: white;
@@ -345,10 +344,10 @@
     -o-border-radius: 10px;
 }
 #menu-button:hover {
-    width: 150px;
     font-size: large;
     background-color: black;
     color: white;
+    border: 4px solid black;
     border-radius: 10px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;

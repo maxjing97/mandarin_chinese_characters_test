@@ -251,6 +251,13 @@ function DeckCards({data,setClosed, setAltcomp}) {
       return
     }
   }
+  //undo remove
+  const undoRemove = () => {
+    setRemovesize(0)
+    setRemovejson(new Map())
+    return
+  }
+
 
   //add/remove a card to the deletion list a card if needed
   const toggleRemove=(checked,idx, data_type, char_type)=>{
@@ -347,9 +354,14 @@ function DeckCards({data,setClosed, setAltcomp}) {
           </div>
           }
           {removesize > 0 && 
-          <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
-            Delete {removesize } selected card{removesize === 1 ? "":"s"}
-          </button>
+          <div>
+            <button onClick={()=>undoRemove()} id="menu-button" style={{backgroundColor: "rgb(32, 216, 47)", color:"white"}}>
+              Undo All
+            </button>
+            <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
+              Delete {removesize } selected card{removesize === 1 ? "":"s"}
+            </button>
+          </div>
           }
           {removesize === 0 &&
           <button onClick={()=>handlePractice("def")} id="menu-practice-button">
