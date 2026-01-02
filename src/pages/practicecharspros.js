@@ -55,7 +55,6 @@ const Results = ({accuracies, num_test, componentJsons}) => {
     }
   }
 
-
   useEffect(()=>{
     return () => {} 
   }, []) //call only once on mount

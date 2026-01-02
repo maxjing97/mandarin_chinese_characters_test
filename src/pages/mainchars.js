@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from "../context/userContext";
 
 const maxCat = 2429 //constant storing the highest possible character difficulty category (may change as more characters are added)
+const minTest = 1 // minimum number of items to test
 
 //this the main navigation part to select the characters
 export default function Characters() {
@@ -44,11 +45,8 @@ export default function Characters() {
 
     //function to handle handle final submission
     const handleSubmit = (testType) => {
-        //convert to integer 
-        console.log(numChars)
-        console.log(catrange)
-        if (numChars < 5) {
-            setError("Number of Characters selected less than 5")
+        if (numChars < minTest) {
+            setError(`"Number of items selected less than ${minTest}`)
         } else if (numChars > maxCat) {
             setError("Number selected to practice is too large")
         } else if (catrange[0] > catrange[1] || Math.abs(catrange[1]-catrange[0])<10 || catrange[0]<1 || catrange[1]>maxCat) {
