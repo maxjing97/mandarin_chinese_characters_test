@@ -79,9 +79,9 @@ export default function UserProvider ({children}) {
             console.log("server issues when adding data", resdata)
             return 
         } else {
+            queryClient.invalidateQueries(["cards"]) //invalidate context
             return resdata
         }
-    
       } catch {
         console.error("unknown issues when trying to add data")
       }
@@ -109,6 +109,7 @@ export default function UserProvider ({children}) {
             console.log("server issues when adding data", resdata)
             return 
         } else {
+            queryClient.invalidateQueries(["cards"]) //invalidate context
             return resdata
         }
       } catch {
@@ -159,6 +160,7 @@ export default function UserProvider ({children}) {
             if(!response.ok) {
                 console.log("updating cards name failed")
             } else {
+                queryClient.invalidateQueries(["cards"]) //invalidate context
                 console.log("succesfully updated card name")
             }
         } catch (e) {

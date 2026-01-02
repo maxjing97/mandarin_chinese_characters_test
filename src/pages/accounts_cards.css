@@ -95,6 +95,7 @@
 }
 
 .deck {
+    position: relative;
     background-color: azure;
     display: flex;
     flex-direction: column;
@@ -176,6 +177,7 @@
     box-shadow: none;
 }
 
+
 .main-decks-display {
     display: flex;
     text-align: center;
@@ -184,27 +186,24 @@
     align-items: center;
     justify-content: center;
 }
+.card-type-text {
+    font-size: 12pt;
+    margin: 0;
+    padding: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
 #trash-deck {
-    width: 65px;
+    position: absolute; /* Positioned relative to .parent */
+    top: 4px;  /* 20px from the top of parent */
+    right: 4px; /* 10px from the right of parent */
     text-align: center;
     font-size: 12pt;
     font-weight: bold;
     color: white;
     background-color: rgb(255, 53, 53);
-    margin: auto;
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
-}
-#trash-deck:hover {
-    width: 65px;
-    text-align: center;
-    font-size: 12pt;
-    color: white;
-    background-color: black;
-    border-radius: 10px;
+    margin: 0;
+    padding: 3px;
+    border-radius: 4px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     -ms-border-radius: 10px;
@@ -236,6 +235,7 @@
     background-color: white;
     visibility: visible;
 }
+
 #deck-name {
     height: 20px;
     font-size: 14pt;
@@ -278,7 +278,10 @@
 #table-button {
     font-size: 15pt;
     font-weight:bold;
-    background-color: white;
+    padding: 5px;
+}
+#table-button:hover {
+    background-color: #ecff43;
 }
 #view-deck-cards {
     display: flex;
@@ -287,20 +290,25 @@
     overflow: auto;
 }
 .info-card{
+    position: relative; /* Makes child position relative to this container */
     background-color: azure;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     text-align: center;
-    width: 150px;
-    margin: 2px 10px;
-    padding: 0;
+    width: 240px;
+    margin: 2px 5px;
+    padding: 5px;
     border: 2px solid black;
     border-radius: 10px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     -ms-border-radius: 10px;
     -o-border-radius: 10px;
+}
+.card-text {
+    font-size: 10pt;
+    margin: 5pt auto;
 }
 #menu-button {
     width: 150px;

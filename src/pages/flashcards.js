@@ -60,17 +60,19 @@ const CharDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => { 
         setChecked(false)
       } else { //addcard call
         toggleAdd(data,checked)
-        setbackgroundcolor("rgb(71, 237, 112)")
+        setbackgroundcolor("rgba(129, 255, 161, 1)")
         setChecked(true)
       }
     }
   }
   return (
-    <tr style={{backgroundColor: backgroundcolor}}>
+    <tr id="add-card-row" onClick={()=>handleChange()} style={{backgroundColor: backgroundcolor}}>
       <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
-      <td id="addtable-entry"><button onClick={()=>handleChange()} id="table-button">{charJson["word/character"]}</button></td>
-      <td><button onClick={()=>handleChange()} id="table-button">{charJson["definition"]}</button></td>
-      <td><button onClick={()=>handleChange()} id="table-button">{charJson["full_pronunciation"]}</button></td>
+      <td id="addtable-entry">
+        <p id="table-button" style={{textDecorationLine: checked?  "underline" : "none"}}>{charJson["word/character"]}</p>
+      </td>
+      <td><p id="table-button">{charJson["definition"]}</p></td>
+      <td><p id="table-button">{charJson["full_pronunciation"]}</p></td>
       <td>{charJson["cat"]}</td>
       <td>{index}</td>
     </tr>
@@ -110,16 +112,16 @@ const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => {
         setChecked(false)
       } else { //addcard call
         toggleAdd(data,checked)
-        setbackgroundcolor("rgb(71, 237, 112)")
+        setbackgroundcolor("rgba(129, 255, 161, 1)")
         setChecked(true)
       }
     }
   }
   return (
-    <tr style={{backgroundColor: backgroundcolor}}>
+    <tr id="add-card-row" onClick={()=>handleChange()} style={{backgroundColor: backgroundcolor}}>
       <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
-      <td><button onClick={()=>handleChange()} id="table-button">{charJson["word/character"]}</button></td>
-      <td><button onClick={()=>handleChange()} id="table-button">{charJson["definition"]}</button></td>
+      <td><p id="table-button"  style={{textDecorationLine: checked?  "underline" : "none"}}>{charJson["word/character"]}</p></td>
+      <td><p id="table-button">{charJson["definition"]}</p></td>
       <td>{charJson["cat"]}</td>
       <td>{index}</td>
     </tr>
@@ -146,16 +148,21 @@ function Card({dbjson, infojson, toggleRemove}) {
     <div>
     { infojson && 
     <div className="info-card">
+      {data_type=="C" ?
+        <p className="card-type-text">Single Character (字)</p>
+        :
+        <p className="card-type-text">Multi-Character word (詞)</p>
+      }
       <h3>{infojson["word/character"]}</h3>
-      <p>Definition: {infojson["definition"]}</p>
+      <p className="card-text">Definition: {infojson["definition"]}</p>
 
-      <p>Character type: {infojson["code"]==="s" ? "Simplified":"Traditional"}</p> 
+      <p className="card-text">Character type: {infojson["code"]==="s" ? "Simplified":"Traditional"}</p> 
       {data_type=="C" &&
-        <p>Pronunciation: {infojson["full_pronunciation"]}</p>
+        <p className="card-text">Pronunciation: {infojson["full_pronunciation"]}</p>
       }
 
       <button onClick={handleCheck} id="trash-deck" style={{backgroundColor: !checked ? "rgb(255, 53, 53)":"rgb(32, 216, 47)"}}> {/*conditionally change style based on selection*/}
-        {!checked ? "Delete": "Keep"}
+        <p style={{padding:0, margin: 0}}>{!checked ? "✖": "↶"}</p>
       </button>
     </div>
     }
@@ -163,7 +170,7 @@ function Card({dbjson, infojson, toggleRemove}) {
   )
 }
 
-//get deck details from clicking set, get all detail of cards within a certain flashcard deck, allowing redirect to practice 3 possibilitiies
+//key component that displays all the cards in a certain deck, once a deck is clicked. get deck details from clicking set, get all detail of cards within a certain flashcard deck, allowing redirect to practice 3 possibilitiies
 function DeckCards({data,setClosed, setAltcomp}) {  
   const queryClient = useQueryClient()
   const navigate = useNavigate() //navigate
@@ -178,7 +185,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
   const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
   const [addclosed, setAddclosed] = useState(true)//store if the addcard component is closed
-
+  console.log("current card data:", currData)
   //prepare the original data
   useEffect(()=>{
     const info_list = []
@@ -222,10 +229,15 @@ function DeckCards({data,setClosed, setAltcomp}) {
         const [index, deckname, data_type, char_type]= removejson.get(key) //destructure 
         removecard(userlogin.uid, index, deckname, data_type, char_type)
         setCardCount(prev=>prev-1)//incrment
+        //remove from the deck (keep all values that do not match all the key conditions) demorgan's law
+        setCurrData(currData.filter( prev=>(prev.idx != index || prev.char_type != char_type || prev.data_type != data_type) ))
       }
       queryClient.invalidateQueries(["cards"])
       setRemovesize(0)
-      setClosed(true) //return to menu
+      //return to menu if all cards are deleted, else keep in the same deck
+      if (cardcount - removesize === 0) {
+        setClosed(true) //return to menu
+      } 
     } else {
       return
     }
@@ -339,7 +351,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
             Add Card
           </button>
         </div>
-        <p>Note: pronunciation can only be practiced for cards with single or unique characters listed under the multi-character word list under the learn tab.</p>
+        <p>Note: pronunciation can only be practiced for cards that are single characters (字). Check out the learn page for what constitutes a single character</p>
       </div>
       }
       {!addclosed &&
@@ -363,8 +375,7 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
       setDeckCount(prev=>prev-1) //decrement 
       queryClient.invalidateQueries(["cards"])
     } else {
-      setClosed(true) //hide the card deck
-      return
+      setClosed(false) //hide the card deck
     }
   }
   //handle when function is called to show details
@@ -374,16 +385,14 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
   }
   
   return (
-    <div>
-      <div className="deck" onClick={handleDetails}>
-        <button id="goto-deck" onClick={handleDetails}>
-        <h2>{data[0]}</h2>
-        <h4>{data[1].length} Cards</h4>
-        </button>
-        <button onClick={handleRemove} id="trash-deck">
-          Delete
-        </button>
-      </div>
+    <div className="deck" onClick={handleDetails}>
+      <button id="goto-deck" onClick={handleDetails}>
+      <h2>{data[0]}</h2>
+      <h4>{data[1].length} Cards</h4>
+      </button>
+      <button onClick={handleRemove} id="trash-deck">
+        ✖
+      </button>
     </div>
   )
 }
