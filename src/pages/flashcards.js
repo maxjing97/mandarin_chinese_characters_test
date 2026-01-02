@@ -373,10 +373,12 @@ function DeckCards({data,setClosed, setAltcomp}) {
 //main component shown at the home flashcards page, under flashcards.
 function Deck({data, setDeckCount, setClosed, setAltcomp}) {
   const {userlogin, removedeck} = useUser()
+  const [removeTriggered, setRemoveTriggered] = useState(false)
   const navigate = useNavigate() //navigate
   const queryClient = useQueryClient()
   //display if details are being shown
   const handleRemove = () => {
+    setRemoveTriggered(true)
     //confirm with user
     const confirmed = window.confirm(`Are you sure you want to delete this deck, ${data[0]}`);
     if(confirmed) {
@@ -384,23 +386,29 @@ function Deck({data, setDeckCount, setClosed, setAltcomp}) {
       setDeckCount(prev=>prev-1) //decrement 
       queryClient.invalidateQueries(["cards"])
     } else {
-      setClosed(false) //hide the card deck
+      setClosed(true) //hide the card deck
+      setAltcomp(null)
+      return
     }
   }
   //handle when function is called to show details
   const handleDetails = () =>{
-    setClosed(false) //expose the card deck
-    setAltcomp(<DeckCards data={data} setClosed={setClosed} setAltcomp={setAltcomp}/>)
+    if (!removeTriggered) {
+      setClosed(false) //expose the card deck
+      setAltcomp(<DeckCards data={data} setClosed={setClosed} setAltcomp={setAltcomp}/>)
+    } else {
+      return
+    }
   }
   
   return (
-    <div className="deck" onClick={handleDetails}>
+    <div className="deck">
+      <button onClick={handleRemove} id="trash-deck">
+        ✖
+      </button>
       <button id="goto-deck" onClick={handleDetails}>
       <h2>{data[0]}</h2>
       <h4>{data[1].length} Cards</h4>
-      </button>
-      <button onClick={handleRemove} id="trash-deck">
-        ✖
       </button>
     </div>
   )

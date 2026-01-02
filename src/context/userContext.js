@@ -133,9 +133,10 @@ export default function UserProvider ({children}) {
         })
         const resdata = await response.json() //get response data
         if(!response.ok) {
-            console.log("server issues when adding data", resdata)
+            console.log("server issues when removing data", resdata)
             return 
         } else {
+            queryClient.invalidateQueries(["cards"]) //invalidate context
             return resdata
         }
       } catch {
