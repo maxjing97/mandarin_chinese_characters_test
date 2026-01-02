@@ -359,7 +359,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
               Undo All
             </button>
             <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
-              Delete {removesize } selected card{removesize === 1 ? "":"s"}
+              Delete {removesize } card{removesize === 1 ? "":"s"}
             </button>
           </div>
           }
@@ -372,7 +372,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
             Add Card
           </button>
         </div>
-        <p>Note: pronunciation can only be practiced for cards that are single characters (字). Check out the learn page for what constitutes a single character</p>
+        <p>Pronunciation can only be practiced for cards that are single characters (字). Check out the learn page for what constitutes a single character</p>
       </div>
       }
       {!addclosed &&
