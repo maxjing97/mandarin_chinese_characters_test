@@ -129,9 +129,15 @@ const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained}) => {
 };
 
 //show card details, including type. Allow cards to be selected 
-function Card({dbjson, infojson, toggleRemove}) {
+function Card({dbjson, infojson, toggleRemove, removesize}) {
   const [checked, setChecked] = useState(false) //check if a card has been checked (for deletion)
   const{char_type,data_type,deck_name,idx,user_id} = dbjson //destructure data from database
+
+  useEffect(()=>{
+    if(removesize === 0) {
+      setChecked(false) //avoid checking bugs
+    }
+  })
 
   //handle cheked
   const handleCheck = () => {
@@ -185,7 +191,6 @@ function DeckCards({data,setClosed, setAltcomp}) {
   const [removejson, setRemovejson] = useState(new Map())//map of lists to remove
   const [removesize, setRemovesize] = useState(0)//store map size as a state component to force edits to the dom
   const [addclosed, setAddclosed] = useState(true)//store if the addcard component is closed
-  console.log("current card data:", currData)
   //prepare the original data
   useEffect(()=>{
     const info_list = []
@@ -225,15 +230,19 @@ function DeckCards({data,setClosed, setAltcomp}) {
   const removeCards = () => {
     const confirm = window.confirm("remove selected cards?")
     if (confirm) {
+      let newData = currData
       for (const key of removejson.keys()) {
         const [index, deckname, data_type, char_type]= removejson.get(key) //destructure 
         removecard(userlogin.uid, index, deckname, data_type, char_type)
         setCardCount(prev=>prev-1)//incrment
         //remove from the deck (keep all values that do not match all the key conditions) demorgan's law
-        setCurrData(currData.filter( prev=>(prev.idx != index || prev.char_type != char_type || prev.data_type != data_type) ))
+        //remove cases where the card matches the index, chartype, datatype, and 
+        newData = newData.filter( prev=>(parseInt(prev.idx) != parseInt(index) || prev.char_type != char_type || prev.data_type != data_type) )
       }
-      queryClient.invalidateQueries(["cards"])
+      setCurrData(newData)
       setRemovesize(0)
+      setRemovejson(new Map())
+      queryClient.invalidateQueries(["cards"])
       //return to menu if all cards are deleted, else keep in the same deck
       if (cardcount - removesize === 0) {
         setClosed(true) //return to menu
@@ -319,7 +328,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
       <div>
         <div id="view-deck-cards">
           {currData.map((json, index)=>(
-            <Card key={index} dbjson={json} datatype={typeList[index]} infojson={infoList[index]} toggleRemove={toggleRemove}/>
+            <Card key={index} dbjson={json} datatype={typeList[index]} infojson={infoList[index]} toggleRemove={toggleRemove} removesize={removesize}/>
           ))}
         </div>
         <p>Count : {cardcount}</p>
