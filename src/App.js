@@ -22,7 +22,7 @@ function App() {
         <Navbar/>
           <div>
         <Routes>        {/*defining routes */}
-          <Route path="/"  element={<Account/>} />{/*default page route */}
+          <Route path="/"  element={<Characters/>} />{/*default page route */}
           <Route path="/flashcards" element={<Flashcards/>} />{/*visible after login only: main flashcard selection paths*/}
           <Route path="/flashcards-definition" element={<PracticeCardDefinition/>} />{/*visible after login only: main flashcard selection paths*/}
           <Route path="/flashcards-pronunciation" element={<PracticeCardPronunciation/>} />{/*visible after login only: main flashcard selection paths*/}
