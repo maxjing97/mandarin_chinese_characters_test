@@ -9,9 +9,9 @@ export function Entry() { //entry function allowing more information to be found
       <h3>Start becoming proficient in reading Mandarin!</h3>
       <h2>More Learning Resources here!</h2>
 
-      <h2 className="list_link"><Link to="/charlist">Link to Characters List (Tested under Practice Characters)</Link></h2>  
-      <h2 className="list_link"><Link to="/wordlist">Link to Words List (Tested under Practice Words)</Link></h2>  
-      <h2 className="list_link"><Link to="/resources">More Resources: Wiktionary</Link></h2>  
+      <Link to="/charlist"><h2 className="list_link">Link to Characters List (Tested under Practice Characters)</h2></Link>  
+      <Link to="/wordlist"><h2 className="list_link">Link to Words List (Tested under Practice Words)</h2></Link> 
+      <Link to="/resources"><h2 className="list_link">More Resources: Wiktionary</h2> </Link> 
     </div>
   );
 }

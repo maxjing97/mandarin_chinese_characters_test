@@ -17,9 +17,26 @@
     margin: 10px 10px;
     padding: 0
 }
-.list_link, .list_link a {
+/*react list components are anchor tags for css purposes*/
+.about_main a {
+    text-decoration: none;
+}
+
+.list_link  {
     padding: 10px;
     background-color: #08639C;
+    text-decoration: none;
+    color: whitesmoke;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+.list_link:hover  {
+    padding: 10px;
+    background-color: #002034;
     text-decoration: none;
     color: whitesmoke;
     border-radius: 10px;
