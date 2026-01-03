@@ -8,22 +8,25 @@
 .logo {
   height: 50px;
 }
-.dropdown {
-  height: 100%;
-  width: 160px;
-  text-align: center;
+body {
+  overflow:auto;
 }
+
 .navBar {
     background-color: #CC230A;
+    width: 100%; /*full width navBar*/
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    align-items: center; /* vertical centering*/
+    align-items: center; /*vertical centering*/
     font-family: Arial, sans-serif;
     border-bottom: 3px solid #dcb909;
 }
-
-.main-option a:hover {
+.dropdown a {
+  text-decoration: none;
+  color: black;
+}
+.main-option:hover {
   color: black;
 }
 .main-option a {
@@ -31,57 +34,54 @@
     text-align: center;
     text-decoration: none;
     font-weight: bold;
-    font-size: 20pt;
+    font-size: clamp(9pt,20pt,5vw);
     padding: 8px 0px;
     height: 100%;
-    width: 160px;
     border-radius: 3px;
     transition: background-color 0.3s ease;
 }
-
+/*key part to *style for dropdown menus*/
+/*trigger display of the subdropdown content class when the main part is hovered above*/
+.dropdown {
+  height: 100%;
+  width: clamp(100px,160px,10vw);
+  text-align: center;
+  margin: 0px 10px
+}
 .dropdown-content {
   display: none;
+}
+.dropdown:hover .dropdown-content { 
+  display: flex;
+  flex-direction: column;
   position: absolute;
   background-color: #f9f9f9;
   font-weight: bold;
-  font-size: 12pt;
-  width : 160px;
+  font-size: clamp(9pt,12pt,5vw);
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 9999;
+  width: clamp(100px,160px,10vw);
+}
+.dropdown-content p {
+  color: black;
+  width: clamp(100px,160px,10vw)
 }
 .dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-.dropdown-content a:hover {
+  margin: 0;
+  padding: 0;
+} 
+
+
+/*change highlighting*/
+.dropdown-content p:hover {
   color: white;
   background-color: black;
-  padding: 12px 16px;
+  height: 100%
+}
+.dropdown #logout:hover {
+  color: white;
+  background-color: red;
   text-decoration: none;
-  display: block;
 }
 
-/*trigged when covered*/
-.dropdown:hover .dropdown-content { 
-  display: block;
-}
 
-.dropdown button {
-  border: none;
-  background-color: white;
-  font-size: 12pt;
-  font-weight: bold;
-  padding: 12px 16px;
-  width : 160px;
-}
-.dropdown button:hover {
-  border: none;
-  background-color: rgb(255, 0, 0);
-  color: #f9f9f9;
-  font-size: 12pt;
-  font-weight: bold;
-  width : 160px;
-  padding: 12px 16px;
-}
