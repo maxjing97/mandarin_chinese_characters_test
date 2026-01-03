@@ -22,13 +22,14 @@ function App() {
         <Navbar/>
           <div>
         <Routes>        {/*defining routes */}
-          <Route path="/"  element={<Characters/>} />{/*default page route */}
+          <Route path="/"  element={<Words/>} />{/*default page route */}
           <Route path="/flashcards" element={<Flashcards/>} />{/*visible after login only: main flashcard selection paths*/}
           <Route path="/flashcards-definition" element={<PracticeCardDefinition/>} />{/*visible after login only: main flashcard selection paths*/}
           <Route path="/flashcards-pronunciation" element={<PracticeCardPronunciation/>} />{/*visible after login only: main flashcard selection paths*/}
           {/*practice pages and account */}
           <Route path="/account"  element={<Account/>} />
           <Route path="/words"  element={<Words/>} />
+          <Route path="/characters"  element={<Characters/>} />
             {/*defining routes within the practice page*/}
             <Route path="/practice_char_pronunciation"  element={<PracticeCharPronunciation/>} />
             <Route path="/practice_char_definition"  element={<PracticeCharDefinition/>} />
