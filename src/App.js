@@ -26,8 +26,8 @@ function App() {
           <Route path="/flashcards" element={<Flashcards/>} />{/*visible after login only: main flashcard selection paths*/}
           <Route path="/flashcards-definition" element={<PracticeCardDefinition/>} />{/*visible after login only: main flashcard selection paths*/}
           <Route path="/flashcards-pronunciation" element={<PracticeCardPronunciation/>} />{/*visible after login only: main flashcard selection paths*/}
-          {/*practice pages */}
-          <Route path="/characters"  element={<Characters/>} />
+          {/*practice pages and account */}
+          <Route path="/account"  element={<Account/>} />
           <Route path="/words"  element={<Words/>} />
             {/*defining routes within the practice page*/}
             <Route path="/practice_char_pronunciation"  element={<PracticeCharPronunciation/>} />

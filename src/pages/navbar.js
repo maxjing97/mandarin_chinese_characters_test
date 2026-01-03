@@ -8,7 +8,7 @@ import { signOut } from 'firebase/auth';
 
 const Navbar=()=>{
     const navigate = useNavigate();
-    const [accountText, setAccountText] = useState("❌") //index of components to show
+    const [accountText, setAccountText] = useState("Login") //index of components to show
     const {userlogin} = useUser()//get user info - true if user has logged in 
     const logout = async () => {
         await signOut(auth);
@@ -17,9 +17,9 @@ const Navbar=()=>{
     //if the user is logged in, set into to 4 immediately
     useEffect(()=>{
         if (userlogin) {
-            setAccountText("Account ✅")
+            setAccountText("Account")
         } else {
-            setAccountText("Account ❌")
+            setAccountText("Login")
         }
     })
 
@@ -42,7 +42,7 @@ const Navbar=()=>{
                 </div>
             </div>
             <div className="dropdown">
-                <h1 className="main-option"><Link to="/">{accountText}</Link></h1>
+                <h1 className="main-option"><Link to="/account">{accountText}</Link></h1>
                 {userlogin && <div className="dropdown-content">
                     <Link to="/flashcards">My Flashcards</Link>
                     <button onClick={logout}>Logout</button>
