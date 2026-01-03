@@ -48,8 +48,16 @@ body {
   text-align: center;
   margin: 0px 10px
 }
-.dropdown-content {
-  display: none;
+.dropdown-content { /*do not show dropdown by default, else show*/
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: #f9f9f9;
+  font-weight: bold;
+  font-size: clamp(9pt,12pt,5vw);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 9999;
+  width: clamp(100px,160px,10vw);
 }
 .dropdown:hover .dropdown-content { 
   display: flex;
@@ -64,18 +72,18 @@ body {
 }
 .dropdown-content p {
   color: black;
-  width: clamp(100px,160px,10vw)
+  width: clamp(100px,160px,10vw);
+  margin: 0;
+  padding: 14px 0px;
 }
 .dropdown-content a {
   margin: 0;
   padding: 0;
 } 
-
-
 /*change highlighting*/
 .dropdown-content p:hover {
   color: white;
-  background-color: black;
+  background-color: black; /*color applies to padded areas not */
   height: 100%
 }
 .dropdown #logout:hover {
