@@ -38,7 +38,7 @@ const Navbar=()=>{
                 <div className="dropdown-content">
                     <Link to="/charlist">Tested Characters</Link>
                     <Link to="/wordlist">Tested Words</Link>
-                    <Link to="/resources">More Resources</Link>
+                    <Link to="/resources">Dictionary</Link>
                 </div>
             </div>
             <div className="dropdown">
