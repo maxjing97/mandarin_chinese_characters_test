@@ -34,15 +34,6 @@ function Login({onPasswordEnter, change}) { //handler password
             onChange={(e)=>setPassword(e.target.value)}
             placeholder="Password"
           />
-          <button
-            type="button"
-            id="show_password"
-            onClick={() => setShowPassword((prev) => !prev)}
-          >
-          {showPassword ? 
-          <img className="password-icon" src="/media/hide_pass.png" alt="hide password"/> 
-          : <img className="password-icon" src="/media/show_pass.png" alt="show password"/>}
-          </button>
         </div>
         
         <div className="submit_section">
@@ -106,15 +97,6 @@ function Register({change}) { //handler for the registration
               onChange={(e)=>setPassword(e.target.value)}
               placeholder="Password"
             />
-            <button
-              type="button"
-              id="show_password"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-            {showPassword ? 
-            <img className="password-icon" src="/media/hide_pass.png" alt="hide password"/> 
-            : <img className="password-icon" src="/media/show_pass.png" alt="show password"/>}
-            </button>
           </div>
           <h3>Confirm Password</h3>
           <div className="password_input">

@@ -89,22 +89,17 @@ const CharDetailsRow = ({charJson, index, deckname, toggleAdd, contained, initia
 const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained, initial_checked = false}) => {
   const [checked, setChecked] = useState(initial_checked)
   const [fixed, setfixed] = useState(false) //set if fixed (set as fixed if in contained)
-  const [backgroundcolor, setbackgroundcolor] = useState("white")//set background color 
   const {userlogin} = useUser();
 
   //if the current charJson is already in the list of contained jsons, we mark as checked to avoid duplicates
   useEffect(() => {
     if (initial_checked) { //set color based on if it is checked 
-      setbackgroundcolor("rgba(129, 255, 161, 1)")
       setChecked(initial_checked)
-    } else {  //set color based on if it is checked 
-      setbackgroundcolor("white")
-    }
+    } 
     //loop through list of contained json files
     for(const currjson of contained) {
       if(JSON.stringify(currjson) === JSON.stringify(charJson)){
         setChecked(true) //if we see a containment, mark as checked to avoid duplicates
-        setbackgroundcolor("rgb(173, 173, 173)")
         setfixed(true)
         return
       }
@@ -123,17 +118,15 @@ const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained, initial
       }
       if (checked) { //remove path call if it is checked and not fixed 
         toggleAdd(data,checked)
-        setbackgroundcolor("white")
         setChecked(false)
       } else { //addcard call
         toggleAdd(data,checked)
-        setbackgroundcolor("rgba(129, 255, 161, 1)")
         setChecked(true)
       }
     }
   }
   return (
-    <tr id="add-card-row" onClick={()=>handleChange()} style={{backgroundColor: backgroundcolor}}>
+    <tr id="add-card-row" onClick={()=>handleChange()} style={{backgroundColor: checked ? "rgba(129, 255, 161, 1)": "white" }}>
       <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
       <td><p id="table-button"  style={{textDecorationLine: checked?  "underline" : "none"}}>{charJson["word/character"]}</p></td>
       <td><p id="table-button">{charJson["definition"]}</p></td>
@@ -610,10 +603,10 @@ export function PracticeAddDeck({dataType, mainjson}) {
   const [deckname, setDeckname] = useState("") //current selected deckname
   const [inputdeckname, setInputdeckname] = useState("") //current deckname typed if any
   const [isSet, setisSet] = useState(false) //check if the name has been set yet
-  const [count, setCount] = useState(0)//count of cards added 
   const [contained, setContained] = useState([])//list of jsons contained (the jsons in each deck)
   const [deckcount, setDeckCount] = useState(0)//count the number of decks
   const [addmap, setAddmap] = useState(new Map())//map to store information of about cards to adds
+  const [addcount, setAddcount] = useState(new Map())//count of cards to add (for display purposes only)
   const {cardsmap, isFetching, removecard, addcard} = useUser()
   const queryClient = useQueryClient()
 
@@ -623,7 +616,7 @@ export function PracticeAddDeck({dataType, mainjson}) {
       setDecks(cardsmap)
       setDeckCount(cardsmap.size)
     }
-  })
+  }, [])
 
   //check if the newdeckname has been taken
   const handlenewdeckname = (e) =>{
@@ -658,19 +651,41 @@ export function PracticeAddDeck({dataType, mainjson}) {
   const toggleAdd = (data, checked) =>{
     const {user_id, idx, deck_name, data_type, char_type} = data//destructure
     const key = `${idx}-${data_type}-${char_type}` //get key
-    if (checked) { //remove path call if it is checked and not fixed 
+    if (checked) { //remove map key call if it is checked and not fixed 
       const copy = addmap//remove from map
       copy.delete(key)
       setAddmap(copy)
-      setCount(prev=>prev-1)
+      setAddcount(copy.size) //ensures rerendering size
     } else { //addcard call
       const copy = addmap//remove from map
       copy.set(key,data)
       setAddmap(copy)
-      setCount(prev=>prev+1)
+      setAddcount(copy.size) //ensures rerendering size
     }
   }
-  //function to handle save ()
+  //remove all listed cards from the list of added cards 
+  const addAll = () =>{     
+    const copy = addmap//add to the current map
+    for(const json of mainjson) {
+      const idx = findIndex(json)
+      const data_type = dataType==="words" ? "W":"C"
+      const char_type = json["code"]
+      const data = {user_id : userlogin.uid, idx:idx, deck_name : deckname, data_type:data_type, char_type:json["code"]}//destructure
+      const key = `${idx}-${data_type}-${char_type}` //get key
+      copy.set(key,data)
+      setAddmap(copy)
+      setAddcount(copy.size) //ensures rerendering size
+    }
+    const maincopy = mainjson
+    mainjson = maincopy
+  }
+  //remove all listed cards from the list of added cards 
+  const removeAll = () =>{     
+    setAddmap(new Map())
+    setAddcount(0) //ensures rerendering size
+  }
+
+  //function to handle save-calls the backend
   const handleSave = () => {
     //iterate through map and save all data
     const newcarddata = []///list of new datajoins
@@ -706,28 +721,6 @@ export function PracticeAddDeck({dataType, mainjson}) {
     }
     return -1
   }
-  //remove all listed cards from the list of added cards 
-  const addAll = () =>{     
-    const copy = addmap//add to the current map
-    for(const json of mainjson) {
-      const idx = findIndex(json)
-      const data_type = dataType==="words" ? "W":"C"
-      const char_type = json["code"]
-      const data = {user_id : userlogin.uid, idx:idx, deck_name : deckname, data_type:data_type, char_type:json["code"]}//destructure
-      const key = `${idx}-${data_type}-${char_type}` //get key
-      copy.set(key,data)
-      setAddmap(copy)
-      setCount(copy.size)
-    }
-    const maincopy = mainjson
-    mainjson = maincopy
-  }
-  //remove all listed cards from the list of added cards 
-  const removeAll = () =>{     
-    setAddmap(new Map())
-    setCount(0)
-  }
-  //return if a card is checked 
 
   return (
     <div>
@@ -756,31 +749,53 @@ export function PracticeAddDeck({dataType, mainjson}) {
         </div>
       </div>
       {/*must pass add map so colors change dynamically, forcing rerender*/}
-      {isSet && 
+      {isSet &&
       <div> 
       <h3>Add cards to the deck selected, {deckname}, from the list of characters missed</h3>
       <div id="addchars-show">
-        {addmap.size !== mainjson.length ? 
-          <button id="add-all-cards" onClick={addAll}>Add all</button>:
+        {addcount !== mainjson.length ? 
+          <button id="add-all-cards" onClick={addAll}>Add all</button> 
+          :
           <button id="remove-all-cards" onClick={removeAll}>Remove All</button>
         }
-        <button id="save-cards" onClick={handleSave}>{count} card{count > 1 ? "s": ""} added, Save and Exit</button>
+        <button id="save-cards" onClick={handleSave}>
+          <p>{addcount > 0 ? `Cards added: ${addcount}, Save and Exit`
+          : "No cards added, Save and Exit?"}</p>
+        </button>
+
       </div>
+        {addcount != 0 &&
         <div>
           <table class="char_table" hidden={!(dataType==="characters")}>
             <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
             <tbody>{mainjson.map((Json,i) => (
-              <CharDetailsRow key={i} charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained} initial_checked={addmap.size==mainjson.length}/> //
+              <CharDetailsRow key={i} charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained} initial_checked={addcount==mainjson.length}/> 
             ))}</tbody>        
           </table>
           <table class="char_table" hidden={!(dataType==="words")}>
             <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
             <tbody>{mainjson.map((Json,i) => (
-              <DefDetailsRow key={i} charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained} initial_checked={addmap.size==mainjson.length}/>
+              <DefDetailsRow key={i} charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained} initial_checked={addcount==mainjson.length}/>
             ))}</tbody>
           </table>
-        </div>
-      </div>}
+        </div>}
+        {addcount == 0 &&
+        <div>
+          <table class="char_table" hidden={!(dataType==="characters")}>
+            <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
+            <tbody>{mainjson.map((Json,i) => (
+              <CharDetailsRow key={i} charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained} initial_checked={false}/> 
+            ))}</tbody>        
+          </table>
+          <table class="char_table" hidden={!(dataType==="words")}>
+            <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
+            <tbody>{mainjson.map((Json,i) => (
+              <DefDetailsRow key={i} charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained} initial_checked={false}/>
+            ))}</tbody>
+          </table>
+        </div>}
+      </div>
+      }
     </div>
     }
     {!cardsmap &&
