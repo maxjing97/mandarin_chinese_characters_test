@@ -170,9 +170,9 @@ function Card({dbjson, infojson, toggleRemove, removesize}) {
       <p className="card-text">Definition: {infojson["definition"]}</p>
 
       <p className="card-text">Character type: {infojson["code"]==="s" ? "Simplified":"Traditional"}</p> 
-      {data_type=="C" &&
-        <p className="card-text">Pronunciation: {infojson["full_pronunciation"]}</p>
-      }
+
+      <p className="card-text">Pronunciation: {infojson["full_pronunciation"]}</p>
+
 
       <button onClick={handleCheck} id="trash-deck" style={{backgroundColor: !checked ? "rgb(255, 53, 53)":"rgb(32, 216, 47)"}}> {/*conditionally change style based on selection*/}
         <p style={{padding:0, margin: 0}}>{!checked ? "✖": "↶"}</p>
