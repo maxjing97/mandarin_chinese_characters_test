@@ -85,7 +85,7 @@ const CharDetailsRow = ({charJson, index, deckname, toggleAdd, contained, initia
     </tr>
   );
 };
-//row details for the addcard part, result details for a multicharacter words
+//row details for the addcard part, result details for multi-character words
 const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained, initial_checked = false}) => {
   const [checked, setChecked] = useState(initial_checked)
   const [fixed, setfixed] = useState(false) //set if fixed (set as fixed if in contained)
@@ -130,6 +130,7 @@ const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained, initial
       <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
       <td><p id="table-button"  style={{textDecorationLine: checked?  "underline" : "none"}}>{charJson["word/character"]}</p></td>
       <td><p id="table-button">{charJson["definition"]}</p></td>
+      <td><p id="table-button">{charJson["full_pronunciation"]}</p></td>
       <td>{charJson["cat"]}</td>
     </tr>
   );
@@ -580,13 +581,13 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="words")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
           <tbody>{Object.entries(tradword).map((Json,i) => (
             <DefDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="words")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th><th>index</th></tr></thead>
+          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{Object.entries(simpword).map((Json,i) => (
             <DefDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>

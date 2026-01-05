@@ -34,6 +34,7 @@ const DefDetailsRow = ({charJson, index}) => {
       <td>{index}</td>
       <td>{charJson["word/character"]}</td>
       <td>{charJson["definition"]}</td>
+      <td>{charJson["full_pronunciation"]}</td>
       <td>{charJson["cat"]}</td>
     </tr>
   );
@@ -160,7 +161,7 @@ export function WordList () {
         </div>
       </div>
       <table>
-        <thead><tr><th>Count</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
+        <thead><tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
         <tbody>{displayJson.map((Json, i) => (
           <DefDetailsRow charJson={Json} index={i+1}/>
         ))}</tbody>
