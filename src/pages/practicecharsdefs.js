@@ -68,12 +68,18 @@ const Results = ({accuracies, num_test, componentJsons, data_type="characters"})
     <div className='results-display'>
       <h2>Results Page</h2>
       <p>First-time Accuracy {accuracy/num_test*100}% or {accuracy}/{num_test} correct</p>
-      <p>Missed Characters (if any)</p>
+      {compList.length > 0 ? <h3>Missed Characters</h3>:
+      <h3>Good Job! All Correct!</h3>
+      }
       <table style={{ display: compList.length > 0 ? 'block' : 'none' }}>
+        <thead>
         <tr><th>word/character</th><th>definition</th><th>full pronunciation</th></tr>
+        </thead>
+        <tbody>
         {compList.map((Json, i) => (
           <DetailsRow charJson={Json}/>
         ))}
+        </tbody>
       </table>
       {userlogin && compList && compList.length > 0 &&
       <div>

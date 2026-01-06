@@ -164,3 +164,6 @@ table, th, td {
     font-family: "kaiti";
     font-size: 14pt;
 }
+.results-display table {
+    border: none /*removes overall table border, does not mean that the individual rows do not have bordes*/
+}

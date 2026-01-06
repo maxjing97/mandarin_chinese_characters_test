@@ -198,12 +198,7 @@
     align-items: center;
     justify-content: center;
 }
-.card-type-text {
-    font-size: 12pt;
-    margin: 0;
-    padding: 0;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-}
+
 #trash-deck {
     position: absolute; /* Positioned relative to .parent */
     z-index: 100;
@@ -333,21 +328,29 @@
     background-color: #ecff43;
 }
 #view-deck-cards {
-    display: flex;
-    flex-direction: row;
+    display: flex; /* Arranges children side by side */
+    overflow-x: scroll; /* Enables horizontal scrollbar if needed */
+    overflow-y: hidden; /* Hides vertical scrollbar */
     max-width: 800px;
-    overflow: auto;
+    height: 300px; /* Set a desired height */
+    padding: 0px;
+    white-space: nowrap; /* Ensures items stay in one line */
 }
 .info-card{
-    position: relative; /* Makes child position relative to this container */
+    white-space: normal; /*overwrite the parent white-space parameter, allowing for nessary line breaks */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    position: relative; 
     background-color: azure;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     text-align: center;
-    width: 240px;
+    width: clamp(50px, 200px, 200px);
+    height: clamp(70px, 400px, 200px);
     margin: 2px 5px;
-    padding: 5px;
+    padding: 0px 5px;
+    min-width: 0;
     border: 2px solid black;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -355,9 +358,33 @@
     -ms-border-radius: 10px;
     -o-border-radius: 10px;
 }
+.main-part {
+    flex-grow: 1
+}
+.character-display {
+    font-size: 16pt;
+    margin-top: 6pt;
+    margin-bottom: 0pt;
+    padding: 0px;
+}
+.info-card:hover {
+    white-space: wrap;
+}/*show all text if hovered*/
 .card-text {
+    font-size: 12pt;
+    margin-top: 3pt;
+    margin-bottom: 0pt;
+}
+.card-text-small {
     font-size: 10pt;
-    margin: 5pt auto;
+    margin-top: 10pt;
+    margin-bottom: 0pt;
+}
+.card-type-text {
+    font-size: 10pt;
+    margin-top: 0px;
+    padding: 0px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 #menu-button {
     margin: 0 10px ;

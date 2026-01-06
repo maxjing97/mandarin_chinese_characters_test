@@ -11,6 +11,17 @@
 body {
   overflow:auto;
 }
+#modules {
+    height: 50px;
+    padding: 5px;
+    white-space: nowrap;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+       display: none;
+    }
+}
 
 .navBar {
     background-color: #CC230A;

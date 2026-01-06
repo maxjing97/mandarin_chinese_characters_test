@@ -162,18 +162,23 @@ function Card({dbjson, infojson, toggleRemove, removesize}) {
     <div>
     { infojson && 
     <div className="info-card">
-      {data_type=="C" ?
-        <p className="card-type-text">Single Character (字)</p>
-        :
-        <p className="card-type-text">Multi-Character word (詞)</p>
-      }
-      <h3>{infojson["word/character"]}</h3>
-      <p className="card-text">Definition: {infojson["definition"]}</p>
+      <div className="main-part">
+        <h3 className="character-display">{infojson["word/character"]}</h3>
 
-      <p className="card-text">Character type: {infojson["code"]==="s" ? "Simplified":"Traditional"}</p> 
+        <p className="card-text" style={{marginTop:"0px"}}>{infojson["full_pronunciation"]}</p>
 
-      <p className="card-text">Pronunciation: {infojson["full_pronunciation"]}</p>
+        <p className="card-text" style={{textDecoration:"underline"}}>{infojson["test_definition"]}</p>
 
+        
+      </div>
+      <div>
+        <p className="card-text-small">{infojson["code"]==="s" ? "Simplified":"Traditional"}</p> 
+        {data_type=="C" ?
+          <p className="card-type-text">Single Character (字)</p>
+          :
+          <p className="card-type-text">Multi-Character (詞)</p>
+        }
+      </div>
 
       <button onClick={handleCheck} id="trash-deck" style={{backgroundColor: !checked ? "rgb(255, 53, 53)":"rgb(32, 216, 47)"}}> {/*conditionally change style based on selection*/}
         <p style={{padding:0, margin: 0}}>{!checked ? "✖": "↶"}</p>
@@ -788,7 +793,7 @@ export function PracticeAddDeck({dataType, mainjson}) {
             ))}</tbody>        
           </table>
           <table class="char_table" hidden={!(dataType==="words")}>
-            <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>difficulty category</th></tr></thead>
+            <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
             <tbody>{mainjson.map((Json,i) => (
               <DefDetailsRow key={i} charJson={Json} index={findIndex(Json)} deckname={deckname} toggleAdd={toggleAdd} contained={contained} initial_checked={addcount==mainjson.length}/>
             ))}</tbody>
