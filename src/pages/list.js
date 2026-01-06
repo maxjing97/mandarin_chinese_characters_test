@@ -17,8 +17,10 @@ const CharDetailsRow = ({charJson, index}) => { //current table row format displ
         const v2 = charJson["alt"]
         return `${v1} or ${v2}`
       }
+    } else {
+      return charJson["word/character"]
     } 
-  }
+  } 
   return (
     <tr>
       <td>{index}</td>

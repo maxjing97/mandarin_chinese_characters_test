@@ -116,8 +116,8 @@ function getComponents(bottom, top , num_test, character_type) {
   const jsonlist = getJsons(bottom, top,num_test, character_type)//get the proper list of subjson
   //iterate to create components
   //based on the test type: isolate the key for the correct value to test the user on
-  let test_key = "test_definition" //we are testing the defnition
-  let supporting ="pronunciation" //get the supporting text key to help the user: either definition or the pronuciation
+  let test_key = "full_definition" //we are testing the defnition
+  let supporting ="full_pronunciation" //get the supporting text key to help the user: either definition or the pronuciation
 
   const defslist = [] //get a list of definition json to show
   const defidx = [0,1,2,3,4] //index of the 5 definitions to show
