@@ -735,7 +735,10 @@ export function PracticeAddDeck({dataType, mainjson}) {
               <label class="decklabel" htmlFor ={key}>{value[0]}</label>
           </div>
         ))}      
-        <div className="deck-button" onClick={() => currdeckname(inputdeckname,["x",[]])}> 
+        <div className="deck-button" onClick={() => {
+          currdeckname(inputdeckname,["x",[]])
+          handlenewdeckname(inputdeckname)
+        }}> 
           <input type="radio" name="chartype" id="new" className="charbutton"  checked={deckname === inputdeckname}/>
           <label class="decklabel" >+</label>
           <input
