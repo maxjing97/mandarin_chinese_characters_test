@@ -757,9 +757,11 @@ export function PracticeAddDeck({dataType, mainjson}) {
       {/*must pass add map so colors change dynamically, forcing rerender*/}
       {isSet &&
       <div> 
+      
+      {inputWarning.length != 0 ? 
+      <h3 id='input-warning'>{inputWarning}</h3>
+      :
       <h3>Add cards to {deckname}</h3>
-      {inputWarning.length != 0 && 
-      <p id='input-warning'>{inputWarning}</p>
       }
       <div id="addchars-show">
         {inputWarning.length == 0 && 
