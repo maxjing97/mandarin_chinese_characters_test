@@ -1,8 +1,16 @@
 # mandarin chinese reading 
 This is an app allowing users to create random flashcards or random flashcards from a list of chinese characters and multi-character words. 
 
-<h3>Start becoming proficient in reading Mandarin!</h3>
-<h2>practice and learn now!</h2>
+### Practice Mandarin Characters and Words 
+
+Choose from 6 combinations to practice. Practice pronunciation without tones, with tones, and definitions for single characters and multi-character words. 
+
+
+### Save flashcards if you create an account:
+
+![alt text](./readME_media/image.png)
+
+### About
 
 <p>This is a project to create a flashcard app that also assigns in learning chinese by having characters ranked in a frequency order</p>
 <p>This tool is likely most helpful to people wanting to practice their character and mandarin pronunciation comprehension who are at an intermediate to early advanced
@@ -12,7 +20,7 @@ level of chinese. The character list contains ~2600 to practice, and the diction
 The original ranking is based on a <a href="http://www.mementoslangues.fr/Chinois/Sinogrammes/Table3000CaracteresChinois.pdf">linked pdf </a>
 here. 
 
-Edits were made with additional resources <br></br><br></br>
+Edits were made with additional resources linked below
 
 This is an open source project with the <a href="https://github.com/maxjing97/mandarin_chinese_characters_test">github link</a> here.<br></br>
 
