@@ -423,6 +423,8 @@
 }
 .deck-button {
     display: flex;
+    margin: 0px 2px;
+    padding: 0px 2px;
     flex-direction: row;
     font-size: 14pt;
     align-items: center;
@@ -460,4 +462,9 @@
     -moz-border-radius: 8px;
     -ms-border-radius: 8px;
     -o-border-radius: 8px;
+}
+#input-warning {
+    font-size: 12pt;
+    font-weight: bold;
+    color:#ff3c3c
 }

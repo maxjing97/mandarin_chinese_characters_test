@@ -5,7 +5,6 @@ import Characters from './pages/mainchars';
 import Words from './pages/mainwords';
 import PracticeCharPronunciation from './pages/practicecharspros';
 import PracticeCharDefinition from "./pages/practicecharsdefs";
-import PracticeWordDefinition from "./pages/practiceworddefs";
 import PracticeCardDefinition from "./pages/practicecardsdefs"
 import PracticeCardPronunciation from "./pages/practicecardspros"
 import {Entry, About, Resources} from './pages/more';
@@ -33,7 +32,6 @@ function App() {
             {/*defining routes within the practice page*/}
             <Route path="/practice_char_pronunciation"  element={<PracticeCharPronunciation/>} />
             <Route path="/practice_char_definition"  element={<PracticeCharDefinition/>} />
-            <Route path="/practice_word_definition"  element={<PracticeWordDefinition/>} />
           {/*routes for the more page*/}
           <Route path="/resources"  element={<Resources />}/>
           <Route path="/about"  element={<About />}/>

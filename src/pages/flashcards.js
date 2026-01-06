@@ -363,17 +363,21 @@ function DeckCards({data,setClosed, setAltcomp}) {
           ))}
         </div>
         <p>Count : {cardcount}</p>
+        
         <div id="deck-practice-selector">
           <button onClick={()=>setClosed(true)} id="menu-button">
             Exit to menu
           </button>
-          {(countChars() > 0 && removesize === 0) && 
+          {removesize == 0 &&
           <div>
             <button onClick={()=>handlePractice("pwt")} id="menu-practice-button">
               Practice Pronunciations with tones
             </button>
             <button onClick={()=>handlePractice("prt")} id="menu-practice-button">
               Practice Pronunciations without tones
+            </button>
+            <button onClick={()=>handlePractice("def")} id="menu-practice-button">
+              Practice Definitions for all cards 
             </button>
           </div>
           }
@@ -387,16 +391,10 @@ function DeckCards({data,setClosed, setAltcomp}) {
             </button>
           </div>
           }
-          {removesize === 0 &&
-          <button onClick={()=>handlePractice("def")} id="menu-practice-button">
-            Practice Definitions for all cards 
-          </button>
-          }
           <button onClick={()=>setAddclosed(false)} id="menu-button">
             Add Card
           </button>
         </div>
-        <p>Pronunciation can only be practiced for cards that are single characters (字). Check out the learn page for what constitutes a single character</p>
       </div>
       }
       {practicing && 
@@ -603,6 +601,7 @@ export function PracticeAddDeck({dataType, mainjson}) {
   const [decks, setDecks] = useState(new Map()) //get decks map
   const [deckname, setDeckname] = useState("") //current selected deckname
   const [inputdeckname, setInputdeckname] = useState("") //current deckname typed if any
+  const [inputWarning, setInputWarning] = useState("") //special input warning shown for a custom card anme 
   const [isSet, setisSet] = useState(false) //check if the name has been set yet
   const [contained, setContained] = useState([])//list of jsons contained (the jsons in each deck)
   const [deckcount, setDeckCount] = useState(0)//count the number of decks
@@ -620,23 +619,24 @@ export function PracticeAddDeck({dataType, mainjson}) {
   }, [])
 
   //check if the newdeckname has been taken
-  const handlenewdeckname = (e) =>{
+  const handlenewdeckname = (text) =>{
     if (deckcount === 5) {
-      alert("cannot create new decks at this time")
+      alert("You already have 5 decks: cannot create more decks")
     }
-    else if (inputdeckname.length ===0) {
-      alert("deck name must but be empty")
-    } else if (cardsmap.has(inputdeckname.trim())) { //check if this is key in the map
-      alert("deck name must but be unique, try again")
-      setInputdeckname("") //reset the string
+    else if (text.length ===0) {
+      setInputWarning("Type a name for this deck")
+    } else if (text.length > 30) {
+      setInputWarning("New deck name should not be larger than 30 characters")
+    } else if (cardsmap.has(text.trim())) { //check if this is key in the map
+      setInputWarning("New deck name must but be unique, try again")
     } else {
-      setDeckname(inputdeckname) //set the actual deckname used to be the same as the input
-      setisSet(true)
+      setInputWarning("")
     }
+    setDeckname(text) //set the actual deckname used to be the same as the input
   }
   //handle if an existing deckname has been checked
   const currdeckname = (name,data) =>{
-    //find the json of characters contained in the current deck
+    //find the json of characters contained in the current deck (if the deck name exists)
     const info_list = []
     const datalist = data[1]
     for(const json of datalist) {
@@ -669,7 +669,7 @@ export function PracticeAddDeck({dataType, mainjson}) {
     const copy = addmap//add to the current map
     for(const json of mainjson) {
       const idx = findIndex(json)
-      const data_type = dataType==="words" ? "W":"C"
+      const data_type = dataType ==="words" ? "W":"C"
       const char_type = json["code"]
       const data = {user_id : userlogin.uid, idx:idx, deck_name : deckname, data_type:data_type, char_type:json["code"]}//destructure
       const key = `${idx}-${data_type}-${char_type}` //get key
@@ -731,41 +731,50 @@ export function PracticeAddDeck({dataType, mainjson}) {
       <div id="practice-deck-selector"> {/*collapse decks map into a list mapping into the key and a 2 length array */}
         {[...decks].map((value, key)=>( 
           <div className="deck-button"> 
-              <input type="radio" name="chartype" id={key} onClick={() => currdeckname(value[0],value)} className="charbutton" checked={deckname === value[0]} disabled={isSet}></input>
+              <input type="radio" name="chartype" className="charbutton" id={key} onClick={() => {currdeckname(value[0],value); setInputWarning("")}} checked={deckname === value[0]}/>
               <label class="decklabel" htmlFor ={key}>{value[0]}</label>
           </div>
         ))}      
-        <div className="deck-button"> 
-          <input type="radio" name="chartype" id="new" className="charbutton" disabled={isSet}></input>
+        <div className="deck-button" onClick={() => currdeckname(inputdeckname,["x",[]])}> 
+          <input type="radio" name="chartype" id="new" className="charbutton"  checked={deckname === inputdeckname}/>
           <label class="decklabel" >+</label>
           <input
             type="text"
             value = {inputdeckname}
             id="deck-name"
-            onChange={(e)=>{setInputdeckname(e.target.value)}}
-            placeholder="add new deck"
-            disabled={isSet}
+            onChange={(e)=>{
+              handlenewdeckname(e.target.value)
+              currdeckname(e.target.value,["x",[]])
+              setInputdeckname(e.target.value)
+            }}
+            placeholder="New Deck"
           />
-          <button id='card-name-save' onClick={handlenewdeckname}>Save</button>
         </div>
       </div>
       {/*must pass add map so colors change dynamically, forcing rerender*/}
       {isSet &&
       <div> 
-      <h3>Add cards to the deck selected, {deckname}, from the list of characters missed</h3>
+      <h3>Add cards to {deckname}</h3>
+      {inputWarning.length != 0 && 
+      <p id='input-warning'>{inputWarning}</p>
+      }
       <div id="addchars-show">
-        {addcount !== mainjson.length ? 
-          <button id="add-all-cards" onClick={addAll}>Add all</button> 
-          :
-          <button id="remove-all-cards" onClick={removeAll}>Remove All</button>
+        {inputWarning.length == 0 && 
+        <div>
+          {(addcount !== mainjson.length) ? 
+            <button id="add-all-cards" onClick={addAll}>Add all</button> 
+            :
+            <button id="remove-all-cards" onClick={removeAll}>Remove All</button>
+          }
+        </div>
         }
         <button id="save-cards" onClick={handleSave}>
           <p>{addcount > 0 ? `Cards added: ${addcount}, Save and Exit`
           : "No cards added, Save and Exit?"}</p>
         </button>
-
       </div>
-        {addcount != 0 &&
+
+        {inputWarning.length == 0 && addcount != 0 &&
         <div>
           <table class="char_table" hidden={!(dataType==="characters")}>
             <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
@@ -780,7 +789,7 @@ export function PracticeAddDeck({dataType, mainjson}) {
             ))}</tbody>
           </table>
         </div>}
-        {addcount == 0 &&
+        {inputWarning.length == 0 && addcount == 0 &&
         <div>
           <table class="char_table" hidden={!(dataType==="characters")}>
             <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>

@@ -132,9 +132,7 @@ export default function PracticeCardPronunciation({infojsons=[],typelist=[], tes
     //find the number of jsons that are actually a single character
     const truejsons = []
     for(let i=0; i<typelist.length;i++) {
-      if(typelist[i]==="C") {
-        truejsons.push(infojsons[i])
-      }
+      truejsons.push(infojsons[i])
     }
     setNumtest(truejsons.length) //set the number of tesed.
     const [componentList, correctVals, correctJsons] = getComponents(truejsons, test_type) //pass range as a shallow object
@@ -151,7 +149,7 @@ export default function PracticeCardPronunciation({infojsons=[],typelist=[], tes
       myArray = pro.split("/") //split based on / 
     }
     for(const str of myArray) {
-      prolist.push(str.trim().toLowerCase())
+      prolist.push(str.trim().toLowerCase().replace(/\s/g,""))
     }
     return prolist
   }
@@ -192,7 +190,7 @@ export default function PracticeCardPronunciation({infojsons=[],typelist=[], tes
   //handle the submission button
   const handleSubmit = (e) => {
     const targetWord = correctList[index/2] //get the correct target word
-    if (text && parsePronunciations(targetWord).includes(text.trim().toLowerCase())) { //if matching and string is valid
+    if (text && parsePronunciations(targetWord).includes(text.trim().toLowerCase().replace(/\s/g,""))) { //if matching and string is valid
       setText("") //reset if there is match
       setAccuracies(curr=>[...curr, 1])
       setCorrectMessage("Last Response Correct")
@@ -214,7 +212,7 @@ export default function PracticeCardPronunciation({infojsons=[],typelist=[], tes
     setText(e.target.value) //set the text value dynamically
     const value = e.target.value;
     const targetWord = correctList[index/2] //get the correct value for based on the index
-    if (parsePronunciations(targetWord).includes(value.trim().toLowerCase())) {
+    if (parsePronunciations(targetWord).includes(value.trim().toLowerCase().replace(/\s/g,""))) {
       setText("") //reset if there is match
       setAccuracies(curr=>[...curr, 1]) //increment the accuracy
       setCorrectMessage("Last Response Correct") //if correct
@@ -270,7 +268,8 @@ export default function PracticeCardPronunciation({infojsons=[],typelist=[], tes
       <button onClick={menuExit} className="back-menu">
       ⬅ Back to Menu
       </button>
-      <h3>Try to type the pronuciation ({test_type === "prt"? "without": "with"} tone) for {numtest} characters</h3>
+      <h3>Type the correct pronunciation ({test_type === "prt"? "without": "with"} tone) for {numtest} items</h3>
+      <p>If the correct pronunciation is typed, it will automatically go to the next section. {test_type === "prt"? "Spacing, tones, and capitalization are ignored.": "Spacing and capitalization are ignored."}  </p>
 
       <div className="text_container">
         {/* render all components with varying visiblity to avoid unmounting, destroying vital state variables. Renders components in order*/}

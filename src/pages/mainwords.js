@@ -62,7 +62,12 @@ export default function Words() {
                 test_type: testType, //type of information tested: prt, pwt, def
                 practice_type: "words"
             };
-            navigate('/practice_word_definition', { state: data })
+            //if practicing pronuciation we have a special option 
+            if (testType === "prt" || testType === "pwt") {
+                navigate('/practice_char_pronunciation', { state: data })
+            } else {
+                navigate('/practice_char_definition', { state: data })
+            }
         }
     };
 
@@ -130,6 +135,8 @@ export default function Words() {
                 
                 <h2 className="selectCat">Select Test to Take:</h2>
                 <div className="selectbuttonContainer">
+                    <button onClick={() =>  handleSubmit("pwt")} className="selectbutton">Pronunciation (with tones)</button>
+                    <button onClick={() =>  handleSubmit("prt")} className="selectbutton">Pronunciation (without tones)</button>
                     <button onClick={() => handleSubmit("def") } className="selectbutton">Definitions</button>
                 </div>
                 {!userlogin && 

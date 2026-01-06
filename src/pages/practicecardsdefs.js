@@ -250,7 +250,7 @@ export default function PracticeCardDefinition({infojsons=[],typelist=[], test_t
       <button onClick={menuExit} className="back-menu">
       ⬅ Back to Menu
       </button>
-      <h3>Select the correct definition for the character</h3>
+      <h3>Select the correct definition for {num_test} items</h3>
 
       <div className="text_container">
         {/* render all components with varying visiblity to avoid unmounting, destroying vital state variables. Renders components in order*/}

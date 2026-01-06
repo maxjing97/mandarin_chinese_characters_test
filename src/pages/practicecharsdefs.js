@@ -6,6 +6,8 @@ import { useUser } from "../context/userContext";
 
 import tradchar from './data/tradchars.json'; //import json fo 
 import simpchar from './data/simpchars.json'; //import json 
+import tradword from './data/tradwords.json'; //import json 
+import simpword from './data/simpwords.json'; //import json 
 //add component to display the challenge
 const maxCat = 2429 //constant storing the highest possible character difficulty category (may change as more characters are added)
 
@@ -42,7 +44,7 @@ const DetailsRow = ({charJson}) => {
   );
 };
 //child component 4: component to display the final results and give a list of missed results 
-const Results = ({accuracies, num_test, componentJsons}) => {
+const Results = ({accuracies, num_test, componentJsons, data_type="characters"}) => {
   const {userlogin} = useUser()//get user info - true if user has logged in 
   const ourAccuracy = accuracies.slice(0,num_test)//narrowed down list of accuracy on the first attempt only
   const accuracy = ourAccuracy.reduce((a,b)=>a+b,0) //compute accuracy on the first few num_test elements
@@ -73,10 +75,10 @@ const Results = ({accuracies, num_test, componentJsons}) => {
           <DetailsRow charJson={Json}/>
         ))}
       </table>
-      {userlogin &&
+      {userlogin && compList && compList.length > 0 &&
       <div>
         <p>Save your missed characters to a flashcard deck!</p>
-        <PracticeAddDeck dataType={"characters"} mainjson={compList}/>
+        <PracticeAddDeck dataType={data_type} mainjson={compList}/>
       </div>
       }
     </div>
@@ -91,6 +93,10 @@ function getJsons(bottom, top, numtest,practice_type, character_type) {
     jsonData = tradchar
   } else if (practice_type === "characters" && character_type === "Simp") {
     jsonData = simpchar
+  } else if (practice_type === "words" && character_type === "Trad") {
+    jsonData = tradword
+  } else if (practice_type === "words" && character_type === "Simp") {
+    jsonData = simpword
   }
   //first get all json matching the category range 
   for (const key in jsonData) {
@@ -197,7 +203,7 @@ export default function PracticeCharDefinition(props) { //main parent image comp
         setIndex(0);
         setIsText(1);
         setCorrectMessage("") //clear mesage at the end
-        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
+        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons} data_type={practice_type}/>])
       }
     } else if (gap === 2) { //if gap is two, we keep the same pattern
       if (index < (componentList.length-2)) {
@@ -207,7 +213,7 @@ export default function PracticeCharDefinition(props) { //main parent image comp
         setIndex(0);
         setIsText(1);
         setCorrectMessage("") //clear mesage at the end
-        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons}/>])
+        setComponentList([<Results accuracies={accuracy_list} num_test={num_test} componentJsons={correctJsons} data_type={practice_type}/>])
       }
     }
   }
@@ -238,7 +244,11 @@ export default function PracticeCharDefinition(props) { //main parent image comp
     //in the case, we are not at the results page, show a warning window before exiting to menu
     const confirmed = window.confirm("Are you sure you want to proceed?"); //confirm for this case as a precaution to avoid exiting to menu
     if (confirmed) {
-      navigate('/characters') //exist back to characters
+      if (practice_type == "words") {
+        navigate('/words')
+      } else {
+        navigate('/characters') //exit back to characters
+      }
     } 
   }
 
@@ -252,7 +262,7 @@ export default function PracticeCharDefinition(props) { //main parent image comp
       <button onClick={menuExit} className="back-menu">
       ⬅ Back to Menu
       </button>
-      <h3>Select the correct definition for the character</h3>
+      <h3>Select the correct definition for {num_test} items</h3>
 
       <div className="text_container">
         {/* render all components with varying visiblity to avoid unmounting, destroying vital state variables. Renders components in order*/}
@@ -274,7 +284,9 @@ export default function PracticeCharDefinition(props) { //main parent image comp
           </div>
         </div>
         
+        {correctmessage.length > 0 &&
         <p style={{...styles.correct_text, ...{backgroundColor : (correctmessage==="Last Response Correct" ? "#44e02f":"#e63946")}}}>{correctmessage}</p> 
+        }
 
         <div id="def_buttons">
           <p style={{display: componentList.length !== 1 ? 'block' : 'none' }}>
