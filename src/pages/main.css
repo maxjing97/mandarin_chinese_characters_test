@@ -15,8 +15,7 @@
     padding: 0px;
     font-family: Arial;
     background-color: #fff;
-    height: 600px;
-    width: 500px;
+    width: clamp(300px, 500px, 500px);
 }
 .selectCat {
     font-size: 14pt;
