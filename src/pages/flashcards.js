@@ -551,7 +551,6 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
       <div id="add-cards-selector">
         <div id="addchars-show">
           <div className="charbuttonContainer">
-              <h2 className="selectCat">Select Character type: </h2>
               <div className="charbutton"> 
                   <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad", dataType)} className="charbutton" checked={charType === 'Trad'}></input>
                   <label htmlFor ="c1">Traditional</label>
@@ -563,14 +562,13 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
           </div>
         </div>
         <div className="charbuttonContainer">
-            <h2 className="selectCat">Type:</h2>
             <div className="charbutton"> 
                 <input type="radio" name="wordtype" id="w1" onClick={() => handleClick(charType, "characters")} className="charbutton" checked={dataType === 'characters'}></input>
-                <label htmlFor ="w1">Unique Characters</label>
+                <label htmlFor ="w1">Single Characters</label>
             </div>
             <div className="charbutton"> 
                 <input type="radio" name="wordtype" id="w2" onClick={() => handleClick(charType, "words")} className="charbutton"></input>
-                <label htmlFor ="w2">Words</label>
+                <label htmlFor ="w2">Multi-Characters</label>
             </div>  
         </div>
         <button id="save-cards" onClick={handleSave}>{count} cards added, Save and Exit</button>
