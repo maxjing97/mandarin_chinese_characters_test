@@ -315,6 +315,15 @@
     width: 20px;
     background-color: green;
 }
+#add-cards-selector {
+    display: block;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: white;
+    visibility: visible;
+    margin: 0;
+}
 #addchars-show {
     align-items: center;
     display: flex;
@@ -328,7 +337,10 @@
 }
 .charbuttonContainer {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+}
+.charbutton {
+    width: fit-content;
 }
 
 #deck-name {
@@ -404,16 +416,10 @@
     display: flex;
     flex-direction: column;
     width: 98vw;
-    padding: 1vw;
-    overflow: auto;
+    padding: 1vw; /*cannot have overflow set for the stickiness to take effect*/
 }
 /*mobile sizing for the character lists and table*/
 @media only screen and (max-width: 768px) {
-    #add-deck-cards {
-        display: flex;
-        flex-direction: column;
-        width: 100vw;
-    }
     .charlist_content {
         text-align: center;
         font-size: 10pt;
@@ -435,12 +441,35 @@
         font-size: 10pt;
         font-weight: normal;
     }
+    #add-cards-selector {
+        display: block;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        background-color: white;
+        visibility: visible;
+        margin: 0;
+    }
 }
 
 #table-button {
-    font-size: 15pt;
+    font-size: 12pt;
     font-weight:bold;
-    padding: 5px;
+    padding: 2px;
+}
+.char_table {
+    max-width: 90vw;
+}
+
+.char_table td {
+    padding: 0px; /* top/bottom padding 2% of vh, left/right padding 5% of vw */
+    margin: 0px;
+    font-size: 12pt;
+    font-weight: normal;
+}
+.char_table th {
+    font-size: 12pt;
+    font-weight: normal;
 }
 #table-button:hover {
     background-color: #ecff43;
@@ -552,7 +581,7 @@
     }
 }
 #menu-button {
-    margin: 5px 0px;
+    margin: 5px 5px;
     font-size: large;
     background-color: white;
     border: 2px solid black;
@@ -613,6 +642,10 @@
     margin: 0px;
     padding: 0px;
     font-size: 14pt;
+}
+#deck-menu-selector {
+    display: flex;
+    justify-content: center;
 }
 
 /*practice button and text settings for mobile */ 

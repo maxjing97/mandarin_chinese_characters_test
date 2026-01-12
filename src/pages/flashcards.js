@@ -393,7 +393,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
           }
         </div>
         
-        <div id="deck-practice-selector">
+        <div id="deck-menu-selector">
           <button onClick={()=>setClosed(true)} id="menu-button">
             Exit to menu
           </button>
@@ -548,17 +548,19 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
       {isSet &&
       <div id="add-deck-cards">
       <h3>Add cards to the deck from the list of characters</h3>
-      <div id="addchars-show">
-        <div className="charbuttonContainer">
-            <h2 className="selectCat">Select Character type: </h2>
-            <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad", dataType)} className="charbutton" checked={charType === 'Trad'}></input>
-                <label htmlFor ="c1">Traditional</label>
-            </div>
-            <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp", dataType)} className="charbutton"></input>
-                <label htmlFor ="c2">Simplified</label>
-            </div>     
+      <div id="add-cards-selector">
+        <div id="addchars-show">
+          <div className="charbuttonContainer">
+              <h2 className="selectCat">Select Character type: </h2>
+              <div className="charbutton"> 
+                  <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad", dataType)} className="charbutton" checked={charType === 'Trad'}></input>
+                  <label htmlFor ="c1">Traditional</label>
+              </div>
+              <div className="charbutton"> 
+                  <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp", dataType)} className="charbutton"></input>
+                  <label htmlFor ="c2">Simplified</label>
+              </div>     
+          </div>
         </div>
         <div className="charbuttonContainer">
             <h2 className="selectCat">Type:</h2>
