@@ -399,7 +399,7 @@
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 #menu-button {
-    margin: 0 10px ;
+    margin: 5px 0px;
     font-size: large;
     background-color: white;
     border-radius: 10px;
@@ -449,12 +449,24 @@
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-top: 10px;
 }
- 
+/*setting for non-mobile */ 
+@media only screen and (min-width: 768px) {
+    #deck-practice-selector{
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+    }
+}
+
 .practice_option_button {
     
   flex: 1 1 auto;

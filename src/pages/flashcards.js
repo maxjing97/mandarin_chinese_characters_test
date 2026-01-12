@@ -371,7 +371,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
         
         <div id="deck-practice-selector">
           {removesize == 0 &&
-          <div>
+          <div  id="deck-practice-selector">
             <button class="practice_option_button" onClick={()=>handlePractice("pwt")} id="menu-practice-button">
               Practice Pronunciations with tones
             </button>
@@ -384,7 +384,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
           </div>
           }
           {removesize > 0 && 
-          <div>
+          <div id="deck-practice-selector">
             <button onClick={()=>undoRemove()} id="menu-button" style={{backgroundColor: "rgb(32, 216, 47)", color:"white"}}>
               Undo All
             </button>
@@ -399,16 +399,6 @@ function DeckCards({data,setClosed, setAltcomp}) {
           <button onClick={()=>setClosed(true)} id="menu-button">
             Exit to menu
           </button>
-          {removesize > 0 && 
-          <div>
-            <button onClick={()=>undoRemove()} id="menu-button" style={{backgroundColor: "rgb(32, 216, 47)", color:"white"}}>
-              Undo All
-            </button>
-            <button onClick={()=>removeCards()} id="menu-button" style={{backgroundColor: "rgb(255, 53, 53)", color:"white"}}>
-              Delete {removesize } card{removesize === 1 ? "":"s"}
-            </button>
-          </div>
-          }
           <button onClick={()=>setAddclosed(false)} id="menu-button">
             Add Card
           </button>

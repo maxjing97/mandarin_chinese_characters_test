@@ -24,14 +24,39 @@ body {
 }
 
 .navBar {
+  background-color: #CC230A;
+  width: clamp(600px,100%,10000px); /*full width navBar, preserve width even when shrunk*/
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: center; /*vertical centering*/
+  font-family: Arial, sans-serif;
+  border-bottom: 3px solid #dcb909;
+}
+/*setting for mobile */ 
+@media only screen and (max-width: 768px) {
+  .navBar {
     background-color: #CC230A;
     width: clamp(600px,100%,10000px); /*full width navBar, preserve width even when shrunk*/
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    flex-grow: 1;
     justify-content: flex-start;
     align-items: center; /*vertical centering*/
     font-family: Arial, sans-serif;
     border-bottom: 3px solid #dcb909;
+  }
+}
+.navBar-main {
+    background-color: #CC230A;
+  width: clamp(600px,100%,10000px); /*full width navBar, preserve width even when shrunk*/
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  justify-content: flex-start;
+  align-items: center; /*vertical centering*/
+  font-family: Arial, sans-serif;
 }
 #title {
   flex-shrink: 1;

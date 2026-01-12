@@ -45,10 +45,23 @@
     border: 1px solid #333;
     border-radius: 4px;
     background-color: #eee;
+    font-size: 12pt;
 }
+
 .selectbutton p {
     margin: 0;
     font-size: 12pt;
+}
+
+/*reduce font for mobile version*/
+@media only screen and (max-width: 768px) {
+    .charbutton, .selectbutton {
+        font-size: 10pt;
+    }
+    .selectbutton p {
+    margin: 0;
+    font-size: 12pt;
+    }
 }
 .charbutton:hover {
     border: 2px solid #CC230A;
