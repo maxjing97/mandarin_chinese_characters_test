@@ -135,9 +135,9 @@ export default function Characters() {
                 
                 <h2 className="selectCat">Select Test to Take:</h2>
                 <div className="selectbuttonContainer">
-                    <button onClick={() =>  handleSubmit("pwt")} className="selectbutton">Pronunciation (with tones)</button>
-                    <button onClick={() =>  handleSubmit("prt")} className="selectbutton">Pronunciation (without tones)</button>
-                    <button onClick={() => handleSubmit("def") } className="selectbutton">Definitions</button>
+                    <button onClick={() =>  handleSubmit("pwt")} className="selectbutton"><p>Pronunciation (with tones)</p></button>
+                    <button onClick={() =>  handleSubmit("prt")} className="selectbutton"><p>Pronunciation (without tones)</p></button>
+                    <button onClick={() => handleSubmit("def") } className="selectbutton"><p>Definitions</p></button>
                 </div>
                 <p id="error">{error}</p> 
                 {!userlogin && 

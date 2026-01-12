@@ -17,10 +17,22 @@
     -o-border-radius: 10px;
 }
 #flashcards-main {
+    width: 95%;
+    flex-wrap: wrap;
     display: flex;
     flex-direction: column;
     text-align: center;
     justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+#flashcards-controls {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 .submit_section {
     padding-top: 10px;
@@ -436,17 +448,27 @@
 #deck-options-selector, #deck-practice-selector{
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     margin-top: 10px;
 }
+ 
+.practice_option_button {
+    
+  flex: 1 1 auto;
+  min-width: 0
+}
+
 #practice-deck-selector {
     display: flex;
     flex-direction: row;
     align-items: center;
     text-align: center;
+    flex-wrap: wrap;
     justify-content: center;
+    width: 100%;
     margin: auto;
 }
 .deck-button {

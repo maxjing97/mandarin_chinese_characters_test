@@ -361,7 +361,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
       }
 
       {addclosed && !practicing &&
-      <div>
+      <div id="flashcards-controls">
         <div id="view-deck-cards">
           {currData.map((json, index)=>(
             <Card key={index} dbjson={json} datatype={typeList[index]} infojson={infoList[index]} toggleRemove={toggleRemove} removesize={removesize}/>
@@ -372,13 +372,13 @@ function DeckCards({data,setClosed, setAltcomp}) {
         <div id="deck-practice-selector">
           {removesize == 0 &&
           <div>
-            <button onClick={()=>handlePractice("pwt")} id="menu-practice-button">
+            <button class="practice_option_button" onClick={()=>handlePractice("pwt")} id="menu-practice-button">
               Practice Pronunciations with tones
             </button>
-            <button onClick={()=>handlePractice("prt")} id="menu-practice-button">
+            <button class="practice_option_button" onClick={()=>handlePractice("prt")} id="menu-practice-button">
               Practice Pronunciations without tones
-            </button>
-            <button onClick={()=>handlePractice("def")} id="menu-practice-button">
+            </button> 
+            <button class="practice_option_button" onClick={()=>handlePractice("def")} id="menu-practice-button">
               Practice Definitions for all cards 
             </button>
           </div>

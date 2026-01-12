@@ -40,12 +40,15 @@
 /*charbutton button is radio button wrapper*/
 .charbutton, .selectbutton {
     padding: 10px 20px;
-    font-size: 12pt;
     font-weight: bold; 
     cursor: pointer;
     border: 1px solid #333;
     border-radius: 4px;
     background-color: #eee;
+}
+.selectbutton p {
+    margin: 0;
+    font-size: 12pt;
 }
 .charbutton:hover {
     border: 2px solid #CC230A;
