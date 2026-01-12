@@ -348,6 +348,19 @@
     padding: 0px;
     white-space: nowrap; /* Ensures items stay in one line */
 }
+/*mobile or small device*/
+@media only screen and (max-width: 768px) {
+    #view-deck-cards {
+        display: flex; /* Arranges children side by side */
+        overflow-x: scroll; /* Enables horizontal scrollbar if needed */
+        overflow-y: hidden; /* Hides vertical scrollbar */
+        max-width: 300px;
+        margin:auto;
+        height: 300px; /* Set a desired height */
+        padding: 0px;
+        white-space: nowrap; /* Ensures items stay in one line */
+    }
+}
 .info-card{
     white-space: normal; /*overwrite the parent white-space parameter, allowing for nessary line breaks */
     text-overflow: ellipsis;
