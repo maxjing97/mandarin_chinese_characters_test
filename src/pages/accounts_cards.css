@@ -434,6 +434,7 @@
     -o-border-radius: 10px;
 }
 #deck-options-selector, #deck-practice-selector{
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
