@@ -371,7 +371,7 @@ function DeckCards({data,setClosed, setAltcomp}) {
         
         <div id="deck-practice-selector">
           {removesize == 0 &&
-          <div  id="deck-practice-selector">
+          <div id="deck-practice-selector">
             <button class="practice_option_button" onClick={()=>handlePractice("pwt")} id="menu-practice-button">
               <p>Practice Pronunciations with tones</p>
             </button>
@@ -532,7 +532,7 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
   }
 
   return (
-    <div>
+    <div id="add-deck-container">
       {showdecknameinput && 
       <div>
         <h3>Select a Name</h3>

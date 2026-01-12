@@ -181,3 +181,27 @@ p.rangeinputbox-text {
     gap: 10px;
     height: 50px;
 }
+/*mobile sizing for the character lists and table*/
+@media only screen and (max-width: 768px) {
+    .charlist_content {
+        text-align: center;
+        font-size: 10pt;
+    }
+    .charlist_content p {
+        margin-bottom: 0;
+    }
+    #characters-list {
+        padding: 0px; /* top/bottom padding 2% of vh, left/right padding 5% of vw */
+        margin: 0px;
+    }
+    .char_table td {
+        padding: 0px; /* top/bottom padding 2% of vh, left/right padding 5% of vw */
+        margin: 0px;
+        font-size: 8pt;
+        font-weight: normal;
+    }
+    .char_table th {
+        font-size: 10pt;
+        font-weight: normal;
+    }
+}

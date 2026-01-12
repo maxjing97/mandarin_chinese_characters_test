@@ -26,6 +26,12 @@
     align-items: center;
     margin: auto;
 }
+/*mobile only settings*/
+@media only screen and (max-width: 768px) {
+    #flashcards-main {
+        width: 100%;
+    }
+}
 #flashcards-controls {
     display: flex;
     flex-wrap: wrap;
@@ -331,6 +337,31 @@
     width: 600px;
 }
 
+/*mobile sizing for the character lists and table*/
+@media only screen and (max-width: 768px) {
+    .charlist_content {
+        text-align: center;
+        font-size: 10pt;
+    }
+    .charlist_content p {
+        margin-bottom: 0;
+    }
+    #characters-list {
+        padding: 0px; /* top/bottom padding 2% of vh, left/right padding 5% of vw */
+        margin: 0px;
+    }
+    .char_table td {
+        padding: 0px; /* top/bottom padding 2% of vh, left/right padding 5% of vw */
+        margin: 0px;
+        font-size: 8pt;
+        font-weight: normal;
+    }
+    .char_table th {
+        font-size: 10pt;
+        font-weight: normal;
+    }
+}
+
 #table-button {
     font-size: 15pt;
     font-weight:bold;
@@ -348,17 +379,25 @@
     padding: 0px;
     white-space: nowrap; /* Ensures items stay in one line */
 }
-/*mobile or small device*/
+/*mobile or small device table and view setting*/
 @media only screen and (max-width: 768px) {
     #view-deck-cards {
         display: flex; /* Arranges children side by side */
         overflow-x: scroll; /* Enables horizontal scrollbar if needed */
         overflow-y: hidden; /* Hides vertical scrollbar */
-        max-width: 300px;
+        max-width: 100vw; /*allow for max viewport width*/
         margin:auto;
-        height: 300px; /* Set a desired height */
+        height: 100%; /* Set a desired height */
         padding: 0px;
         white-space: nowrap; /* Ensures items stay in one line */
+    }
+    #table-button {
+        font-size: 10pt;
+    }
+    #add-deck-container {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
     }
 }
 .info-card{
@@ -411,6 +450,10 @@
     padding: 0px;
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
+.practice_option_button {
+  flex: 1 1 auto;
+  min-width: 0
+}
 /*mobile only font sizes*/
 @media only screen and (max-width: 768px) {
     .main-part {
@@ -431,9 +474,6 @@
         margin-top: 0px;
         padding: 0px;
         font-family: Georgia, 'Times New Roman', Times, serif;
-    }
-    .practice_option_button {
-        font-size: 10pt;
     }
 }
 #menu-button {
@@ -498,23 +538,20 @@
     padding: 0px;
     font-size: 14pt;
 }
-.practice_option_button {
-  flex: 1 1 auto;
-  min-width: 0
-}
+
 /*practice button and text settings for mobile */ 
 @media only screen and (max-width: 768px) {
     #deck-practice-selector{
         width: 100%;
         display: flex;
         flex-wrap: wrap;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         font-size: 12pt;
     }
-    .practice_option_button {
-        margin: 10px 0px;
+    #menu-practice-button, .practice_option_button {
+        margin: 1px 0px;
     }
     #deck-practice-selector p {
         margin: 0px;

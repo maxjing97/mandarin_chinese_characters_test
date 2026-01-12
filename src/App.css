@@ -86,31 +86,7 @@ body {
     border-radius: 3px;
     transition: background-color 0.3s ease;
 }
-/*mobile only font sizes*/
-@media only screen and (max-width: 768px) {
-  .navBar {
-    width: 100%;
-  }
-  .navBar-main {
-    width: 100%;
-  }
-  #body {
-    font-size: 10pt;
-    display: flex;
-    flex-direction: column;
-  }
-  #title {
-    font-size: 12pt;
-    margin: 5pt 1pt;
-  }
-  .dropdown a {
-    font-size: 10pt;
-  }
-  .main-option a {
-    font-size: 10pt;
-    padding: 2px 0px;
-  }
-}
+
 /*key part to *style for dropdown menus*/
 /*trigger display of the subdropdown content class when the main part is hovered above*/
 .dropdown {
@@ -154,5 +130,43 @@ body {
   background-color: red;
   text-decoration: none;
 }
+/*mobile only font sizes for the navbar*/
+@media only screen and (max-width: 768px) {
+  .navBar {
+    width: 100%;
+  }
+  .navBar-main {
+    width: 100%;
+  }
+  #body {
+    font-size: 10pt;
+    display: flex;
+    flex-direction: column;
+  }
+  #title {
+    font-size: 14pt;
+    margin-top: 5pt;
+    margin-bottom: 0px;
 
+  }
+  .main-option {
+    padding: 0px;
+    margin: 5px;
+  }
+  .main-option a {
+    font-size: 12pt;
+    padding: 2px 0px;
+  }
+  .dropdown a {
+    font-size: 12pt;
+  }
+  .dropdown-content {
+    font-size: 12pt;
+  }
+  .dropdown {
+    max-height: fit-content;
+    margin: 0px auto;
+  }
+  
+}
 
