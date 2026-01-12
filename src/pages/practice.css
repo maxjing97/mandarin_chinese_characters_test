@@ -50,6 +50,13 @@
     flex: 1;
     font-size: 40pt;
 }
+/*mobile font size here*/
+@media only screen and (max-width: 768px) {
+    .main_text {
+        flex: 1;
+        font-size: 20pt;
+    }
+}
 .sup_text {
     object-fit: contain;
     font-size: 12pt;
@@ -125,6 +132,31 @@ table, th, td {
     -ms-transition: background-color 0.3s ease;
     -o-transition: background-color 0.3s ease;
 }
+
+/*practice button and text settings for mobile */ 
+@media only screen and (max-width: 768px) {
+    .back-menu {
+        position:static; 
+        background-color: #e63946;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-size: 12px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+        -webkit-transition: background-color 0.3s ease;
+        -moz-transition: background-color 0.3s ease;
+        -ms-transition: background-color 0.3s ease;
+        -o-transition: background-color 0.3s ease;
+    }
+    .back-menu:hover {
+        position:static; 
+        background-color: #2c0004;
+    }
+}
+
 .back {
     background-color: #e63946;
     color: #fff;

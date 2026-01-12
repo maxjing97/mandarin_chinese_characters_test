@@ -17,6 +17,11 @@
     background-color: #fff;
     width: clamp(300px, 500px, 500px);
 }
+@media only screen and (max-width: 768px) {
+    .container {
+        width : 95%; /*key change removes fixed width*/
+    }
+}
 .selectCat {
     font-size: 14pt;
 }
@@ -30,6 +35,25 @@
     display: flex;
     gap: 10px;
     justify-content: center;
+}
+/*mobile size*/
+@media only screen and (max-width:768px) {
+    .title {
+        font-size: 14pt;
+    }
+    .selectCat {
+        font-size: 12pt;
+    }
+    .selectbutton p {
+        font-size: 10pt;
+    }
+    .selectbuttonContainer {
+        display: flex;
+        flex-direction: column;
+
+        justify-content: center;
+
+    }
 }
 .rangebuttonContainer {
     display: flex;
@@ -56,11 +80,13 @@
 /*reduce font for mobile version*/
 @media only screen and (max-width: 768px) {
     .charbutton, .selectbutton {
-        font-size: 10pt;
+        font-size: 12pt;
+        padding: 1pt 1pt;
+        margin: 1pt;
     }
     .selectbutton p {
-    margin: 0;
-    font-size: 12pt;
+        margin: 0;
+        font-size: 12pt;
     }
 }
 .charbutton:hover {
@@ -113,6 +139,13 @@ input[type="radio"]:checked{
 p.rangeinputbox-text {
     margin: 10 0;
     padding: 0px;
+}
+
+/*reduce font for mobile version*/
+@media only screen and (max-width: 768px) {
+    .textinput, .numinput {
+        font-size: 10pt;
+    }
 }
 
 #error {
