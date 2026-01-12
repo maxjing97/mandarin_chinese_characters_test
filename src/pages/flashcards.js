@@ -75,11 +75,10 @@ const CharDetailsRow = ({charJson, index, deckname, toggleAdd, contained, initia
   }
   return (
     <tr id="add-card-row" onClick={()=>handleChange()} style={{backgroundColor: backgroundcolor}}>
-      <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
       <td id="addtable-entry">
         <p id="table-button" style={{textDecorationLine: checked?  "underline" : "none"}}>{charJson["word/character"]}</p>
       </td>
-      <td><p id="table-button">{charJson["definition"]}</p></td>
+      <td><p id="table-button">{charJson["test_definition"]}</p></td>
       <td><p id="table-button">{charJson["full_pronunciation"]}</p></td>
       <td>{charJson["cat"]}</td>
     </tr>
@@ -127,9 +126,8 @@ const DefDetailsRow = ({charJson, index, deckname, toggleAdd, contained, initial
   }
   return (
     <tr id="add-card-row" onClick={()=>handleChange()} style={{backgroundColor: checked ? "rgba(129, 255, 161, 1)": "white" }}>
-      <td><input id="check-character" type="checkbox" checked={checked} onChange={handleChange}/></td>
       <td><p id="table-button"  style={{textDecorationLine: checked?  "underline" : "none"}}>{charJson["word/character"]}</p></td>
-      <td><p id="table-button">{charJson["definition"]}</p></td>
+      <td><p id="table-button">{charJson["test_definition"]}</p></td>
       <td><p id="table-button">{charJson["full_pronunciation"]}</p></td>
       <td>{charJson["cat"]}</td>
     </tr>
@@ -548,7 +546,7 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
       </div>
       }
       {isSet &&
-      <div>
+      <div id="add-deck-cards">
       <h3>Add cards to the deck from the list of characters</h3>
       <div id="addchars-show">
         <div className="charbuttonContainer">
@@ -576,25 +574,25 @@ function AddDeck({setDeckCount=()=>{}, defaultdeckname = null, contained=[], ref
         <button id="save-cards" onClick={handleSave}>{count} cards added, Save and Exit</button>
       </div>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="characters")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
+          <thead><tr><th>word/character</th><th>Definition</th><th>Pronunciation</th><th>difficulty category</th></tr></thead>
           <tbody>{Object.entries(tradchar).map((Json,i) => (
             <CharDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="characters")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
+          <thead><tr><th>word/character</th><th>Definition</th><th>Pronunciation</th><th>difficulty category</th></tr></thead>
           <tbody>{Object.entries(simpchar).map((Json,i) => (
             <CharDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>        
         </table>
         <table class="char_table" hidden={!(charType=="Trad" && dataType=="words")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
+          <thead><tr><th>word/character</th><th>Definition</th><th>Pronunciation</th><th>difficulty category</th></tr></thead>
           <tbody>{Object.entries(tradword).map((Json,i) => (
             <DefDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>
         </table>
         <table class="char_table" hidden={!(charType=="Simp" && dataType=="words")}>
-          <thead><tr><th>+/-</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
+          <thead><tr><th>word/character</th><th>Definition</th><th>Pronunciation</th><th>difficulty category</th><th>index</th></tr></thead>
           <tbody>{Object.entries(simpword).map((Json,i) => (
             <DefDetailsRow key={i} charJson={Json[1]} index={Json[0]} deckname={deckname} toggleAdd={toggleAdd} contained={contained}/>
           ))}</tbody>
@@ -862,23 +860,26 @@ export default function Flashcards() {
   }
 
   return (
-    <div id="main-decks-display"> 
+    <div id="deck-header"> 
       { isaltclosed &&
-      <div className="main-decks-display">
+      <div>
         <h2>My Flashcard Decks</h2>
-        <div id="full-decks-display">
-          {
-            [...decks].map((value, key) => ( 
-              <Deck data={value} key={key} setDeckCount={setDeckCount} setClosed={setAltclosed} setAltcomp={setAltcomp}/>
-            ))
-          }
-          {/* button to add a deck*/}
+        <div className="main-decks-display">
+          <div id="full-decks-display">
+            {
+              [...decks].map((value, key) => ( 
+                <Deck data={value} key={key} setDeckCount={setDeckCount} setClosed={setAltclosed} setAltcomp={setAltcomp}/>
+              ))
+            }
+            {/* button to add a deck*/}
+          </div>
           <button className="add-deck" onClick={handleAddDeck}>
             <img src="/media/add.png" alt="add" className="deck-icon"/>
           </button>
         </div>
         <p>{deckcount===0 ? `Get Started by creating a deck`:`Deck Count: ${deckcount}`}</p>
-      </div>}
+      </div>
+      }
       { !isaltclosed && 
         <div className="main-decks-display">
           {altcomp}   

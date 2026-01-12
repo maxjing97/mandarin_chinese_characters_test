@@ -25,7 +25,7 @@ const CharDetailsRow = ({charJson, index}) => { //current table row format displ
     <tr>
       <td>{index}</td>
       <td>{getdisplaystring(charJson)}</td>
-      <td>{charJson["definition"]}</td>
+      <td>{charJson["test_definition"]}</td>
       <td>{charJson["full_pronunciation"]}</td>
       <td>{charJson["cat"]}</td>
     </tr>
@@ -37,7 +37,7 @@ const DefDetailsRow = ({charJson, index}) => {
     <tr>
       <td>{index}</td>
       <td>{charJson["word/character"]}</td>
-      <td>{charJson["definition"]}</td>
+      <td>{charJson["test_definition"]}</td>
       <td>{charJson["full_pronunciation"]}</td>
       <td>{charJson["cat"]}</td>
     </tr>
@@ -112,7 +112,7 @@ export function CharList () {
         </div>
       </div>
       <table className='char_table'>
-        <thead><tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
+        <thead><tr><th>Count</th><th>word/character</th><th>Definition</th><th>Pronunciation</th><th>difficulty category</th></tr></thead>
         <tbody>{displayJson.map((Json, i) => (
           <CharDetailsRow charJson={Json} index={i+1}/>
         ))}</tbody>
