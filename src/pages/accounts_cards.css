@@ -411,6 +411,31 @@
     padding: 0px;
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
+/*mobile only font sizes*/
+@media only screen and (max-width: 768px) {
+    .main-part {
+        margin-bottom: 10px;
+    }
+    .card-text {
+        font-size: 10pt;
+        margin-top: 3pt;
+        margin-bottom: 0pt;
+    }
+    .card-text-small {
+        font-size: 8pt;
+        margin-top: 2pt;
+        margin-bottom: 0pt;
+    }
+    .card-type-text {
+        font-size: 8pt;
+        margin-top: 0px;
+        padding: 0px;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+    .practice_option_button {
+        font-size: 10pt;
+    }
+}
 #menu-button {
     margin: 5px 0px;
     font-size: large;
@@ -462,13 +487,23 @@
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     margin-top: 10px;
 }
-/*setting for non-mobile */ 
-@media only screen and (min-width: 768px) {
+/*selector button text */
+#deck-practice-selector p {
+    margin: 0px;
+    padding: 0px;
+    font-size: 14pt;
+}
+.practice_option_button {
+  flex: 1 1 auto;
+  min-width: 0
+}
+/*practice button and text settings for mobile */ 
+@media only screen and (max-width: 768px) {
     #deck-practice-selector{
         width: 100%;
         display: flex;
@@ -476,15 +511,19 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        margin-top: 10px;
+        font-size: 12pt;
+    }
+    .practice_option_button {
+        margin: 10px 0px;
+    }
+    #deck-practice-selector p {
+        margin: 0px;
+        padding: 0px;
+        font-size: 12pt;
     }
 }
 
-.practice_option_button {
-    
-  flex: 1 1 auto;
-  min-width: 0
-}
+
 
 #practice-deck-selector {
     display: flex;

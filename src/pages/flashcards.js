@@ -373,13 +373,13 @@ function DeckCards({data,setClosed, setAltcomp}) {
           {removesize == 0 &&
           <div  id="deck-practice-selector">
             <button class="practice_option_button" onClick={()=>handlePractice("pwt")} id="menu-practice-button">
-              Practice Pronunciations with tones
+              <p>Practice Pronunciations with tones</p>
             </button>
             <button class="practice_option_button" onClick={()=>handlePractice("prt")} id="menu-practice-button">
-              Practice Pronunciations without tones
+              <p>Practice Pronunciations without tones</p>
             </button> 
             <button class="practice_option_button" onClick={()=>handlePractice("def")} id="menu-practice-button">
-              Practice Definitions for all cards 
+              <p>Practice Definitions for all cards</p>
             </button>
           </div>
           }
