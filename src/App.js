@@ -18,8 +18,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
+        <div id="root">
         <Navbar/>
-          <div>
         <Routes>        {/*defining routes */}
           <Route path="/"  element={<Words/>} />{/*default page route */}
           <Route path="/flashcards" element={<Flashcards/>} />{/*visible after login only: main flashcard selection paths*/}
