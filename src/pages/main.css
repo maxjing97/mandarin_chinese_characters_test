@@ -5,7 +5,6 @@
     align-items: center;
     background-color: #f5f5f5;
     border-bottom: 4px solid #444;
-    margin: auto; 
 }
 .container {
     display: flex;
@@ -21,13 +20,11 @@
 }
 .selectCat {
     font-size: 14pt;
-    margin: 10px;
 }
 .title {
-    font-size: clamp(9px,24px,24px);
+    font-size: clamp(1rem, calc(1em + 2vw), 18pt);
     font-weight: bold;
     text-align: center;
-    margin-top : 10px;
     color: black;
 }
 .selectbuttonContainer {
@@ -110,17 +107,24 @@ p.rangeinputbox-text {
 }
 
 #characters-list {
-    margin: 10px 100px;
+    padding: 2vh 5vw; /* top/bottom padding 2% of vh, left/right padding 5% of vw */
 }
 .char_table {
-    padding: 100px;
+    padding: 2vh 5vw; /* top/bottom padding 2% of vh, left/right padding 5% of vw */
 }
 .charlist_start {
     display: block;
     position: sticky;
     top: 0;
+    width: 100%;
     background-color: white;
     visibility: visible;
+    margin: 0;
+}
+.charlist_content {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
 }
 .charbuttonContainer {
     display: flex;

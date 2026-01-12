@@ -93,28 +93,29 @@ export function CharList () {
   return (
     <div id='characters-list'>
       <div className='charlist_start'>
-      <button onClick={handleBack}className="back_to_learn">⏴ Learning Menu</button>
-      <h2>Character List</h2>
-      <p>This is the list of characters (with various pronunciations) tested in the practice characters section</p>
-      <p>(Also includes words where one of the characters is unique in the list)</p>
-        
-        <div className="charbuttonContainer">
-            <h2 className="selectCat">Select Character type: </h2>
-            <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad")} className="charbutton" checked={charType === 'Trad'}></input>
-                <label htmlFor ="c1">Traditional</label>
+        <div className='charlist_content'>
+          <button onClick={handleBack}className="back_to_learn">⏴ Learning Menu</button>
+          <h2>Character List</h2>
+          <p>This is the list of characters (with various pronunciations) tested in the practice characters section</p>
+          <p>(Also includes words where one of the characters is unique in the list)</p>
+            
+            <div className="charbuttonContainer">
+                <div className="charbutton"> 
+                    <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad")} className="charbutton" checked={charType === 'Trad'}></input>
+                    <label htmlFor ="c1">Traditional</label>
+                </div>
+                <div className="charbutton"> 
+                    <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton"></input>
+                    <label htmlFor ="c2">Simplified</label>
+                </div>     
             </div>
-            <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton"></input>
-                <label htmlFor ="c2">Simplified</label>
-            </div>     
         </div>
       </div>
-      <table class="char_table">
-        <tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr>
-        {displayJson.map((Json, i) => (
+      <table className='char_table'>
+        <thead><tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
+        <tbody>{displayJson.map((Json, i) => (
           <CharDetailsRow charJson={Json} index={i+1}/>
-        ))}
+        ))}</tbody>
       </table>
     </div>
   );
@@ -148,23 +149,24 @@ export function WordList () {
   return (
     <div id='characters-list'>
       <div className='charlist_start'>
-      <button onClick={handleBack}className="back_to_learn">⏴ Learning Menu</button>
-      <h2>Multi-character Word List</h2>
-      <p>This is the list of words formed from multiple characters tested in the practice word section</p>
-      <p>(Also includes words where one of the characters is unique in the list)</p>
-        <div className="charbuttonContainer">
-            <h2 className="selectCat">Select Character type: </h2>
-            <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad")} className="charbutton" checked={charType === 'Trad'}></input>
-                <label htmlFor ="c1">Traditional</label>
+        <div className='charlist_content'>
+          <button onClick={handleBack}className="back_to_learn">⏴ Learning Menu</button>
+          <h2>Multi-character Word List</h2>
+          <p>This is the list of words formed from multiple characters tested in the practice word section</p>
+          <p>(Also includes words where one of the characters is unique in the list)</p>
+            <div className="charbuttonContainer">
+                <div className="charbutton"> 
+                    <input type="radio" name="chartype" id="c1" onClick={() => handleClick("Trad")} className="charbutton" checked={charType === 'Trad'}></input>
+                    <label htmlFor ="c1">Traditional</label>
+                </div>
+                <div className="charbutton"> 
+                    <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton"></input>
+                    <label htmlFor ="c2">Simplified</label>
+                </div>     
             </div>
-            <div className="charbutton"> 
-                <input type="radio" name="chartype" id="c2" onClick={() => handleClick("Simp")} className="charbutton"></input>
-                <label htmlFor ="c2">Simplified</label>
-            </div>     
         </div>
       </div>
-      <table>
+      <table className='char_table'>
         <thead><tr><th>Count</th><th>word/character</th><th>full definition</th><th>full pronunciation</th><th>difficulty category</th></tr></thead>
         <tbody>{displayJson.map((Json, i) => (
           <DefDetailsRow charJson={Json} index={i+1}/>

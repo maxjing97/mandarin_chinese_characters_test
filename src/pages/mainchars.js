@@ -73,8 +73,8 @@ export default function Characters() {
 
     return (
         <header className="page">
-            <h1 className="title">Test your knowledge of Characters (字)</h1>
             <div className="container">
+                <h1 className="title">Test your knowledge of Characters (字)</h1>
                 <h2 className="selectCat">Select Difficulty Range (1-{maxCat}) of Characters to test</h2>
                 <div className="rangebuttonContainer">
                     <div className="charbutton" onClick={() => setCatrange([1, maxCat])}> 
